@@ -65,7 +65,7 @@ const DestinationGuide = () => {
         <p className="subtitle">Holiday in Sri Lanka</p>
 
         <div className="destination-province">
-          <h2>Western Province</h2>
+          <h2 style="color:gray;">Western Province</h2>
         </div>
 
         <div className="destination-grid">
