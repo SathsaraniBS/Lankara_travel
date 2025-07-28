@@ -27,8 +27,16 @@ body {
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: height 0.2s ease;
 }
 
+.warpper.active{
+  height: 520px;
+}
 .warpper .from-box {
   width: 100%;
   padding: 40px;
@@ -36,6 +44,20 @@ body {
 
 }
 
+.warpper.active .from-box.login{
+  transition: none;
+  translate: -400px;
+}
+.warpper .from-box.register{
+  position: absolute;
+  transition: none;
+  translate: 400px;
+}
+
+.warpper.active .from-box.register{
+  transition: translate 0.18s ease;
+  translate: 0;
+}
 from h1 {
   font-size: 36px;
   text-align: center;
