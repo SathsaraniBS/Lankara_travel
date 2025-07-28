@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Edu+SA+Hand:wght@400..700&family=Poppins:wght@400;600;700&display=swap');
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(45deg, #0a0a0a, #3a4452);
+  animation: gradientAnimation 10s infinite alternate;
+
+}
+
+.warpper {
+  position: relative;
+  width: 420px;
+  height: 450px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.warpper .from-box {
+  width: 100%;
+  padding: 40px;
+  margin-top: 20px;
+
+}

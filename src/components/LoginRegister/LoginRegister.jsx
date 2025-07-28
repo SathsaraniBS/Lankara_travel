@@ -1,5 +1,7 @@
 import React from 'react'
 import './LoginRegister.css'
+import { FaUserAlt , FaLock} from "react-icons/fa";
+
 function LoginRegister() {
   return (
     <div className='wrapper'>
@@ -8,10 +10,13 @@ function LoginRegister() {
                 <h1>Login</h1>
                 <div className='input-box'>
                     <input type='text' placeholder='Username' required/>
+                    <FaUserAlt className='icon'/>
+
                 </div>
 
                 <div className='input-box'>
                     <input type='Password' placeholder='Password' required/>
+                    <FaLock className='icon'/>
                 </div>
 
                 <div className='remember-forgot'>
