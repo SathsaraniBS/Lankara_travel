@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ThingsToDo from './components/ThingsToDo';
 import DestinationGuide from './components/DestinationGuide';
 import Services from './components/services';
+import LoginRegister from './components/LoginRegister/LoginRegister';
 
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
   return (
       <>
       <Router>
+        <LoginRegister />
           <Navbar />
           <Herosection />
           <ThingsToDo />
