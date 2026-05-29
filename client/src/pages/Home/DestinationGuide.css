@@ -1,0 +1,139 @@
+/* Background container */
+.destination-container {
+  position: relative;
+  min-height: 100vh;
+  background-image: url("/public/images/backimage2.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 20px;
+}
+
+/* Destination Cards */
+.destination-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
+  gap: 50px;
+  justify-content: center;
+  margin-top: 20px;
+  width: 90%;
+  max-width: 1200px;
+}
+
+.destination-card {
+  width: 250px;
+  height: 320px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.destination-card:hover {
+  transform: scale(1.05);
+}
+
+/* Card Overlay */
+.destination-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 12px;
+  text-align: center;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+.like-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.like-btn:hover {
+  color: red;
+}
+
+
+
+/* Media Queries */
+@media screen and (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+  }
+
+  .destination-card {
+    width: 180px;
+    height: 280px;
+  }
+
+  .destination-overlay {
+    padding: 8px;
+  }
+
+  .like-btn {
+    font-size: 16px;
+  }
+
+  .like-btn:hover {
+    color: red;
+  }
+
+  .like-btn:active {
+    color: red;
+  } 
+
+
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .destination-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .destination-grid {
+    grid-template-columns: repeat(1, 1fr); /* 1 column for small screens */
+  }
+}

@@ -1,0 +1,131 @@
+/* ThingsToDoSriLanka.css */
+.container {
+    position: relative;
+    text-align: center;
+    color: white;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .background-image {
+    background: url('/public/images/backimage.jpg') no-repeat center center/cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 5px 10px;
+    height: 40px;
+  }
+  
+  .search-icon {
+    margin-right: 10px;
+    color: #333;
+    font-size: 20px;
+
+  }
+  
+  input {
+    border: none;
+    background: transparent;
+    outline: none;
+  }
+  
+  .content {
+    max-width: 600px;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+
+@media screen and (max-width: 768px) {
+    .header {
+      justify-content: center;
+    }
+    
+
+    .search-bar {
+      margin-top: 10px;
+    }
+
+    .content {
+      font-size: 16px;
+    }
+
+    .background-image {
+      background-size: cover;
+    }
+
+    .header {
+      padding: 10px;
+    }
+
+    .search-bar {
+      padding: 5px 10px;
+    }
+
+    input {
+      font-size: 14px;
+    }
+
+    .content {
+      padding: 10px;
+    }
+
+    .content h1 {
+      font-size: 24px;
+    }
+
+    .content p {
+      font-size: 14px;
+    }
+
+    .background-image {
+      background-size: cover;
+    }
+
+    .header {
+      padding: 10px;
+    }
+
+    .search-bar {
+        padding: 5px 10px;
+      }
+
+      input {
+        font-size: 14px;
+      }
+
+      .content {
+        padding: 10px;
+      }
+
+      .content h1 {
+        font-size: 24px;
+      }
+
+      
+
+    
+}
+  
