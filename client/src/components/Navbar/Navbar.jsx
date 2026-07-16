@@ -8,40 +8,28 @@ const Navbar = () => {
   const handleClick = () => setClick(!click);
 
   return (
-    <nav className="bg-transparent h-20 flex justify-center items-center sticky top-0 z-[999] text-2xl font-bold">
-      <div className="relative flex justify-center items-center h-20 max-w-[1500px] w-full">
-        {/* Logo */}
+    <nav className="bg-transparent h-20 flex items-center sticky top-0 z-[999] text-2xl font-bold">
+      <div className="flex items-center justify-between h-20 max-w-[1500px] w-full mx-auto px-5">
+        {/* Logo - always pinned to the left */}
+        <div className="flex items-right gap-2 shrink-0">
         <Link
           to="/"
-          className="text-white ml-4 cursor-pointer text-3xl flex items-center"
+          className="text-white cursor-pointer text-3xl flex items-center shrink-0"
           onClick={closeMobileMenu}
         >
           <img src="/images/logo.png" alt="logo" className="h-[70px] rounded-full" />
         </Link>
-
-        {/* Hamburger icon - mobile only */}
-        <div
-          className="hidden max-[960px]:block absolute top-0 right-0 -translate-x-full translate-y-[60%] text-3xl cursor-pointer"
-          onClick={handleClick}
-        >
-          <i
-            className={
-              click
-                ? "fas fa-times text-white max-[960px]:text-[2rem]"
-                : "fas fa-bars text-white"
-            }
-          ></i>
         </div>
 
-        {/* Nav menu */}
+        {/* Nav menu - centered on desktop, full-screen dropdown on mobile */}
         <ul
-          className={`grid grid-cols-[repeat(6,auto)] gap-2.5 list-none text-center justify-center mr-8 whitespace-nowrap
-          max-[960px]:grid-cols-1 max-[960px]:flex max-[960px]:flex-col max-[960px]:w-full max-[960px]:h-[90vh]
-          max-[960px]:absolute max-[960px]:top-20 max-[960px]:opacity-100 max-[960px]:whitespace-normal
-          max-[960px]:transition-all max-[960px]:duration-500
+          className={`flex gap-6 list-none items-center whitespace-nowrap
+          max-[960px]:flex-col max-[960px]:w-full max-[960px]:h-[90vh]
+          max-[960px]:absolute max-[960px]:top-20 max-[960px]:left-0
+          max-[960px]:whitespace-normal max-[960px]:transition-all max-[960px]:duration-500
           ${click
-            ? "max-[960px]:left-0 max-[960px]:bg-[#242222] max-[960px]:z-10"
-            : "max-[960px]:left-[-100%]"}`}
+            ? "max-[960px]:flex max-[960px]:bg-[#242222] max-[960px]:z-10"
+            : "max-[960px]:hidden"}`}
         >
           <li className="h-20">
             <Link
@@ -132,10 +120,19 @@ const Navbar = () => {
           </li>
         </ul>
 
-        {/* Desktop-only buttons */}
-        <div className="flex gap-2 max-[960px]:hidden">
-          <Button buttonStyle="btn--outline" to="/sign-in">SIGN IN</Button>
-          <Button buttonStyle="btn--outline" to="/sign-up">Register</Button>
+        {/* Right side: buttons (desktop) + hamburger (mobile) - always pinned to the right */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="flex gap-2 max-[960px]:hidden">
+            <Button buttonStyle="btn--outline" to="/sign-in">SIGN IN</Button>
+            <Button buttonStyle="btn--outline" to="/sign-up">Register</Button>
+          </div>
+
+          <div
+            className="hidden max-[960px]:block text-3xl cursor-pointer"
+            onClick={handleClick}
+          >
+            <i className={click ? "fas fa-times text-white" : "fas fa-bars text-white"}></i>
+          </div>
         </div>
       </div>
     </nav>
