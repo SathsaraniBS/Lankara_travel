@@ -18,6 +18,7 @@ const DestinationGuide = () => {
       className="relative min-h-screen bg-cover bg-center flex flex-col justify-center items-center text-center"
       style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
     >
+    
       <div className="absolute inset-0 bg-black/40"></div>
 
       <div className="relative z-10 p-5">
