@@ -18,7 +18,6 @@ const DestinationGuide = () => {
       className="relative min-h-screen bg-cover bg-center flex flex-col justify-center items-center text-center"
       style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
     >
-    
       <div className="absolute inset-0 bg-black/40"></div>
 
       <div className="relative z-10 p-5">
@@ -40,7 +39,7 @@ const DestinationGuide = () => {
               style={{ backgroundImage: `url(${dest.image})` }}
             >
               <div
-                className="absolute bottom-0 w-full bg-black/60 text-white p-3 text-center
+                className="absolute bottom-0 w-full bg-black/80 text-white p-3 text-center
                 rounded-b-2xl max-[768px]:p-2"
               >
                 <h2>{dest.name}</h2>
