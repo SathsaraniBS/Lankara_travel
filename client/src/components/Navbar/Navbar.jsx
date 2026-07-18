@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "../Button";
 
 const Navbar = () => {
   const [click, setClick] = useState(false);
@@ -11,14 +10,14 @@ const Navbar = () => {
     <nav className="bg-transparent h-20 flex items-center sticky top-0 z-[999] text-2xl font-bold">
       <div className="flex items-center justify-between h-20 max-w-[1500px] w-full mx-auto px-5">
         {/* Logo - always pinned to the left */}
-        <div className="flex items-right gap-2 shrink-0">
-        <Link
-          to="/"
-          className="text-white cursor-pointer text-3xl flex items-center shrink-0"
-          onClick={closeMobileMenu}
-        >
-          <img src="/images/logo.png" alt="logo" className="h-[70px] rounded-full" />
-        </Link>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            to="/"
+            className="text-white cursor-pointer text-3xl flex items-center shrink-0"
+            onClick={closeMobileMenu}
+          >
+            <img src="/images/logo.png" alt="logo" className="h-[70px] rounded-full" />
+          </Link>
         </div>
 
         {/* Nav menu - centered on desktop, full-screen dropdown on mobile */}
@@ -122,9 +121,22 @@ const Navbar = () => {
 
         {/* Right side: buttons (desktop) + hamburger (mobile) - always pinned to the right */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex gap-2 max-[960px]:hidden">
-            <Button buttonStyle="btn--outline" to="/sign-in">SIGN IN</Button>
-            <Button buttonStyle="btn--outline" to="/sign-up">Register</Button>
+          <div className="flex gap-2 px-4 mt-6">
+            <Link
+              to="/sign-in"
+              className="flex-1 text-center border-2 border-white text-white font-semibold py-2 hover:bg-red-600 hover:border-red-600 transition duration-300"
+            >
+              Sign in
+            </Link>
+            <Link
+              to="/sign-up"
+              className="rounded-[2px] cursor-pointer m-2 px-5 py-2 text-xl flex justify-center items-center
+              bg-transparent text-white border border-white
+              transition-all duration-500 ease-in-out
+              hover:bg-white hover:text-[#222] hover:duration-300 hover:ease-out"
+            >
+              Register 
+            </Link>
           </div>
 
           <div
