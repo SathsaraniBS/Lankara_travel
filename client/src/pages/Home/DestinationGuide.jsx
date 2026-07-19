@@ -58,7 +58,7 @@ const DestinationGuide = () => {
                 style={{ backgroundImage: `url(${dest.image})` }}
               >
                 <div
-                  className="absolute bottom-0 w-full bg-black text-white p-3 text-center
+                  className="absolute bottom-0 w-full bg-black/40 text-white p-3 text-center
                   rounded-b-2xl max-[768px]:p-2"
                 >
                   <h2>{dest.name}</h2>

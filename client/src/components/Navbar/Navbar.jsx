@@ -129,7 +129,7 @@ const Navbar = () => {
               Sign in
             </Link>
             <Link
-              to="/sign-up"
+              to="/register"
               className="rounded-[2px] cursor-pointer m-2 px-5 py-2 text-xl flex justify-center items-center
               bg-transparent text-white border border-white
               transition-all duration-500 ease-in-out
