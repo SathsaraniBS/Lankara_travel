@@ -1,0 +1,60 @@
+# ============================
+# Environment Variables (CRITICAL - Secrets)
+# ============================
+.env
+.env.local
+.env.*.local
+
+# ============================
+# Python
+# ============================
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# ============================
+# Alembic (Migration cache - versions folder keep කරන්න, cache නෙමෙයි)
+# ============================
+alembic/__pycache__/
+
+# ============================
+# Distribution / Packaging
+# ============================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ============================
+# IDE / Editor
+# ============================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ============================
+# OS Generated Files
+# ============================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================
+# Logs
+# ============================
+*.log
+logs/
+
+# ============================
+# Database (local SQLite testing files if any)
+# ============================
+*.sqlite3
+*.db
