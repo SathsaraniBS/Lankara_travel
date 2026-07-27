@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from auth import router as auth_router
 from routers.flights import router as flights_router
 from routers.hotels import router as hotels_router
+from routers.bookings import router as bookings_router
 
 app = FastAPI(
     title="Lankara Travel API",
@@ -22,6 +23,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(flights_router)
 app.include_router(hotels_router)
+app.include_router(bookings_router)
 
 @app.get("/")
 async def root():
