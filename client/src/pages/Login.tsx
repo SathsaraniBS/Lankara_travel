@@ -1,42 +1,63 @@
-// src/pages/Login.jsx
+// app/login/page.tsx
+"use client";
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import api from "../api/axios"; // ✅ centralized axios instance (no hardcoded localhost)
+import { useState, FormEvent } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import api from "@/api/axios"; // ✅ centralized axios instance (no hardcoded localhost)
+import { AxiosError } from "axios";
 
-function Login() {
+interface LoginResponse {
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: "admin" | "user";
+  };
+}
+
+interface ErrorResponse {
+  message?: string;
+}
+
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const res = await api.post("/api/auth/login", { email, password });
+      const res = await api.post<LoginResponse>("/api/auth/login", {
+        email,
+        password,
+      });
 
       // Backend returns { token, user: { role, ... } }
       login(res.data.token, res.data.user);
 
       if (res.data.user.role === "admin") {
-        navigate("/admindashboard"); // ✅ Fixed: was "/admin" which has no route
+        router.push("/admindashboard"); // ✅ Fixed: was "/admin" which has no route
       } else {
-        navigate("/user/dashboard");
+        router.push("/user/dashboard");
       }
     } catch (err) {
+      const axiosErr = err as AxiosError<ErrorResponse>;
       const message =
-        err.response?.data?.message ||
-        err.message ||
+        axiosErr.response?.data?.message ||
+        axiosErr.message ||
         "Login failed. Please try again.";
       setError(message);
-      console.error("Login error:", err);
+      console.error("Login error:", axiosErr);
     } finally {
       setLoading(false);
     }
@@ -45,7 +66,6 @@ function Login() {
   return (
     <div className="bg-black text-white min-h-screen flex items-center justify-center p-6">
       <div className="border-2 border-orange-500 shadow-2xl rounded-xl bg-gray-900/80 backdrop-blur-sm p-8 max-w-md w-full">
-
         <h2 className="text-4xl font-bold text-center mb-8 text-orange-500">
           Login
         </h2>
@@ -92,8 +112,8 @@ function Login() {
         </form>
 
         <p className="text-center mt-6 text-gray-400">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-orange-400 font-semibold hover:underline">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-orange-400 font-semibold hover:underline">
             Register here
           </Link>
         </p>
@@ -104,14 +124,11 @@ function Login() {
             <input type="checkbox" className="accent-orange-500 w-4 h-4" />
             Remember me
           </label>
-          <Link to="/forgot-password" className="text-cyan-400 hover:text-cyan-300 transition">
+          <Link href="/forgot-password" className="text-cyan-400 hover:text-cyan-300 transition">
             Forgot password?
           </Link>
         </div>
-
       </div>
     </div>
   );
 }
-
-export default Login;
