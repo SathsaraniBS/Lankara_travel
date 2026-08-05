@@ -18,10 +18,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // FastAPI backend  OAuth2PasswordRequestForm expect 
-      // form-urlencoded data, JSON 
       const formData = new URLSearchParams();
-      formData.append("username", email); // email  "username" field 
+      formData.append("username", email);
       formData.append("password", password);
 
       const response = await api.post("/auth/login", formData, {
@@ -29,11 +27,7 @@ export default function LoginPage() {
       });
 
       const { access_token } = response.data;
-
-      // Token browser  save 
       localStorage.setItem("access_token", access_token);
-
-      // Success - home page  redirect  ( dashboard)
       router.push("/");
     } catch (err: any) {
       if (err.response?.status === 401) {
@@ -47,24 +41,34 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">
-          Welcome back
+    <div
+      className="relative min-h-screen w-full flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat px-4 py-12"
+      style={{
+        // Place your background image (e.g. scenic Ella train image) in public/images/bg.jpg
+        backgroundImage: "url('/images/backimage1.jpg')",
+      }}
+    >
+      {/* Dark overlay for contrast */}
+      <div className="absolute inset-0 bg-black/30 backdrop-brightness-90" />
+
+      {/* Glassmorphic Form Container */}
+      <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl text-white">
+        <h1 className="text-3xl font-bold text-center mb-1 drop-shadow-md">
+          Welcome Back
         </h1>
-        <p className="text-gray-500 mb-6">
-          Login to your Lankara Travel account
+        <p className="text-center text-gray-200 text-sm mb-6">
+          Login to Lankara Travel and start planning your trip
         </p>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+          <div className="mb-4 p-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-200 text-sm text-center">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-200 mb-1">
               Email
             </label>
             <input
@@ -73,12 +77,12 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:bg-white/20 transition"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-200 mb-1">
               Password
             </label>
             <input
@@ -86,19 +90,19 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+              placeholder="At least 8 characters"
+              className="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:bg-white/20 transition"
             />
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2 text-gray-500 cursor-pointer">
-              <input type="checkbox" className="accent-orange-500 w-4 h-4" />
+          <div className="flex items-center justify-between text-xs text-gray-200 pt-1">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" className="accent-sky-500 w-4 h-4 rounded" />
               Remember me
             </label>
             <Link
               href="/forgot-password"
-              className="text-cyan-500 hover:text-cyan-600"
+              className="text-sky-300 hover:underline"
             >
               Forgot password?
             </Link>
@@ -107,19 +111,19 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-500 text-white font-semibold py-2.5 rounded-lg hover:bg-orange-600 transition disabled:opacity-50"
+            className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5 rounded-xl transition shadow-lg disabled:opacity-50 mt-2"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-gray-300 mt-6">
           Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="text-orange-500 font-semibold hover:underline"
+            className="text-sky-300 font-semibold hover:underline"
           >
-            Register here
+            Register
           </Link>
         </p>
       </div>
