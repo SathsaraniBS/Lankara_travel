@@ -23,6 +23,7 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_THIS_SECRET_KEY_IN_PRODUCTION")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
+RESET_TOKEN_EXPIRE_MINUTES = 15
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -67,6 +68,15 @@ class TokenData(BaseModel):
     user_id: Optional[str] = None
 
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
 # ============================================================
 # Password Utilities
 # ============================================================
@@ -91,6 +101,25 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 
+def create_reset_token(user_id: str) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)
+    payload = {"sub": user_id, "type": "password_reset", "exp": expire}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_reset_token(token: str) -> str:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "password_reset":
+            raise HTTPException(status_code=400, detail="Invalid token type")
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(status_code=400, detail="Invalid token")
+        return user_id
+    except JWTError:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+
 async def get_user_by_email(db: AsyncSession, email: str) -> Optional[User]:
     result = await db.execute(select(User).where(User.email == email))
     return result.scalar_one_or_none()
@@ -106,7 +135,7 @@ async def authenticate_user(db: AsyncSession, email: str, password: str) -> Opti
 
 
 # ============================================================
-# Dependency - Current Logged-in User (Protected routes සඳහා)
+# Dependency - Current Logged-in User (Protected routes)
 # ============================================================
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
@@ -181,7 +210,7 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
 ):
-    
+
     user = await authenticate_user(db, form_data.username, form_data.password)
 
     if not user:
@@ -198,5 +227,41 @@ async def login(
 
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: User = Depends(get_current_user)):
-    """Currently logged-in user ගේ profile data return කරනවා."""
+    """Currently logged-in user profile data return ."""
     return current_user
+
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    
+    user = await get_user_by_email(db, data.email)
+
+    if user:
+        reset_token = create_reset_token(str(user.id))
+
+        reset_link = f"http://localhost:3000/reset-password?token={reset_token}"
+        print("=" * 60)
+        print(f"PASSWORD RESET REQUESTED for: {user.email}")
+        print(f"Reset link (valid {RESET_TOKEN_EXPIRE_MINUTES} min):")
+        print(f"   {reset_link}")
+        print("=" * 60)
+
+    return {
+        "message": "If an account with that email exists, a password reset link has been sent."
+    }
+
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+async def reset_password(data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    user_id = verify_reset_token(data.token)
+
+    result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.hashed_password = hash_password(data.new_password)
+    await db.commit()
+
+    return {"message": "Password has been reset successfully. You can now log in."}
