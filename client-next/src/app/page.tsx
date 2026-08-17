@@ -1,4 +1,5 @@
 import HeroSection from "@/components/HeroSection";
+import DestinationsSection from "@/components/DestinationsSection";
 import Link from "next/link";
 import { Plane, Hotel, ShieldCheck } from "lucide-react";
 
@@ -50,6 +51,9 @@ export default function HomePage() {
 
         </div>
       </section>
+
+      {/* Destinations Section */}
+      <DestinationsSection />
     </div>
   );
 }
