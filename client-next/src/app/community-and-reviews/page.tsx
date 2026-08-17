@@ -1,220 +1,309 @@
 "use client";
 
 import React, { useState } from "react";
-import { Star, MessageSquare, ThumbsUp, User } from "lucide-react";
+import Image from "next/image";
+import { Star, MapPin, Smile, Users, Award, MessageSquareQuote } from "lucide-react";
 
 interface Review {
   id: number;
   name: string;
+  location: string;
+  avatar: string;
   rating: number;
-  date: string;
-  comment: string;
-  likes: number;
+  quote: string;
+  isMain?: boolean;
 }
 
-const initialReviews: Review[] = [
+const reviewsData: Review[] = [
   {
     id: 1,
-    name: "Kasun Perera",
+    name: "Dilini Perera",
+    location: "Colombo, Sri Lanka",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80",
     rating: 5,
-    date: "2026-02-10",
-    comment:
-      "Ella and Sigiriya trip was well-organized! The local insights helped us find incredible non-touristy food spots.",
-    likes: 12,
+    quote:
+      "Our trip to Ella and Nuwara Eliya was absolutely amazing! Everything was well organized and the hotels were fantastic. Lankara Travel made our vacation stress-free and memorable. Highly recommend!",
+    isMain: true,
   },
   {
     id: 2,
-    name: "Sarah Jenkins",
+    name: "Tharindu Silva",
+    location: "Galle, Sri Lanka",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
     rating: 5,
-    date: "2026-01-28",
-    comment:
-      "Amazing resource for first-time travelers to Sri Lanka. The community reviews made planning effortless.",
-    likes: 8,
+    quote: "Amazing experience from start to finish.",
   },
   {
     id: 3,
-    name: "Dilshan Silva",
-    rating: 4,
-    date: "2026-01-15",
-    comment:
-      "Great recommendations for coastal spots! Mirissa beach tips were spot on.",
-    likes: 5,
+    name: "Nadeesha Karunaratne",
+    location: "Kandy, Sri Lanka",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=80",
+    rating: 5,
+    quote: "Great service and best holiday ever!",
+  },
+  {
+    id: 4,
+    name: "Supun De Silva",
+    location: "Negombo, Sri Lanka",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80",
+    rating: 5,
+    quote: "Super friendly team and well planned tours.",
+  },
+  {
+    id: 5,
+    name: "Kasun Madushanka",
+    location: "Jaffna, Sri Lanka",
+    avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&q=80",
+    rating: 5,
+    quote: "Very reliable and trustworthy service.",
+  },
+  {
+    id: 6,
+    name: "Heshani Rathnayake",
+    location: "Batticaloa, Sri Lanka",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80",
+    rating: 5,
+    quote: "Loved the itinerary and hotel choices.",
+  },
+  {
+    id: 7,
+    name: "Isuru Jayawardena",
+    location: "Anuradhapura, Sri Lanka",
+    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80",
+    rating: 5,
+    quote: "Excellent customer service and amazing trip!",
+  },
+  {
+    id: 8,
+    name: "Amandi Fernando",
+    location: "Matara, Sri Lanka",
+    avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80",
+    rating: 5,
+    quote: "Smooth bookings and wonderful support!",
   },
 ];
 
-export default function CommunityAndReviewsPage() {
-  const [reviews, setReviews] = useState<Review[]>(initialReviews);
-  const [name, setName] = useState("");
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState("");
-
-  const handleAddReview = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !comment) return;
-
-    const newReview: Review = {
-      id: Date.now(),
-      name,
-      rating,
-      date: new Date().toISOString().split("T")[0],
-      comment,
-      likes: 0,
-    };
-
-    setReviews([newReview, ...reviews]);
-    setName("");
-    setComment("");
-    setRating(5);
-  };
-
-  const handleLike = (id: number) => {
-    setReviews(
-      reviews.map((rev) =>
-        rev.id === id ? { ...rev, likes: rev.likes + 1 } : rev
-      )
-    );
-  };
+export default function TestimonialsPage() {
+  const [selectedReview, setSelectedReview] = useState<Review>(
+    reviewsData.find((r) => r.isMain) || reviewsData[0]
+  );
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 pt-28 pb-16 px-6 sm:px-12">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <div className="relative min-h-screen text-slate-800 pt-24 pb-16 px-4 sm:px-6 overflow-hidden">
+      
+      {/* Background Image & Overlay */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/images/backimage1.jpg"
+          alt="Travel Background"
+          fill={true}
+          priority={true}
+          className="object-cover object-center"
+        />
+        {/* Soft white overlay to ensure content readability */}
+        <div className="absolute inset-0 bg-slate-70/80" />
+      </div>
+
+      <div className="max-w-6xl mx-auto space-y-12 relative z-10">
+        
         {/* Header Section */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">
-            Community & Reviews
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
+            Loved By Over <span className="text-blue-600">Thousand Travelers</span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            See what fellow travelers are saying about their Sri Lankan adventures and share your own experiences.
+          <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto font-medium">
+            Real stories from real travelers who explored, experienced, and created
+            unforgettable memories with Lankara Travel.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* Add Review Form */}
-          <div className="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-2xl h-fit">
-            <h2 className="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-2">
-              <MessageSquare size={24} /> Leave a Review
-            </h2>
-
-            <form onSubmit={handleAddReview} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  placeholder="John Doe"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition duration-200"
-                />
+        {/* Circular Testimonials Layout */}
+        <div className="relative min-h-[520px] flex items-center justify-center py-8">
+          
+          {/* Main Featured Center Review */}
+          <div className="z-10 bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-slate-100 max-w-lg text-center flex flex-col items-center space-y-3 transition-all duration-300">
+            <div className="relative">
+              <Image
+                src={selectedReview.avatar}
+                alt={selectedReview.name}
+                width={110}
+                height={110}
+                className="w-28 h-28 rounded-full object-cover ring-4 ring-blue-500/20"
+              />
+              <div className="absolute bottom-1 right-1 bg-emerald-500 text-white rounded-full p-1">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                </svg>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Rating
-                </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      type="button"
-                      key={star}
-                      onClick={() => setRating(star)}
-                      className="focus:outline-none"
-                    >
-                      <Star
-                        size={24}
-                        className={
-                          star <= rating
-                            ? "fill-amber-400 text-amber-400"
-                            : "text-slate-600"
-                        }
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900">{selectedReview.name}</h3>
+              <p className="text-xs text-slate-500 flex items-center justify-center gap-1 mt-0.5">
+                <MapPin size={12} className="text-blue-500" /> {selectedReview.location}
+              </p>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Your Experience
-                </label>
-                <textarea
-                  rows={4}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  required
-                  placeholder="Share your trip details..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition duration-200 resize-none"
-                ></textarea>
-              </div>
+            <p className="text-slate-600 text-sm leading-relaxed italic px-2">
+              &ldquo;{selectedReview.quote}&rdquo;
+            </p>
 
-              <button
-                type="submit"
-                className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg transition duration-300"
-              >
-                Submit Review
-              </button>
-            </form>
+            <div className="flex gap-1 text-amber-400">
+              {Array.from({ length: selectedReview.rating }).map((_, i) => (
+                <Star key={i} size={18} fill="currentColor" />
+              ))}
+            </div>
           </div>
 
-          {/* Review List */}
-          <div className="lg:col-span-2 space-y-6">
-            <h2 className="text-2xl font-bold text-slate-200">
-              Community Experiences ({reviews.length})
-            </h2>
-
-            {reviews.map((review) => (
+          {/* Left Side Small Reviews */}
+          <div className="hidden lg:flex flex-col justify-between absolute left-0 h-full py-4 space-y-6">
+            {reviewsData.slice(1, 4).map((review) => (
               <div
                 key={review.id}
-                className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4"
+                onClick={() => setSelectedReview(review)}
+                className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${
+                  selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
+                }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
-                      <User size={20} />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-200">
-                        {review.name}
-                      </h3>
-                      <p className="text-xs text-slate-500">{review.date}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, index) => (
-                      <Star
-                        key={index}
-                        size={16}
-                        className={
-                          index < review.rating
-                            ? "fill-amber-400 text-amber-400"
-                            : "text-slate-700"
-                        }
-                      />
+                <Image
+                  src={review.avatar}
+                  alt={review.name}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 rounded-full object-cover shrink-0"
+                />
+                <div className="text-left text-xs">
+                  <h4 className="font-bold text-slate-900">{review.name}</h4>
+                  <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
+                    <MapPin size={10} className="text-blue-500" /> {review.location}
+                  </p>
+                  <div className="flex text-amber-400 my-0.5">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Star key={i} size={10} fill="currentColor" />
                     ))}
                   </div>
-                </div>
-
-                <p className="text-slate-300 text-sm leading-relaxed">
-                  {review.comment}
-                </p>
-
-                <div className="pt-2 flex items-center justify-between text-xs text-slate-400">
-                  <button
-                    onClick={() => handleLike(review.id)}
-                    className="flex items-center gap-1.5 hover:text-emerald-400 transition"
-                  >
-                    <ThumbsUp size={16} />
-                    <span>Helpful ({review.likes})</span>
-                  </button>
+                  <p className="text-slate-600 line-clamp-1">{review.quote}</p>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Right Side Small Reviews */}
+          <div className="hidden lg:flex flex-col justify-between absolute right-0 h-full py-4 space-y-6">
+            {reviewsData.slice(4, 7).map((review) => (
+              <div
+                key={review.id}
+                onClick={() => setSelectedReview(review)}
+                className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${
+                  selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
+                }`}
+              >
+                <Image
+                  src={review.avatar}
+                  alt={review.name}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 rounded-full object-cover shrink-0"
+                />
+                <div className="text-left text-xs">
+                  <h4 className="font-bold text-slate-900">{review.name}</h4>
+                  <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
+                    <MapPin size={10} className="text-blue-500" /> {review.location}
+                  </p>
+                  <div className="flex text-amber-400 my-0.5">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Star key={i} size={10} fill="currentColor" />
+                    ))}
+                  </div>
+                  <p className="text-slate-600 line-clamp-1">{review.quote}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Center Small Review */}
+          <div className="hidden lg:block absolute bottom-0 left-1/2 -translate-x-1/2">
+            {reviewsData.slice(7, 8).map((review) => (
+              <div
+                key={review.id}
+                onClick={() => setSelectedReview(review)}
+                className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${
+                  selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
+                }`}
+              >
+                <Image
+                  src={review.avatar}
+                  alt={review.name}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 rounded-full object-cover shrink-0"
+                />
+                <div className="text-left text-xs">
+                  <h4 className="font-bold text-slate-900">{review.name}</h4>
+                  <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
+                    <MapPin size={10} className="text-blue-500" /> {review.location}
+                  </p>
+                  <div className="flex text-amber-400 my-0.5">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Star key={i} size={10} fill="currentColor" />
+                    ))}
+                  </div>
+                  <p className="text-slate-600 line-clamp-1">{review.quote}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
         </div>
+
+        {/* Stats Metrics Bar */}
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/70 p-6 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
+            <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+              <Smile size={24} />
+            </div>
+            <div className="text-left">
+              <p className="text-lg font-extrabold text-slate-900">4.8/5</p>
+              <p className="text-xs text-slate-500">Average Rating</p>
+              <p className="text-[10px] text-slate-400">Based on 2,350+ reviews</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
+            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
+              <Users size={24} />
+            </div>
+            <div className="text-left">
+              <p className="text-lg font-extrabold text-slate-900">10,000+</p>
+              <p className="text-xs text-slate-500">Happy Travelers</p>
+              <p className="text-[10px] text-slate-400">Joined with us</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
+            <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
+              <Award size={24} />
+            </div>
+            <div className="text-left">
+              <p className="text-lg font-extrabold text-slate-900">15,000+</p>
+              <p className="text-xs text-slate-500">Trips Completed</p>
+              <p className="text-[10px] text-slate-400">Successful journeys</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 justify-center">
+            <div className="p-3 bg-sky-50 text-sky-600 rounded-2xl">
+              <MessageSquareQuote size={24} />
+            </div>
+            <div className="text-left">
+              <p className="text-lg font-extrabold text-slate-900">98%</p>
+              <p className="text-xs text-slate-500">Recommendation Rate</p>
+              <p className="text-[10px] text-slate-400">Would recommend us</p>
+            </div>
+          </div>
+        </div>
+
       </div>
-    </main>
+    </div>
   );
 }
