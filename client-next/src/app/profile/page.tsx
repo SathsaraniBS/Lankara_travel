@@ -1,253 +1,320 @@
-"use client";
+'use client';
+import { useState } from 'react';
+import { useStore } from '@/store';
+import { Initiative } from '@/types';
+import { Badge, ProgressBar } from '@/components/ui';
+import { X, ChevronRight, Upload } from 'lucide-react';
+import InitiativeDetail from './detail/InitiativeDetail';
+import BulkUploadModal from './BulkUploadModal';
 
-import React, { useState, useEffect } from "react";
-import { User, Mail, MapPin, Phone, ShieldCheck, History, Camera, Loader2, CheckCircle2 } from "lucide-react";
+const WORKSTREAM_SUBS: Record<string, string[]> = {
+  'Revenue Offence': [
+    'Non-tech pack business',
+    'Onboarding with new strategic customers',
+    'Grow with existing customers',
+    'India',
+    'Accessories',
+  ],
+  'Manufacturing': [
+    'Overhead reduction',
+    'Autonomation / deskilling / method improvements',
+    'Product capability improvements',
+    'Productivity improvements',
+  ],
+  'Raw Material': [
+    'Consumption / market efficiency / wastage minimizing',
+    'Pricing & counter sourcing',
+    'Logistics inbound / verticality',
+    'Stock holding',
+  ],
+  'SG&A and Finance': [
+    'Marketing & Development Cost',
+    'Employee related Cost',
+    'Administration Cost',
+    'Borrowing and Interest Cost',
+    'Cost Validity',
+  ],
+};
 
-interface UserProfile {
-  id: string;
-  full_name: string;
-  email: string;
-  phone?: string;
-  location?: string;
-  avatar_url?: string;
-}
+const STAGE_FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'L0',  label: 'L0 — Idea' },
+  { key: 'L1',  label: 'L1 — Identified' },
+  { key: 'L2',  label: 'L2 — Validated' },
+  { key: 'L3',  label: 'L3 — Planned' },
+  { key: 'L4',  label: 'L4 — Executed' },
+  { key: 'L5',  label: 'L5 — Realized' },
+];
 
-interface Booking {
-  id: string;
-  type: string;
-  title: string;
-  date: string;
-  status: string;
-  amount: number;
-}
+function AddInitiativeModal({ onClose }: { onClose: () => void }) {
+  const { addInitiative, fetchInitiatives } = useStore();
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    name: '',
+    workstream: 'Revenue Offence',
+    subWorkstream: '',
+    owner: '',
+    valueTarget: '',
+    description: '',
+  });
 
-export default function ProfilePage() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [successMsg, setSuccessMsg] = useState(false);
+  const subOptions = WORKSTREAM_SUBS[form.workstream] || [];
+  const nameError = submitted && !form.name.trim();
+  const ownerError = submitted && !form.owner.trim();
+  const subError = submitted && !form.subWorkstream;
 
-  // Form Fields
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [location, setLocation] = useState("");
+const handleSubmit = async () => {
+    setSubmitted(true);
+    if (!form.name.trim() || !form.owner.trim() || !form.subWorkstream) return;
 
-  useEffect(() => {
-    async function fetchProfileData() {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:8000/api/v1/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+    await addInitiative({
+      name: form.name,
+      owner: form.owner,
+      department: form.subWorkstream || form.workstream,
+      workstream: form.workstream,
+      status: 'L0',
+      progress: 0,
+      valueTarget: parseFloat(form.valueTarget) || 0,
+      savedValuetured: 0,
+      timeline: '',
+      description: form.description,
+    });
 
-        if (res.ok) {
-          const data = await res.json();
-          setProfile(data.user);
-          setFullName(data.user.full_name || "");
-          setPhone(data.user.phone || "");
-          setLocation(data.user.location || "");
-          setBookings(data.bookings || []);
-        }
-      } catch (err) {
-        console.warn("Backend API unavailable, using fallback profile state.");
-        // Mock data fallback
-        const mockUser = {
-          id: "usr_101",
-          full_name: "Kasun Perera",
-          email: "kasun@example.com",
-          phone: "+94 77 123 4567",
-          location: "Colombo, Sri Lanka",
-        };
-        setProfile(mockUser);
-        setFullName(mockUser.full_name);
-        setPhone(mockUser.phone);
-        setLocation(mockUser.location);
-        setBookings([
-          { id: "bk_001", type: "Flight", title: "Colombo (CMB) to Male (MLE)", date: "2026-05-12", status: "Confirmed", amount: 320.00 },
-          { id: "bk_002", type: "Hotel", title: "Heritance Kandalama", date: "2026-06-18", status: "Completed", amount: 450.00 },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProfileData();
-  }, []);
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setSuccessMsg(false);
-
+    // Notify workstream leader
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8000/api/v1/users/me", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ full_name: fullName, phone, location }),
-      });
-
-      if (res.ok) {
-        setSuccessMsg(true);
-        setTimeout(() => setSuccessMsg(false), 3000);
+      const { getApproversForStage } = await import('@/lib/approvals');
+      const approvers = getApproversForStage('L0', form.workstream);
+      if (approvers.length > 0) {
+        await fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: approvers.map((a: { name: string; email: string }) => a.email),
+            initiativeName: form.name,
+            workstream: form.workstream,
+            currentStage: 'L0',
+            nextStage: 'L1',
+            submittedBy: form.owner,
+            initiativeId: '',
+          }),
+        });
       }
-    } catch (err) {
-      console.error("Update failed:", err);
-    } finally {
-      setSaving(false);
+    } catch (e) {
+      console.error('Notification failed:', e);
     }
+
+    await fetchInitiatives();
+    onClose();
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#070b09] flex items-center justify-center text-emerald-500">
-        <Loader2 size={32} className="animate-spin" />
+  return (
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl border border-gray-100 w-full max-w-md shadow-lg">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <h2 className="text-sm font-semibold text-gray-900">New initiative</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={16} /></button>
+        </div>
+        <div className="px-5 py-4 space-y-3">
+          <div>
+            <label className="block text-[11px] font-medium text-gray-500 mb-1">
+              Initiative name <span className="text-red-500">*</span>
+            </label>
+            <input type="text" placeholder="e.g. Supplier consolidation" value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className={`w-full border rounded-lg px-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${nameError ? 'border-red-400 bg-red-50' : 'border-gray-200'}`} />
+            {nameError && <p className="text-[10px] text-red-500 mt-1">Initiative name is required.</p>}
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-gray-500 mb-1">Workstream</label>
+            <select value={form.workstream}
+              onChange={(e) => setForm({ ...form, workstream: e.target.value, subWorkstream: '' })}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              {Object.keys(WORKSTREAM_SUBS).map((w) => <option key={w}>{w}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-gray-500 mb-1">
+              Sub-workstream <span className="text-red-500">*</span>
+            </label>
+            <select value={form.subWorkstream}
+              onChange={(e) => setForm({ ...form, subWorkstream: e.target.value })}
+              className={`w-full border rounded-lg px-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${subError ? 'border-red-400 bg-red-50' : 'border-gray-200'}`}>
+              <option value="">Select sub-workstream...</option>
+              {subOptions.map((s) => <option key={s}>{s}</option>)}
+            </select>
+            {subError && <p className="text-[10px] text-red-500 mt-1">Please select a sub-workstream.</p>}
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-gray-500 mb-1">
+              Owner <span className="text-red-500">*</span>
+            </label>
+            <input type="text" placeholder="Name · Department" value={form.owner}
+              onChange={(e) => setForm({ ...form, owner: e.target.value })}
+              className={`w-full border rounded-lg px-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${ownerError ? 'border-red-400 bg-red-50' : 'border-gray-200'}`} />
+            {ownerError && <p className="text-[10px] text-red-500 mt-1">Owner is required.</p>}
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-gray-500 mb-1">Value target ($)</label>
+            <input type="number" placeholder="0.0" value={form.valueTarget}
+              onChange={(e) => setForm({ ...form, valueTarget: e.target.value })}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-gray-500 mb-1">Description</label>
+            <textarea placeholder="Briefly describe this initiative..." value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-20" />
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 px-5 py-4 border-t border-gray-100">
+          <button onClick={onClose} className="px-3 py-1.5 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">Cancel</button>
+          <button onClick={handleSubmit} className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Create initiative</button>
+        </div>
       </div>
+    </div>
+  );
+}
+
+export default function Initiatives({ showAdd, onCloseAdd, currentUserEmail }: { showAdd: boolean; onCloseAdd: () => void; currentUserEmail: string }) {
+  const { initiatives, fetchInitiatives } = useStore();
+  const [filter, setFilter] = useState('all');
+  const [selected, setSelected] = useState<Initiative | null>(null);
+  const [showBulk, setShowBulk] = useState(false);
+
+  // Separate active vs declined
+  const activeInitiatives = initiatives.filter(i => i.status !== 'declined');
+  const declinedInitiatives = initiatives.filter(i => i.status === 'declined');
+
+  const isDeclinedTab = filter === 'declined';
+
+  const filtered = isDeclinedTab
+    ? declinedInitiatives
+    : filter === 'all'
+      ? activeInitiatives
+      : activeInitiatives.filter(i => i.status === filter);
+
+  if (selected) {
+    return (
+      <InitiativeDetail
+      init={selected}
+      onClose={() => setSelected(null)}
+      onRefresh={fetchInitiatives}
+      currentUserEmail={currentUserEmail}
+    />
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#070b09] text-white py-12 px-4 sm:px-8">
-      <div className="max-w-5xl mx-auto space-y-8">
-        
-        {/* Header Section */}
-        <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-6">
-          <div className="relative group cursor-pointer">
-            <div className="w-24 h-24 rounded-full bg-emerald-500/10 border-2 border-emerald-500 flex items-center justify-center text-emerald-400 font-bold text-2xl overflow-hidden">
-              {profile?.full_name?.charAt(0) || "U"}
-            </div>
-            <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-              <Camera size={20} className="text-white" />
-            </div>
+    <div className="flex h-full flex-col">
+      <div className="flex-1 p-5 overflow-y-auto">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">Initiatives</h1>
+            <p className="text-xs text-gray-400 mt-0.5">{activeInitiatives.length} active · {declinedInitiatives.length} declined</p>
           </div>
-
-          <div className="space-y-1 text-center sm:text-left flex-1">
-            <h1 className="text-2xl font-extrabold text-zinc-100">{profile?.full_name}</h1>
-            <p className="text-xs text-zinc-400 flex items-center justify-center sm:justify-start gap-1.5">
-              <Mail size={14} className="text-emerald-500" /> {profile?.email}
-            </p>
-            <span className="inline-block mt-2 bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-              Verified Account
-            </span>
-          </div>
+          <button
+            onClick={() => setShowBulk(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
+            <Upload size={12} /> Bulk upload
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Edit Profile Form */}
-          <div className="lg:col-span-2 bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
-              <h2 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
-                <User size={18} className="text-emerald-500" /> Personal Details
-              </h2>
-              {successMsg && (
-                <span className="text-xs text-emerald-400 flex items-center gap-1">
-                  <CheckCircle2 size={14} /> Saved Successfully
-                </span>
-              )}
-            </div>
-
-            <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Full Name</label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-[#070b09] border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:border-emerald-500 transition"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">Phone Number</label>
-                  <div className="relative">
-                    <Phone size={14} className="absolute left-3.5 top-3 text-zinc-500" />
-                    <input
-                      type="text"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-[#070b09] border border-zinc-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:border-emerald-500 transition"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">Location</label>
-                  <div className="relative">
-                    <MapPin size={14} className="absolute left-3.5 top-3 text-zinc-500" />
-                    <input
-                      type="text"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="w-full bg-[#070b09] border border-zinc-800 rounded-xl pl-9 pr-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:border-emerald-500 transition"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={saving}
-                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-6 py-2.5 rounded-xl transition flex items-center gap-2 disabled:opacity-50"
-              >
-                {saving && <Loader2 size={14} className="animate-spin" />}
-                {saving ? "Saving Changes..." : "Save Changes"}
+        {/* Stage filter tabs */}
+        <div className="flex gap-2 mb-3 flex-wrap">
+          {STAGE_FILTERS.map((f) => {
+            const count = f.key === 'all'
+              ? activeInitiatives.length
+              : activeInitiatives.filter(i => i.status === f.key).length;
+            return (
+              <button key={f.key} onClick={() => setFilter(f.key)}
+                className={`px-3 py-1 rounded-full text-xs border transition-colors ${
+                  filter === f.key && !isDeclinedTab
+                    ? 'bg-blue-50 text-blue-700 border-blue-300 font-medium'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                }`}>
+                {f.label} ({count})
               </button>
-            </form>
-          </div>
+            );
+          })}
+        </div>
 
-          {/* Quick Security & Stats */}
-          <div className="space-y-6">
-            <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 space-y-4">
-              <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
-                <ShieldCheck size={16} className="text-emerald-500" /> Security Overview
-              </h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
-                Your account is protected with JWT token authentication and encrypted database sessions.
-              </p>
+        {/* Declined tab — separated with a divider */}
+        <div className="flex gap-2 mb-4 items-center">
+          <div className="h-px bg-gray-100 flex-1" />
+          <button
+            onClick={() => setFilter('declined')}
+            className={`px-3 py-1 rounded-full text-xs border transition-colors flex items-center gap-1.5 ${
+              isDeclinedTab
+                ? 'bg-red-50 text-red-600 border-red-300 font-medium'
+                : 'bg-white text-gray-400 border-gray-200 hover:border-red-200 hover:text-red-400'
+            }`}>
+            <span className="text-[10px]">⊘</span>
+            Declined ({declinedInitiatives.length})
+          </button>
+        </div>
+
+        {/* Declined section banner */}
+        {isDeclinedTab && (
+          <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 mb-4 flex items-center gap-3">
+            <span className="text-red-400 text-lg">⊘</span>
+            <div>
+              <p className="text-xs font-medium text-red-700">Declined initiatives</p>
+              <p className="text-[11px] text-red-400 mt-0.5">These initiatives have been removed from the active pipeline. You can reactivate them from the initiative detail view.</p>
             </div>
           </div>
+        )}
 
-        </div>
-
-        {/* Booking History Section */}
-        <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 sm:p-8 space-y-6">
-          <h2 className="text-lg font-bold text-zinc-100 flex items-center gap-2 border-b border-zinc-800/80 pb-4">
-            <History size={18} className="text-emerald-500" /> Recent Bookings
-          </h2>
-
-          <div className="space-y-3">
-            {bookings.length > 0 ? (
-              bookings.map((booking) => (
-                <div
-                  key={booking.id}
-                  className="bg-[#070b09] border border-zinc-800/60 rounded-xl p-4 flex items-center justify-between"
-                >
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                      {booking.type}
-                    </span>
-                    <h4 className="text-xs font-bold text-zinc-200">{booking.title}</h4>
-                    <p className="text-[10px] text-zinc-500">{booking.date}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-extrabold text-zinc-100">${booking.amount.toFixed(2)}</span>
-                    <p className="text-[10px] text-emerald-400 font-medium">{booking.status}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-xs text-zinc-500">No booking history found.</p>
-            )}
+        {filtered.length === 0 ? (
+          <div className="bg-white border border-gray-100 rounded-xl p-12 text-center">
+            <p className="text-sm text-gray-400 mb-1">
+              {isDeclinedTab ? 'No declined initiatives' : 'No initiatives found'}
+            </p>
+            <p className="text-xs text-gray-300">
+              {isDeclinedTab ? 'Initiatives you decline will appear here' : 'Add a new initiative or use bulk upload to get started'}
+            </p>
           </div>
-        </div>
-
+        ) : (
+          <div className="space-y-2">
+            {filtered.map((init) => (
+              <div key={init.id} onClick={() => setSelected(init)}
+                className={`bg-white border rounded-xl p-4 cursor-pointer transition-all ${
+                  isDeclinedTab
+                    ? 'border-red-100 hover:border-red-200 opacity-75 hover:opacity-100'
+                    : 'border-gray-100 hover:border-blue-200 hover:shadow-sm'
+                }`}>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className={`font-medium text-sm ${isDeclinedTab ? 'text-gray-500 line-through' : 'text-gray-800'}`}>
+                      {init.name}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-0.5">
+                      {init.owner} · {init.workstream}
+                      {init.department && init.department !== init.workstream && (
+                        <span className="text-gray-300"> · {init.department}</span>
+                      )}
+                    </div>
+                  </div>
+                  <Badge status={init.status} />
+                  <div className="text-right">
+                    <div className="text-sm font-semibold text-gray-800">${init.savedValuetured.toLocaleString()}</div>
+                    <div className="text-[10px] text-gray-400">of ${init.valueTarget.toLocaleString()}</div>
+                  </div>
+                  <div className="w-28"><ProgressBar pct={init.progress} status={init.status} /></div>
+                  <ChevronRight size={14} className="text-gray-300" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {showAdd && <AddInitiativeModal onClose={onCloseAdd} />}
+      {showBulk && (
+        <BulkUploadModal
+          onClose={() => setShowBulk(false)}
+          onSuccess={() => { fetchInitiatives(); setShowBulk(false); }}
+        />
+      )}
     </div>
   );
 }

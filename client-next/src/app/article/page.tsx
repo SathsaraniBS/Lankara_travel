@@ -23,8 +23,8 @@ const articlesData: Article[] = [
       "Beyond the popular tourist spots lies a world of unexplored waterfalls, quiet beaches, and ancient ruins.",
     category: "Travel Guide",
     date: "2026-02-12",
-    author: "Sathsarani",
-    image: "/images/backimage.jpg",
+    author: "BSS",
+    image: "/images/hidden-places.avif",
   },
   {
     id: 2,
@@ -34,7 +34,7 @@ const articlesData: Article[] = [
     category: "Food & Culture",
     date: "2026-02-05",
     author: "Admin",
-    image: "/images/backimage.jpg",
+    image: "/images/street-food.webp",
   },
   {
     id: 3,
@@ -44,7 +44,7 @@ const articlesData: Article[] = [
     category: "Tips & Tricks",
     date: "2026-01-20",
     author: "Travel Desk",
-    image: "/images/backimage.jpg",
+    image: "/images/train-ride.avif",
   },
 ];
 
