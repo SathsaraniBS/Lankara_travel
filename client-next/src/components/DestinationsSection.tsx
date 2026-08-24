@@ -19,13 +19,15 @@ interface Destination {
   price: number;
   categoryTag: string;
   image: string;
+  name?: string;
+  description?: string;
 }
 
 const categoriesData: Category[] = [
   { id: "1", title: "Adventure Trip", count: "24 Destinations", image: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=300&q=80" },
   { id: "2", title: "Road Trip", count: "30 Destinations", image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=300&q=80" },
   { id: "3", title: "Family Trip", count: "15 Destinations", image: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=300&q=80" },
-  { id: "4", title: "Safari Trip", count: "24 Destinations", image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=300&q=80" },
+  { id: "4", title: "Safari Trip", count: "24 Destinations", image: "/images/safari-trip.jpg" },
   { id: "5", title: "Group Trip", count: "40 Destinations", image: "https://images.unsplash.com/photo-1528543606781-2f6e6857f318?w=300&q=80" },
   { id: "6", title: "Art & Culture", count: "18 Destinations", image: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=300&q=80" },
 ];
@@ -37,18 +39,17 @@ const mockDestinations: Destination[] = [
   { id: "4", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500&q=80" },
   { id: "5", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&q=80" },
   { id: "6", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80" },
-  { id: "7", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=500&q=80" },
-  { id: "8", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?w=500&q=80" },
-  { id: "9", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&q=80" },
-  { id: "10", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=500&q=80" },
-  { id: "11", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=500&q=80" },
-  { id: "12", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1476514525535-ce74f45814d0?w=500&q=80" },
 ];
 
 export default function DestinationsSection() {
   const [destinations, setDestinations] = useState<Destination[]>(mockDestinations);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  const [guideDestinations, setGuideDestinations] = useState<Destination[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch Main Destinations
   useEffect(() => {
     async function fetchDestinations() {
       try {
@@ -65,11 +66,30 @@ export default function DestinationsSection() {
     fetchDestinations();
   }, [selectedCategory]);
 
+  // Fetch Sri Lanka Destination Guide
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/destinations")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Server responded with ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setGuideDestinations(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <section id="destinations" className="py-16 px-4 sm:px-8 bg-[#070b09] text-white scroll-mt-20">
       <div className="max-w-7xl mx-auto space-y-16">
-        
-        {/* Destinations Category Header */}
+
+        {/* Categories Header */}
         <div className="space-y-8 text-center">
           <div className="space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-wide text-zinc-100 uppercase">
@@ -181,9 +201,7 @@ export default function DestinationsSection() {
               <span className="text-xs text-zinc-400">Destinations</span>
             </div>
             <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-center space-y-1">
-              <span className="text-2xl sm:text-3xl font-extrabold text-zinc-100 flex items-center gap-1">
-                4.8
-              </span>
+              <span className="text-2xl sm:text-3xl font-extrabold text-zinc-100">4.8</span>
               <span className="text-xs text-zinc-400">Overall Rating</span>
             </div>
           </div>
@@ -207,6 +225,49 @@ export default function DestinationsSection() {
           </div>
         </div>
 
+      </div>
+
+      {/* Destination Guide Section */}
+      <div
+        className="relative min-h-screen bg-cover bg-center flex flex-col justify-center items-center text-center mt-16"
+        style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-black/40"></div>
+
+        <div className="relative z-10 p-5">
+          <h1 className="text-[3rem] font-bold text-white max-[768px]:text-[2rem]">
+            Destination Guide
+          </h1>
+          <p className="text-2xl text-white mb-5">Holiday in Sri Lanka</p>
+
+          {loading && <p className="text-white text-xl mt-5">Loading destinations...</p>}
+
+          {error && (
+            <p className="text-white text-xl mt-5">
+              Couldn't load destinations. Is the backend server running?
+            </p>
+          )}
+
+          {!loading && !error && (
+            <div className="grid grid-cols-3 gap-[50px] justify-center mt-5 w-[90%] max-w-[1200px] max-[1024px]:grid-cols-2 max-[768px]:grid-cols-1">
+              {guideDestinations.map((dest) => (
+                <div
+                  key={dest.id}
+                  className="w-[250px] h-[320px] bg-cover bg-center rounded-2xl relative transition-transform duration-300 ease-in-out cursor-pointer hover:scale-105 max-[768px]:w-[180px] max-[768px]:h-[280px]"
+                  style={{ backgroundImage: `url(${dest.image})` }}
+                >
+                  <div className="absolute bottom-0 w-full bg-black/40 text-white p-3 text-center rounded-b-2xl max-[768px]:p-2">
+                    <h2>{dest.name || dest.title}</h2>
+                    <p>{dest.description}</p>
+                    <button className="bg-transparent border-none text-white text-xl cursor-pointer mt-[5px] hover:text-[red] active:text-[red] max-[768px]:text-base">
+                      ❤
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
