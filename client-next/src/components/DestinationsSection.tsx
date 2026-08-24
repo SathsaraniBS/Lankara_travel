@@ -29,7 +29,7 @@ const categoriesData: Category[] = [
   { id: "3", title: "Family Trip", count: "15 Destinations", image: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=300&q=80" },
   { id: "4", title: "Safari Trip", count: "24 Destinations", image: "/images/safari-trip.jpg" },
   { id: "5", title: "Group Trip", count: "40 Destinations", image: "https://images.unsplash.com/photo-1528543606781-2f6e6857f318?w=300&q=80" },
-  { id: "6", title: "Art & Culture", count: "18 Destinations", image: "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=300&q=80" },
+  { id: "6", title: "Art & Culture", count: "18 Destinations", image: "/images/art&culture.jpg" },
 ];
 
 const mockDestinations: Destination[] = [
@@ -89,7 +89,7 @@ export default function DestinationsSection() {
     <section id="destinations" className="py-16 px-4 sm:px-8 bg-[#070b09] text-white scroll-mt-20">
       <div className="max-w-7xl mx-auto space-y-16">
 
-        {/* Categories Header */}
+        {/* Categories Header & 6 Cards Layout */}
         <div className="space-y-8 text-center">
           <div className="space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-wide text-zinc-100 uppercase">
@@ -100,30 +100,46 @@ export default function DestinationsSection() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {/* 6 Grid items in 1 single row (Responsive with horizontal scroll on small screens) */}
+          <div className="flex sm:grid sm:grid-cols-6 gap-4 overflow-x-auto pb-4 sm:pb-0 scrollbar-none">
             {categoriesData.map((cat) => (
               <div
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.title)}
-                className={`group relative h-40 rounded-2xl overflow-hidden cursor-pointer border transition-all duration-300 ${
+                className={`group relative min-w-[160px] sm:min-w-0 h-[280px] rounded-2xl overflow-hidden cursor-pointer flex flex-col justify-between transition-transform duration-300 hover:scale-105 border ${
                   selectedCategory === cat.title
                     ? "border-emerald-500 ring-2 ring-emerald-500/50"
-                    : "border-zinc-800 hover:border-zinc-700"
+                    : "border-zinc-800"
                 }`}
               >
+                {/* Background Image */}
                 <Image
                   src={cat.image}
                   alt={cat.title}
                   fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                  className="object-cover group-hover:scale-110 transition-transform duration-500 brightness-75"
+                  sizes="(max-width: 640px) 50vw, 16vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                <div className="absolute bottom-3 left-3 text-left space-y-0.5">
-                  <h3 className="text-xs font-bold text-zinc-100 group-hover:text-emerald-400 transition-colors">
+
+                {/* Top Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+
+                {/* Bottom Card Footer Section */}
+                <div className="relative z-10 mt-auto w-full bg-[#1c1a19]/90 backdrop-blur-md p-3 text-center space-y-1 rounded-b-2xl border-t border-white/10">
+                  <h3 className="text-sm font-bold text-zinc-100 tracking-wide line-clamp-1">
                     {cat.title}
                   </h3>
-                  <p className="text-[10px] text-zinc-400">{cat.count}</p>
+                  <p className="text-[11px] text-zinc-300 font-medium line-clamp-1">
+                    {cat.count}
+                  </p>
+                  <div className="pt-1 flex justify-center">
+                    <button 
+                      aria-label="Favorite category"
+                      className="text-white hover:text-red-500 transition-colors text-sm"
+                    >
+                      ♥
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
