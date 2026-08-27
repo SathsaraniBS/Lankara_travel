@@ -1,8 +1,8 @@
 import React from "react";
-import { Compass, Heart, ShieldCheck, Users } from "lucide-react";
+import { Compass, Heart, ShieldCheck } from "lucide-react";
 
 export const metadata = {
-  title: "About Us | Travel Test",
+  title: "About Us | Lankara Travel",
   description: "Learn more about our mission and story.",
 };
 

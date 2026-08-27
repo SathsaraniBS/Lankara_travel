@@ -11,12 +11,12 @@ import {
   MoreVertical, 
   CheckCircle2, 
   Clock, 
-  AlertCircle,
   RefreshCw
 } from "lucide-react";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"users" | "bookings">("users");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const stats = [
     { title: "Total Users", value: "2,845", change: "+12.5%", icon: Users, color: "text-sky-400", bg: "bg-sky-500/10" },
@@ -36,6 +36,15 @@ export default function AdminDashboard() {
     { id: "bk_102", user: "Sarah Chen", type: "Hotel Stay", item: "Heritance Kandalama", amount: "$540", status: "Pending" },
     { id: "bk_103", user: "Michael Scott", type: "Holiday Package", item: "Southern Coastal Sunset", amount: "$480", status: "Confirmed" },
   ];
+
+  // Simple Front-End Search Filter
+  const filteredUsers = recentUsers.filter(
+    (u) => u.name.toLowerCase().includes(searchQuery.toLowerCase()) || u.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredBookings = recentBookings.filter(
+    (b) => b.user.toLowerCase().includes(searchQuery.toLowerCase()) || b.item.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-[#070b09] text-white p-6 sm:p-10 space-y-8">
@@ -80,7 +89,7 @@ export default function AdminDashboard() {
       {/* Data Section */}
       <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 space-y-6">
         
-        {/* Navigation Tabs & Search */}
+        {/* Tabs & Search */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
           <div className="flex items-center gap-2">
             <button
@@ -109,6 +118,8 @@ export default function AdminDashboard() {
             <Search size={14} className="absolute left-3 top-3 text-zinc-500" />
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search records..."
               className="w-full bg-[#070b09] border border-zinc-800 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500"
             />
@@ -129,7 +140,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/40 text-zinc-300">
-                {recentUsers.map((user) => (
+                {filteredUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-zinc-800/20 transition">
                     <td className="py-3 px-2">
                       <div>
@@ -170,7 +181,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/40 text-zinc-300">
-                {recentBookings.map((bk) => (
+                {filteredBookings.map((bk) => (
                   <tr key={bk.id} className="hover:bg-zinc-800/20 transition">
                     <td className="py-3 px-2 font-mono text-zinc-400">{bk.id}</td>
                     <td className="py-3 px-2 font-bold text-zinc-100">{bk.user}</td>
