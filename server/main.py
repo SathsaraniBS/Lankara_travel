@@ -9,6 +9,7 @@ from auth import router as auth_router
 from routers.flights import router as flights_router
 from routers.hotels import router as hotels_router
 from routers.bookings import router as bookings_router
+from routers.payments import router as payments_router
 
 app = FastAPI(
     title="Lankara Travel API",
@@ -34,7 +35,7 @@ app.include_router(auth_router)
 app.include_router(flights_router)
 app.include_router(hotels_router)
 app.include_router(bookings_router)
-
+app.include_router(payments_router)
 
 @app.get("/")
 async def root():
