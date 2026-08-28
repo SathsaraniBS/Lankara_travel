@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { Check, Search, Download, Edit3, XCircle, HelpCircle } from "lucide-react";
 
@@ -9,6 +8,11 @@ export default function ManageBookingsPage() {
   const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "cancelled">("upcoming");
   const [bookingRef, setBookingRef] = useState("TN458921");
   const [emailOrPhone, setEmailOrPhone] = useState("you@email.com");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Searching for:", bookingRef, emailOrPhone);
+  };
 
   return (
     <div className="min-h-screen bg-[#f4f6f9] text-slate-800 font-sans pt-28 pb-16">
@@ -30,7 +34,7 @@ export default function ManageBookingsPage() {
         <div className="border-b border-slate-200 flex gap-8 text-sm font-semibold px-2">
           <button
             onClick={() => setActiveTab("upcoming")}
-            className={`pb-3 transition relative ${
+            className={`pb-3 transition relative cursor-pointer ${
               activeTab === "upcoming"
                 ? "text-[#003580] border-b-2 border-[#003580]"
                 : "text-slate-500 hover:text-slate-800"
@@ -40,7 +44,7 @@ export default function ManageBookingsPage() {
           </button>
           <button
             onClick={() => setActiveTab("past")}
-            className={`pb-3 transition relative ${
+            className={`pb-3 transition relative cursor-pointer ${
               activeTab === "past"
                 ? "text-[#003580] border-b-2 border-[#003580]"
                 : "text-slate-500 hover:text-slate-800"
@@ -50,7 +54,7 @@ export default function ManageBookingsPage() {
           </button>
           <button
             onClick={() => setActiveTab("cancelled")}
-            className={`pb-3 transition relative ${
+            className={`pb-3 transition relative cursor-pointer ${
               activeTab === "cancelled"
                 ? "text-[#003580] border-b-2 border-[#003580]"
                 : "text-slate-500 hover:text-slate-800"
@@ -62,7 +66,7 @@ export default function ManageBookingsPage() {
 
         {/* Find a Booking Filter Card */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <form className="flex flex-col md:flex-row items-end gap-4">
+          <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-end gap-4">
             <div className="w-full md:w-auto font-bold text-slate-800 text-base md:self-center pr-2">
               Find a booking
             </div>

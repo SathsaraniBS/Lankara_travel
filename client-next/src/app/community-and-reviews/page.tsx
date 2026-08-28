@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Star, MapPin, Smile, Users, Award, MessageSquareQuote } from "lucide-react";
+import { Star, MapPin, Smile, Users, Award, MessageSquareQuote, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Review {
   id: number;
@@ -88,6 +88,18 @@ export default function TestimonialsPage() {
     reviewsData.find((r) => r.isMain) || reviewsData[0]
   );
 
+  const handleNext = () => {
+    const currentIndex = reviewsData.findIndex((r) => r.id === selectedReview.id);
+    const nextIndex = (currentIndex + 1) % reviewsData.length;
+    setSelectedReview(reviewsData[nextIndex]);
+  };
+
+  const handlePrev = () => {
+    const currentIndex = reviewsData.findIndex((r) => r.id === selectedReview.id);
+    const prevIndex = (currentIndex - 1 + reviewsData.length) % reviewsData.length;
+    setSelectedReview(reviewsData[prevIndex]);
+  };
+
   return (
     <div className="relative min-h-screen text-slate-800 pt-24 pb-16 px-4 sm:px-6 overflow-hidden">
       
@@ -96,12 +108,11 @@ export default function TestimonialsPage() {
         <Image
           src="/images/backimage1.jpg"
           alt="Travel Background"
-          fill={true}
-          priority={true}
+          fill
+          priority
           className="object-cover object-center"
         />
-        {/* Soft white overlay to ensure content readability */}
-        <div className="absolute inset-0 bg-slate-70/80" />
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-xs" />
       </div>
 
       <div className="max-w-6xl mx-auto space-y-12 relative z-10">
@@ -121,14 +132,29 @@ export default function TestimonialsPage() {
         <div className="relative min-h-[520px] flex items-center justify-center py-8">
           
           {/* Main Featured Center Review */}
-          <div className="z-10 bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-slate-100 max-w-lg text-center flex flex-col items-center space-y-3 transition-all duration-300">
+          <div className="z-10 bg-white/95 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100 max-w-lg text-center flex flex-col items-center space-y-4 transition-all duration-300 relative">
+            
+            {/* Mobile Nav Arrows */}
+            <button
+              onClick={handlePrev}
+              className="lg:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full border border-slate-200 text-slate-600 hover:text-blue-600 cursor-pointer"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={handleNext}
+              className="lg:hidden absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full border border-slate-200 text-slate-600 hover:text-blue-600 cursor-pointer"
+            >
+              <ChevronRight size={20} />
+            </button>
+
             <div className="relative">
               <Image
                 src={selectedReview.avatar}
                 alt={selectedReview.name}
                 width={110}
                 height={110}
-                className="w-28 h-28 rounded-full object-cover ring-4 ring-blue-500/20"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover ring-4 ring-blue-500/20"
               />
               <div className="absolute bottom-1 right-1 bg-emerald-500 text-white rounded-full p-1">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,7 +181,7 @@ export default function TestimonialsPage() {
             </div>
           </div>
 
-          {/* Left Side Small Reviews */}
+          {/* Left Side Small Reviews (Desktop) */}
           <div className="hidden lg:flex flex-col justify-between absolute left-0 h-full py-4 space-y-6">
             {reviewsData.slice(1, 4).map((review) => (
               <div
@@ -188,7 +214,7 @@ export default function TestimonialsPage() {
             ))}
           </div>
 
-          {/* Right Side Small Reviews */}
+          {/* Right Side Small Reviews (Desktop) */}
           <div className="hidden lg:flex flex-col justify-between absolute right-0 h-full py-4 space-y-6">
             {reviewsData.slice(4, 7).map((review) => (
               <div
@@ -221,7 +247,7 @@ export default function TestimonialsPage() {
             ))}
           </div>
 
-          {/* Bottom Center Small Review */}
+          {/* Bottom Center Small Review (Desktop) */}
           <div className="hidden lg:block absolute bottom-0 left-1/2 -translate-x-1/2">
             {reviewsData.slice(7, 8).map((review) => (
               <div

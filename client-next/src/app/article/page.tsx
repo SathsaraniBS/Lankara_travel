@@ -137,9 +137,11 @@ export default function ArticlePage() {
                       </span>
                     </div>
 
-                    <h2 className="text-xl font-bold text-slate-100 hover:text-emerald-400 transition cursor-pointer">
-                      {article.title}
-                    </h2>
+                    <Link href={`/article/${article.id}`}>
+                      <h2 className="text-xl font-bold text-slate-100 hover:text-emerald-400 transition cursor-pointer">
+                        {article.title}
+                      </h2>
+                    </Link>
 
                     <p className="text-slate-400 text-sm leading-relaxed">
                       {article.excerpt}
@@ -148,9 +150,12 @@ export default function ArticlePage() {
                 </div>
 
                 <div className="p-6 pt-0">
-                  <button className="flex items-center gap-2 text-emerald-400 font-semibold text-sm hover:gap-3 transition-all duration-300">
+                  <Link
+                    href={`/article/${article.id}`}
+                    className="inline-flex items-center gap-2 text-emerald-400 font-semibold text-sm hover:gap-3 transition-all duration-300"
+                  >
                     Read More <ArrowRight size={16} />
-                  </button>
+                  </Link>
                 </div>
               </article>
             ))
