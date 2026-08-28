@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send, CheckCircle2, Loader2 } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -11,18 +11,28 @@ export default function ContactPage() {
     message: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Message එක Send කිරීමට අදාළ logic එක මෙතැනට එකතු කරන්න (Backend API)
+    setLoading(true);
+
+    // API integration / async call simulation
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     console.log("Form Submitted:", formData);
-    alert("Thank you for your message! We will get back to you soon.");
+    setLoading(false);
+    setSubmitted(true);
     setFormData({ name: "", email: "", subject: "", message: "" });
+
+    setTimeout(() => setSubmitted(false), 5000);
   };
 
   return (
@@ -87,6 +97,13 @@ export default function ContactPage() {
 
           {/* Contact Form */}
           <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-2xl">
+            {submitted && (
+              <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-sm flex items-center gap-3">
+                <CheckCircle2 size={20} className="shrink-0" />
+                <span>Thank you for your message! We will get back to you soon.</span>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
@@ -156,10 +173,20 @@ export default function ContactPage() {
 
               <button
                 type="submit"
-                className="w-full sm:w-auto px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg transition duration-300 flex items-center justify-center gap-2"
+                disabled={loading}
+                className="w-full sm:w-auto px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
               >
-                <Send size={18} />
-                Send Message
+                {loading ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send size={18} />
+                    Send Message
+                  </>
+                )}
               </button>
             </form>
           </div>

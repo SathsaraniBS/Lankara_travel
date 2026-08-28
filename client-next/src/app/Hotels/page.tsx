@@ -1,18 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { 
   Hotel as HotelIcon, 
   MapPin, 
   Star, 
-  Wifi, 
-  Coffee, 
-  Pool, 
   Search, 
-  SlidersHorizontal, 
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Building2
 } from "lucide-react";
 
 interface Hotel {
@@ -134,84 +132,97 @@ export default function HotelsPage() {
 
           {/* Quick Info Badge */}
           <div className="flex items-center justify-end text-xs text-zinc-400 gap-2">
-            <ShieldCheck size={16} className="text-emerald-500" />
+            <ShieldCheck size={16} className="text-emerald-500 shrink-0" />
             <span>Best Price Guaranteed & Instant Confirmation</span>
           </div>
 
         </div>
 
         {/* Hotels Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {filteredHotels.map((hotel) => (
-            <div
-              key={hotel.id}
-              className="bg-[#121614] border border-zinc-800/80 hover:border-zinc-700 rounded-2xl overflow-hidden transition group flex flex-col justify-between"
-            >
-              <div>
-                {/* Image & Badges Header */}
-                <div className="relative h-60 w-full overflow-hidden">
-                  <img
-                    src={hotel.image}
-                    alt={hotel.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
-                  {hotel.featured && (
-                    <div className="absolute top-3 right-3 bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-3 py-1 rounded-full">
-                      FEATURED
-                    </div>
-                  )}
-                </div>
-
-                {/* Hotel Details */}
-                <div className="p-6 space-y-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-zinc-400 flex items-center gap-1">
-                        <MapPin size={12} className="text-emerald-500" /> {hotel.location}
-                      </span>
-                      <span className="text-[11px] text-amber-400 flex items-center gap-1 font-semibold">
-                        <Star size={12} className="fill-amber-400" /> {hotel.rating} ({hotel.reviewsCount})
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-extrabold text-zinc-100 group-hover:text-emerald-400 transition">
-                      {hotel.name}
-                    </h3>
-                  </div>
-
-                  {/* Amenities Tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {hotel.amenities.map((amenity, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-[#070b09] border border-zinc-800 text-zinc-300 text-[10px] font-medium px-2.5 py-1 rounded-lg"
-                      >
-                        {amenity}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Pricing & CTA Footer */}
-              <div className="p-6 pt-0 border-t border-zinc-800/40 mt-4 flex items-center justify-between">
+        {filteredHotels.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {filteredHotels.map((hotel) => (
+              <div
+                key={hotel.id}
+                className="bg-[#121614] border border-zinc-800/80 hover:border-zinc-700 rounded-2xl overflow-hidden transition group flex flex-col justify-between"
+              >
                 <div>
-                  <span className="text-[10px] text-zinc-500 uppercase font-semibold">Nightly Rate</span>
-                  <div className="text-2xl font-black text-zinc-100">
-                    ${hotel.pricePerNight} <span className="text-xs font-normal text-zinc-400">/ night</span>
+                  {/* Image & Badges Header */}
+                  <div className="relative h-60 w-full overflow-hidden">
+                    <Image
+                      src={hotel.image}
+                      alt={hotel.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover group-hover:scale-105 transition duration-500"
+                    />
+                    {hotel.featured && (
+                      <div className="absolute top-3 right-3 bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-3 py-1 rounded-full z-10">
+                        FEATURED
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Hotel Details */}
+                  <div className="p-6 space-y-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] text-zinc-400 flex items-center gap-1">
+                          <MapPin size={12} className="text-emerald-500" /> {hotel.location}
+                        </span>
+                        <span className="text-[11px] text-amber-400 flex items-center gap-1 font-semibold">
+                          <Star size={12} className="fill-amber-400" /> {hotel.rating} ({hotel.reviewsCount})
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-extrabold text-zinc-100 group-hover:text-emerald-400 transition">
+                        {hotel.name}
+                      </h3>
+                    </div>
+
+                    {/* Amenities Tags */}
+                    <div className="flex flex-wrap gap-2">
+                      {hotel.amenities.map((amenity, idx) => (
+                        <span
+                          key={idx}
+                          className="bg-[#070b09] border border-zinc-800 text-zinc-300 text-[10px] font-medium px-2.5 py-1 rounded-lg"
+                        >
+                          {amenity}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <Link
-                  href={`/bookings?hotelId=${hotel.id}`}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center gap-1.5"
-                >
-                  <span>Book Stay</span>
-                  <ArrowRight size={14} />
-                </Link>
+                {/* Pricing & CTA Footer */}
+                <div className="p-6 pt-0 border-t border-zinc-800/40 mt-4 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] text-zinc-500 uppercase font-semibold">Nightly Rate</span>
+                    <div className="text-2xl font-black text-zinc-100">
+                      ${hotel.pricePerNight} <span className="text-xs font-normal text-zinc-400">/ night</span>
+                    </div>
+                  </div>
+
+                  <Link
+                    href={`/bookings?hotelId=${hotel.id}`}
+                    className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>Book Stay</span>
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          /* Empty State */
+          <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-12 text-center space-y-3">
+            <Building2 size={40} className="text-zinc-600 mx-auto" />
+            <h3 className="text-zinc-200 font-bold text-base">No Hotels Found</h3>
+            <p className="text-zinc-500 text-xs max-w-sm mx-auto">
+              We couldn&apos;t find any accommodations matching your search or budget criteria. Try increasing your max price or changing your search terms.
+            </p>
+          </div>
+        )}
 
       </div>
     </div>

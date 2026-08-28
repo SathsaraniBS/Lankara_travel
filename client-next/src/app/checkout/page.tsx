@@ -3,8 +3,19 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {Check,Lock,AlertTriangle,Info,CreditCard,Building,HelpCircle,ShieldCheck,
-  Headphones,CheckCircle,ChevronDown,} from "lucide-react";
+import {
+  Check,
+  Lock,
+  AlertTriangle,
+  Info,
+  CreditCard,
+  Building,
+  HelpCircle,
+  ShieldCheck,
+  Headphones,
+  CheckCircle,
+  ChevronDown,
+} from "lucide-react";
 
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "property">("card");
@@ -14,7 +25,13 @@ export default function CheckoutPage() {
 
   // Form State
   const [cardNumber, setCardNumber] = useState("1234 5678 9012 3456");
-  const [cardError, setCardError] = useState("Enter a valid card number.");
+  const [cardError, setCardError] = useState("");
+
+  const handlePayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!agreedTerms) return;
+    alert("Proceeding to payment processing...");
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800 font-sans pb-16">
@@ -33,13 +50,13 @@ export default function CheckoutPage() {
           </nav>
 
           <div className="flex items-center gap-4 text-sm">
-            <button className="flex items-center gap-1 border rounded px-2 py-1 text-slate-700 bg-slate-50 text-xs font-semibold">
+            <button className="flex items-center gap-1 border rounded px-2 py-1 text-slate-700 bg-slate-50 text-xs font-semibold cursor-pointer">
               LKR <ChevronDown size={14} />
             </button>
-            <button className="flex items-center gap-1 text-slate-600 hover:text-black">
+            <button className="flex items-center gap-1 text-slate-600 hover:text-black cursor-pointer">
               <HelpCircle size={18} /> Help
             </button>
-            <button className="flex items-center gap-1 text-slate-600 hover:text-black font-medium">
+            <button className="flex items-center gap-1 text-slate-600 hover:text-black font-medium cursor-pointer">
               Sign in
             </button>
           </div>
@@ -82,10 +99,9 @@ export default function CheckoutPage() {
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Left Column - Forms (2 cols on desktop) */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Left Column - Forms */}
+        <form onSubmit={handlePayment} className="lg:col-span-2 space-y-6">
           
-          {/* Header Title */}
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Review and pay</h1>
             <p className="text-slate-600 text-sm mt-1">
@@ -105,7 +121,7 @@ export default function CheckoutPage() {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3.5 text-blue-900 text-xs sm:text-sm flex items-center gap-2.5">
               <Info size={18} className="shrink-0 text-blue-600" />
-              <span>The price was updated due to availability. Your new total is <strong>LKR 50,200</strong>.</span>
+              <span>The price was updated due to availability. Your new total is <strong>LKR 49,000</strong>.</span>
             </div>
           </div>
 
@@ -122,6 +138,7 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   defaultValue="Nimal"
+                  required
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-blue-600"
                 />
               </div>
@@ -130,6 +147,7 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   defaultValue="Perera"
+                  required
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-blue-600"
                 />
               </div>
@@ -139,6 +157,7 @@ export default function CheckoutPage() {
                 <input
                   type="email"
                   defaultValue="nimal.perera@email.com"
+                  required
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:border-blue-600"
                 />
               </div>
@@ -170,7 +189,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod("card")}
-                className={`p-3 border rounded-xl flex items-center gap-2 text-xs sm:text-sm font-semibold transition ${
+                className={`p-3 border rounded-xl flex items-center gap-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                   paymentMethod === "card"
                     ? "border-blue-600 bg-blue-50/50 text-blue-900"
                     : "border-slate-200 text-slate-600 hover:border-slate-300"
@@ -183,7 +202,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod("paypal")}
-                className={`p-3 border rounded-xl flex items-center gap-2 text-xs sm:text-sm font-semibold transition ${
+                className={`p-3 border rounded-xl flex items-center gap-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                   paymentMethod === "paypal"
                     ? "border-blue-600 bg-blue-50/50 text-blue-900"
                     : "border-slate-200 text-slate-600 hover:border-slate-300"
@@ -196,7 +215,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setPaymentMethod("property")}
-                className={`p-3 border rounded-xl flex items-center gap-2 text-xs sm:text-sm font-semibold transition ${
+                className={`p-3 border rounded-xl flex items-center gap-2 text-xs sm:text-sm font-semibold transition cursor-pointer ${
                   paymentMethod === "property"
                     ? "border-blue-600 bg-blue-50/50 text-blue-900"
                     : "border-slate-200 text-slate-600 hover:border-slate-300"
@@ -216,6 +235,7 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       defaultValue="Nimal Perera"
+                      required
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-600"
                     />
                   </div>
@@ -226,6 +246,7 @@ export default function CheckoutPage() {
                       type="text"
                       value={cardNumber}
                       onChange={(e) => setCardNumber(e.target.value)}
+                      required
                       className={`w-full border rounded-lg px-3 py-2 focus:outline-none ${
                         cardError ? "border-red-400 bg-red-50/20 text-red-900" : "border-slate-300"
                       }`}
@@ -238,6 +259,7 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       placeholder="MM/YY"
+                      required
                       className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-600"
                     />
                   </div>
@@ -246,8 +268,10 @@ export default function CheckoutPage() {
                     <label className="block text-slate-600 font-medium mb-1">CVV</label>
                     <div className="relative">
                       <input
-                        type="text"
+                        type="password"
                         placeholder="123"
+                        maxLength={4}
+                        required
                         className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-600"
                       />
                       <HelpCircle size={16} className="absolute right-3 top-2.5 text-slate-400" />
@@ -258,13 +282,6 @@ export default function CheckoutPage() {
                 <div className="flex items-center gap-2 pt-1">
                   <input type="checkbox" id="saveCard" defaultChecked className="rounded border-slate-300 text-blue-600" />
                   <label htmlFor="saveCard" className="text-slate-600 text-xs">Save this card securely for faster future bookings</label>
-                </div>
-
-                {/* Card Brands */}
-                <div className="flex gap-2 pt-2 border-t border-slate-100">
-                  <span className="text-xs font-bold text-blue-900 border px-2 py-0.5 rounded">VISA</span>
-                  <span className="text-xs font-bold text-red-600 border px-2 py-0.5 rounded">MasterCard</span>
-                  <span className="text-xs font-bold text-blue-500 border px-2 py-0.5 rounded">AMEX</span>
                 </div>
               </div>
             )}
@@ -286,7 +303,7 @@ export default function CheckoutPage() {
               />
               <button
                 type="button"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2 rounded-lg transition"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2 rounded-lg transition cursor-pointer"
               >
                 Apply
               </button>
@@ -337,9 +354,9 @@ export default function CheckoutPage() {
             </div>
 
             <button
-              type="button"
+              type="submit"
               disabled={!agreedTerms}
-              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-md transition disabled:opacity-50"
+              className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-md transition disabled:opacity-50 cursor-pointer"
             >
               🔒 Pay LKR 49,000 and confirm booking
             </button>
@@ -349,16 +366,13 @@ export default function CheckoutPage() {
             </p>
           </div>
 
-        </div>
+        </form>
 
         {/* Right Column - Booking Summary Sidebar */}
         <div className="space-y-6">
-          
-          {/* Booking Card */}
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
             <h2 className="font-bold text-slate-900 text-lg">Your booking</h2>
 
-            {/* Hotel Info */}
             <div className="flex gap-3">
               <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0">
                 <Image src="/images/backimage.jpg" alt="Mountain View Hotel" fill className="object-cover" />
@@ -376,7 +390,6 @@ export default function CheckoutPage() {
 
             <hr className="border-slate-100" />
 
-            {/* Stay Details */}
             <div className="space-y-2.5 text-xs sm:text-sm text-slate-700">
               <div className="flex justify-between">
                 <span className="text-slate-500">Check-in</span>
@@ -408,13 +421,12 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <button className="text-xs text-blue-600 font-semibold underline w-full text-right block pt-1">
+            <button className="text-xs text-blue-600 font-semibold underline w-full text-right block pt-1 cursor-pointer">
               Change selection
             </button>
 
             <hr className="border-slate-100" />
 
-            {/* Price Breakdown */}
             <div className="space-y-2 text-xs sm:text-sm">
               <h3 className="font-bold text-slate-900 text-base mb-2">Price details</h3>
               <div className="flex justify-between text-slate-600">
@@ -446,7 +458,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Guarantees Box */}
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4 text-xs">
             <div className="flex items-start gap-3">
               <ShieldCheck className="text-emerald-600 shrink-0" size={20} />

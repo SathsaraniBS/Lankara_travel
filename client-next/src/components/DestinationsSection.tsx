@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { MapPin, Navigation } from "lucide-react";
 
 interface Category {
@@ -42,12 +43,22 @@ const mockDestinations: Destination[] = [
 ];
 
 export default function DestinationsSection() {
+  const router = useRouter();
   const [destinations, setDestinations] = useState<Destination[]>(mockDestinations);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const [guideDestinations, setGuideDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Category click handler
+  const handleCategoryClick = (title: string) => {
+    if (title === "Safari Trip") {
+      router.push("/SafariTrip");
+    } else {
+      setSelectedCategory(title);
+    }
+  };
 
   // Fetch Main Destinations
   useEffect(() => {
@@ -100,12 +111,12 @@ export default function DestinationsSection() {
             </p>
           </div>
 
-          {/* 6 Grid items in 1 single row (Responsive with horizontal scroll on small screens) */}
+          {/* 6 Grid items in 1 single row */}
           <div className="flex sm:grid sm:grid-cols-6 gap-4 overflow-x-auto pb-4 sm:pb-0 scrollbar-none">
             {categoriesData.map((cat) => (
               <div
                 key={cat.id}
-                onClick={() => setSelectedCategory(cat.title)}
+                onClick={() => handleCategoryClick(cat.title)}
                 className={`group relative min-w-[160px] sm:min-w-0 h-[280px] rounded-2xl overflow-hidden cursor-pointer flex flex-col justify-between transition-transform duration-300 hover:scale-105 border ${
                   selectedCategory === cat.title
                     ? "border-emerald-500 ring-2 ring-emerald-500/50"
