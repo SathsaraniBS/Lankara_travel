@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, MapPin, Users, DollarSign, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Users, DollarSign, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
 
 export default function PlanningATripPage() {
   const [destination, setDestination] = useState("");
   const [days, setDays] = useState(3);
   const [travelers, setTravelers] = useState(2);
   const [budget, setBudget] = useState("Medium");
+  const [planGenerated, setPlanGenerated] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Trip plan generated for ${days} days in ${destination || "Sri Lanka"}!`);
+    setPlanGenerated(true);
   };
 
   const topDestinations = [
@@ -20,6 +21,11 @@ export default function PlanningATripPage() {
     { title: "Mirissa", desc: "Whale watching, surfing, and golden beaches.", days: "3-4 Days" },
     { title: "Kandy", desc: "Cultural heart of Sri Lanka & Temple of the Tooth.", days: "2 Days" },
   ];
+
+  const handleSelectDestination = (title: string) => {
+    setDestination(title);
+    setPlanGenerated(false);
+  };
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 pt-28 pb-16 px-6 sm:px-12">
@@ -37,77 +43,97 @@ export default function PlanningATripPage() {
         {/* Trip Planner Form & Recommendations */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Planner Form */}
-          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-2xl">
-            <h2 className="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-2">
-              <Sparkles size={24} /> Customized Itinerary Generator
-            </h2>
+          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-2xl flex flex-col justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-2">
+                <Sparkles size={24} /> Customized Itinerary Generator
+              </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                  <MapPin size={18} className="text-emerald-400" /> Preferred Region / City
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Ella, Mirissa, Kandy"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                    <Calendar size={18} className="text-emerald-400" /> Duration (Days)
+                    <MapPin size={18} className="text-emerald-400" /> Preferred Region / City
                   </label>
                   <input
-                    type="number"
-                    min={1}
-                    max={30}
-                    value={days}
-                    onChange={(e) => setDays(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition"
+                    type="text"
+                    placeholder="e.g. Ella, Mirissa, Kandy"
+                    value={destination}
+                    onChange={(e) => {
+                      setDestination(e.target.value);
+                      setPlanGenerated(false);
+                    }}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                    <Users size={18} className="text-emerald-400" /> Travelers
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={travelers}
-                    onChange={(e) => setTravelers(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                      <Calendar size={18} className="text-emerald-400" /> Duration (Days)
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={30}
+                      value={days}
+                      onChange={(e) => setDays(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                      <Users size={18} className="text-emerald-400" /> Travelers
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={travelers}
+                      onChange={(e) => setTravelers(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                      <DollarSign size={18} className="text-emerald-400" /> Budget Range
+                    </label>
+                    <select
+                      value={budget}
+                      onChange={(e) => setBudget(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition cursor-pointer"
+                    >
+                      <option value="Budget">Budget</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Luxury">Luxury</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                    <DollarSign size={18} className="text-emerald-400" /> Budget Range
-                  </label>
-                  <select
-                    value={budget}
-                    onChange={(e) => setBudget(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition"
-                  >
-                    <option value="Budget">Budget</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Luxury">Luxury</option>
-                  </select>
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg transition duration-300 cursor-pointer"
+                >
+                  Create Trip Plan
+                </button>
+              </form>
+            </div>
+
+            {/* Generated Plan Confirmation Summary */}
+            {planGenerated && (
+              <div className="mt-8 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-xl space-y-3">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-lg">
+                  <CheckCircle2 size={22} /> Itinerary Summary Ready!
                 </div>
+                <p className="text-slate-300 text-sm">
+                  We have prepared a customized <strong className="text-emerald-300">{days}-day</strong> trip plan to{" "}
+                  <strong className="text-emerald-300">{destination || "Sri Lanka"}</strong> for{" "}
+                  <strong className="text-emerald-300">{travelers} traveler(s)</strong> under a{" "}
+                  <strong className="text-emerald-300">{budget}</strong> budget tier.
+                </p>
               </div>
-
-              <button
-                type="submit"
-                className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg transition duration-300"
-              >
-                Create Trip Plan
-              </button>
-            </form>
+            )}
           </div>
 
           {/* Suggested Destinations */}
@@ -116,9 +142,16 @@ export default function PlanningATripPage() {
             
             <div className="space-y-4">
               {topDestinations.map((item, index) => (
-                <div key={index} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1">
+                <div
+                  key={index}
+                  onClick={() => handleSelectDestination(item.title)}
+                  className="bg-slate-950 p-4 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition cursor-pointer space-y-1 group"
+                >
                   <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-emerald-400">{item.title}</h3>
+                    <h3 className="font-semibold text-emerald-400 group-hover:text-emerald-300 transition flex items-center gap-1.5">
+                      {item.title}
+                      <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </h3>
                     <span className="text-xs text-slate-500 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
                       {item.days}
                     </span>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import api from "@/lib/api";
-import { Mail } from "lucide-react";
+import { Mail, Loader2, CheckCircle2 } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -19,7 +19,7 @@ export default function ForgotPasswordPage() {
     try {
       await api.post("/auth/forgot-password", { email });
       setSubmitted(true);
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
       }}
     >
       {/* Dark overlay for contrast */}
-      <div className="absolute inset-0 bg-black/30 backdrop-brightness-90" />
+      <div className="absolute inset-0 bg-black/40 backdrop-brightness-90" />
 
       {/* Glassmorphic Form Container */}
       <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl text-white">
@@ -50,15 +50,20 @@ export default function ForgotPasswordPage() {
         </p>
 
         {submitted ? (
-          <div className="p-4 rounded-lg bg-green-500/20 border border-green-500/40 text-green-200 text-sm">
-            If an account with that email exists, a password reset link has
-            been sent. Please check the developer console (backend terminal)
-            for the reset link during testing.
+          <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-sm flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-emerald-300 mb-1">Email Sent!</p>
+              <p className="text-xs text-emerald-200/90 leading-relaxed">
+                If an account with that email exists, a password reset link has been sent.
+                Please check your inbox or developer terminal during testing.
+              </p>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/40 text-red-200 text-sm text-center">
+              <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200 text-sm text-center">
                 {error}
               </div>
             )}
@@ -80,16 +85,23 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5 rounded-xl transition shadow-lg disabled:opacity-50 mt-2"
+              className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5 rounded-xl transition shadow-lg disabled:opacity-50 mt-2 flex items-center justify-center gap-2 cursor-pointer"
             >
-              {loading ? "Sending..." : "Send Reset Link"}
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Send Reset Link"
+              )}
             </button>
           </form>
         )}
 
         <p className="text-center text-sm text-gray-300 mt-6">
           Remembered your password?{" "}
-          <Link href="/login" className="text-sky-300 font-semibold hover:underline">
+          <Link href="/login" className="text-sky-300 font-semibold hover:underline cursor-pointer">
             Back to Login
           </Link>
         </p>
