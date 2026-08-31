@@ -25,7 +25,7 @@ interface Destination {
 }
 
 const categoriesData: Category[] = [
-  { id: "1", title: "Adventure Trip", count: "24 Destinations", image: "https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=300&q=80" },
+  { id: "1", title: "Adventure Trip", count: "24 Destinations", image: "/images/adventures_trips.jpg" },
   { id: "2", title: "Road Trip", count: "30 Destinations", image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=300&q=80" },
   { id: "3", title: "Family Trip", count: "15 Destinations", image: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=300&q=80" },
   { id: "4", title: "Safari Trip", count: "24 Destinations", image: "/images/safari-trip.jpg" },
@@ -55,6 +55,8 @@ export default function DestinationsSection() {
   const handleCategoryClick = (title: string) => {
     if (title === "Safari Trip") {
       router.push("/SafariTrip");
+    } else if (title === "Adventure Trip") {
+      router.push("/AdventureTrip");
     } else {
       setSelectedCategory(title);
     }
