@@ -29,7 +29,7 @@ const categoriesData: Category[] = [
   { id: "2", title: "Road Trip", count: "30 Destinations", image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=300&q=80" },
   { id: "3", title: "Family Trip", count: "15 Destinations", image: "https://images.unsplash.com/photo-1511895426328-dc8714191300?w=300&q=80" },
   { id: "4", title: "Safari Trip", count: "24 Destinations", image: "/images/safari-trip.jpg" },
-  { id: "5", title: "Group Trip", count: "40 Destinations", image: "https://images.unsplash.com/photo-1528543606781-2f6e6857f318?w=300&q=80" },
+  { id: "5", title: "Group Trip", count: "40 Destinations", image: "/images/group-trip.webp" },
   { id: "6", title: "Art & Culture", count: "18 Destinations", image: "/images/art&culture.jpg" },
 ];
 
