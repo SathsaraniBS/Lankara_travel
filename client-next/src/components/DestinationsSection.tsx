@@ -56,7 +56,9 @@ export default function DestinationsSection() {
     if (title === "Safari Trip") {
       router.push("/SafariTrip");
     } else if (title === "Adventure Trip") {
-      router.push("/GroupTrip");
+      router.push("/RoadTrip");
+    } else if (title === "Road Trip") {
+      router.push("/RoadTrip");
     } else if (title === "Art & Culture") {
       router.push("/ArtandCulture");
     } else if (title === "Group Trip") {
