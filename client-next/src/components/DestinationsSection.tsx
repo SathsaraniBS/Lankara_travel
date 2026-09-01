@@ -107,8 +107,14 @@ export default function DestinationsSection() {
   }, []);
 
   return (
-    <section id="destinations" className="py-16 px-4 sm:px-8 bg-[#070b09] text-white scroll-mt-20">
-      <div className="max-w-7xl mx-auto space-y-16">
+    <section 
+      id="destinations"
+      className="relative min-h-screen w-full flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat px-4 py-16 text-white scroll-mt-20"
+      style={{
+        backgroundImage: "url('/images/backimage1.jpg')",
+      }}
+    >
+      <div className="max-w-7xl w-full mx-auto space-y-16">
 
         {/* Categories Header & 6 Cards Layout */}
         <div className="space-y-8 text-center">
@@ -142,23 +148,23 @@ export default function DestinationsSection() {
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
 
-                {/* Top Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+                {/* Dark Gradient Overlay across the card for readable text */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/90" />
 
-                {/* Bottom Card Footer Section */}
-                <div className="relative z-10 mt-auto w-full bg-[#1c1a19]/90 backdrop-blur-md p-3 text-center space-y-1 rounded-b-2xl border-t border-white/10">
-                  <h3 className="text-sm font-bold text-zinc-100 tracking-wide line-clamp-1">
+                {/* Fully Transparent Bottom Footer */}
+                <div className="relative z-10 mt-auto w-full bg-transparent p-3 text-center space-y-1 rounded-b-2xl">
+                  <h3 className="text-sm font-bold text-zinc-100 tracking-wide line-clamp-1 drop-shadow-md">
                     {cat.title}
                   </h3>
-                  <p className="text-[11px] text-zinc-300 font-medium line-clamp-1">
+                  <p className="text-[11px] text-zinc-300 font-medium line-clamp-1 drop-shadow-md">
                     {cat.count}
                   </p>
                   <div className="pt-1 flex justify-center">
                     <button 
-                      aria-label="Favorite category"
-                      className="text-white hover:text-red-500 transition-colors text-sm"
+                      aria-label="Expand category"
+                      className="text-white hover:text-emerald-400 transition-colors text-xs"
                     >
-                      ♥
+                      ▼
                     </button>
                   </div>
                 </div>
@@ -182,7 +188,7 @@ export default function DestinationsSection() {
             {destinations.map((dest) => (
               <div
                 key={dest.id}
-                className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-3 flex flex-col justify-between space-y-3 hover:border-zinc-700 transition duration-300 group shadow-lg"
+                className="bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-3 flex flex-col justify-between space-y-3 hover:border-zinc-700 transition duration-300 group shadow-lg"
               >
                 <div className="relative h-44 w-full rounded-xl overflow-hidden">
                   <Image
@@ -225,7 +231,7 @@ export default function DestinationsSection() {
         {/* Footer Metrics & Banner Card */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-6 grid grid-cols-2 gap-4">
-            <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-center space-y-1">
+            <div className="bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-center space-y-1">
               <span className="text-2xl sm:text-3xl font-extrabold text-zinc-100">30K+</span>
               <span className="text-xs text-zinc-400">Happy Travelers</span>
             </div>
@@ -233,17 +239,17 @@ export default function DestinationsSection() {
               <span className="text-2xl sm:text-3xl font-black">10+</span>
               <span className="text-xs font-semibold">Years Of Experience</span>
             </div>
-            <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-center space-y-1">
+            <div className="bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-center space-y-1">
               <span className="text-2xl sm:text-3xl font-extrabold text-zinc-100">112+</span>
               <span className="text-xs text-zinc-400">Destinations</span>
             </div>
-            <div className="bg-[#121614] border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-center space-y-1">
+            <div className="bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-center space-y-1">
               <span className="text-2xl sm:text-3xl font-extrabold text-zinc-100">4.8</span>
               <span className="text-xs text-zinc-400">Overall Rating</span>
             </div>
           </div>
 
-          <div className="lg:col-span-6 bg-[#121614] border border-zinc-800/80 rounded-2xl p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+          <div className="lg:col-span-6 bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
             <div className="space-y-2 text-left">
               <h3 className="text-base font-bold text-zinc-100">Happy Trip</h3>
               <p className="text-xs text-zinc-400 leading-relaxed font-light">
@@ -266,12 +272,12 @@ export default function DestinationsSection() {
 
       {/* Destination Guide Section */}
       <div
-        className="relative min-h-screen bg-cover bg-center flex flex-col justify-center items-center text-center mt-16"
+        className="relative w-full min-h-screen bg-cover bg-center flex flex-col justify-center items-center text-center mt-16 rounded-3xl overflow-hidden"
         style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
       >
         <div className="absolute inset-0 bg-black/40"></div>
 
-        <div className="relative z-10 p-5">
+        <div className="relative z-10 p-5 w-full">
           <h1 className="text-[3rem] font-bold text-white max-[768px]:text-[2rem]">
             Destination Guide
           </h1>
@@ -286,18 +292,21 @@ export default function DestinationsSection() {
           )}
 
           {!loading && !error && (
-            <div className="grid grid-cols-3 gap-[50px] justify-center mt-5 w-[90%] max-w-[1200px] max-[1024px]:grid-cols-2 max-[768px]:grid-cols-1">
+            <div className="grid grid-cols-3 gap-[50px] justify-center mt-5 w-[90%] max-w-[1200px] mx-auto max-[1024px]:grid-cols-2 max-[768px]:grid-cols-1">
               {guideDestinations.map((dest) => (
                 <div
                   key={dest.id}
-                  className="w-[250px] h-[320px] bg-cover bg-center rounded-2xl relative transition-transform duration-300 ease-in-out cursor-pointer hover:scale-105 max-[768px]:w-[180px] max-[768px]:h-[280px]"
+                  className="w-full max-w-[250px] h-[320px] mx-auto bg-cover bg-center rounded-2xl relative transition-transform duration-300 ease-in-out cursor-pointer hover:scale-105 max-[768px]:w-[180px] max-[768px]:h-[280px]"
                   style={{ backgroundImage: `url(${dest.image})` }}
                 >
                   <div className="absolute bottom-0 w-full bg-black/40 text-white p-3 text-center rounded-b-2xl max-[768px]:p-2">
                     <h2>{dest.name || dest.title}</h2>
                     <p>{dest.description}</p>
-                    <button className="bg-transparent border-none text-white text-xl cursor-pointer mt-[5px] hover:text-[red] active:text-[red] max-[768px]:text-base">
-                      ❤
+                    <button 
+                      aria-label="Favorite destination"
+                      className="bg-transparent border-none text-white text-xl cursor-pointer mt-[5px] hover:text-red-500 active:text-red-500 max-[768px]:text-base"
+                    >
+                      ♥
                     </button>
                   </div>
                 </div>
