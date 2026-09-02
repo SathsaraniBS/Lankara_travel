@@ -34,13 +34,25 @@ const categoriesData: Category[] = [
 ];
 
 const mockDestinations: Destination[] = [
-  { id: "1", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=500&q=80" },
-  { id: "2", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=500&q=80" },
-  { id: "3", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80" },
-  { id: "4", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500&q=80" },
-  { id: "5", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&q=80" },
-  { id: "6", title: "Six Senses Zil Pasyon", location: "Seychelles", duration: "10 days Trip", price: 850.0, categoryTag: "Safari", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80" },
+  { id: "1", title: "Colombo Explorer", location: "Colombo, Sri Lanka", duration: "3 days Trip", price: 450.0, categoryTag: "Urban", image: "/images/colombo.jpg" },
+  { id: "2", title: "Galle Fort Heritage", location: "Galle, Sri Lanka", duration: "5 days Trip", price: 620.0, categoryTag: "Culture", image: "/images/galle.jpg" },
+  { id: "3", title: "Kandy Sacred Temple", location: "Kandy, Sri Lanka", duration: "4 days Trip", price: 550.0, categoryTag: "Culture", image: "/images/Kandy.jpg" },
+  { id: "4", title: "Trincomalee Beach Retreat", location: "Trincomalee, Sri Lanka", duration: "7 days Trip", price: 780.0, categoryTag: "Beach", image: "/images/Trincomalee.jpg" },
+  { id: "5", title: "Nuwara Eliya Tea Hills", location: "Nuwara Eliya, Sri Lanka", duration: "4 days Trip", price: 500.0, categoryTag: "Nature", image: "/images/nuwaraeliya.webp" },
+  { id: "6", title: "Jaffna Cultural Journey", location: "Jaffna, Sri Lanka", duration: "6 days Trip", price: 600.0, categoryTag: "Culture", image: "/images/jaffna.jpg" },
+  { id: "7", title: "Ella Gap & Nine Arch", location: "Ella, Sri Lanka", duration: "5 days Trip", price: 520.0, categoryTag: "Adventure", image: "/images/ella.jpg" },
+  { id: "8", title: "Sigiriya Fortress Hike", location: "Sigiriya, Sri Lanka", duration: "3 days Trip", price: 480.0, categoryTag: "History", image: "/images/sigiriya.jpg" },
+  { id: "9", title: "Anuradhapura Ancient City", location: "Anuradhapura, Sri Lanka", duration: "4 days Trip", price: 510.0, categoryTag: "History", image: "/images/anuradhapura.jpg" },
 ];
+
+const CATEGORY_ROUTES: Record<string, string> = {
+  "Safari Trip": "/SafariTrip",
+  "Adventure Trip": "/FamilyTrip",
+  "Family Trip": "/FamilyTrip",
+  "Road Trip": "/RoadTrip",
+  "Art & Culture": "/ArtandCulture",
+  "Group Trip": "/GroupTrip",
+};
 
 export default function DestinationsSection() {
   const router = useRouter();
@@ -51,59 +63,58 @@ export default function DestinationsSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Category click handler
   const handleCategoryClick = (title: string) => {
-    if (title === "Safari Trip") {
-      router.push("/SafariTrip");
-    } else if (title === "Adventure Trip") {
-      router.push("/FamilyTrip");
-    } else if (title === "Family Trip") {
-      router.push("/FamilyTrip");
-    } else if (title === "Road Trip") {
-      router.push("/RoadTrip");
-    } else if (title === "Art & Culture") {
-      router.push("/ArtandCulture");
-    } else if (title === "Group Trip") {
-      router.push("/GroupTrip");
+    const route = CATEGORY_ROUTES[title];
+    if (route) {
+      router.push(route);
     } else {
       setSelectedCategory(title);
     }
   };
 
-  // Fetch Main Destinations
   useEffect(() => {
     async function fetchDestinations() {
       try {
-        const query = selectedCategory ? `?category=${selectedCategory}` : "";
+        const query = selectedCategory ? `?category=${encodeURIComponent(selectedCategory)}` : "";
         const res = await fetch(`http://localhost:8000/api/v1/destinations${query}`);
         if (res.ok) {
           const data = await res.json();
-          setDestinations(data);
+          if (Array.isArray(data) && data.length > 0) {
+            setDestinations(data);
+          }
         }
       } catch (err) {
-        console.warn("Backend API unavailable, using fallback data.");
+        console.warn("Backend API unavailable, using all 9 fallback mock destinations.");
       }
     }
     fetchDestinations();
   }, [selectedCategory]);
 
-  // Fetch Sri Lanka Destination Guide
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/destinations")
-      .then((res) => {
+    let isMounted = true;
+    async function fetchGuide() {
+      try {
+        const res = await fetch("http://localhost:8000/destinations");
         if (!res.ok) {
           throw new Error(`Server responded with ${res.status}`);
         }
-        return res.json();
-      })
-      .then((data) => {
-        setGuideDestinations(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+        const data = await res.json();
+        if (isMounted) {
+          setGuideDestinations(data);
+          setLoading(false);
+        }
+      } catch (err: any) {
+        if (isMounted) {
+          setError(err.message || "Failed to fetch");
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchGuide();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -116,7 +127,7 @@ export default function DestinationsSection() {
     >
       <div className="max-w-7xl w-full mx-auto space-y-16">
 
-        {/* Categories Header & 6 Cards Layout */}
+        {/* Categories Header */}
         <div className="space-y-8 text-center">
           <div className="space-y-2 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-wide text-zinc-100 uppercase">
@@ -127,7 +138,6 @@ export default function DestinationsSection() {
             </p>
           </div>
 
-          {/* 6 Grid items in 1 single row */}
           <div className="flex sm:grid sm:grid-cols-6 gap-4 overflow-x-auto pb-4 sm:pb-0 scrollbar-none">
             {categoriesData.map((cat) => (
               <div
@@ -139,7 +149,6 @@ export default function DestinationsSection() {
                     : "border-zinc-800"
                 }`}
               >
-                {/* Background Image */}
                 <Image
                   src={cat.image}
                   alt={cat.title}
@@ -148,10 +157,8 @@ export default function DestinationsSection() {
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
 
-                {/* Dark Gradient Overlay across the card for readable text */}
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/90" />
 
-                {/* Fully Transparent Bottom Footer */}
                 <div className="relative z-10 mt-auto w-full bg-transparent p-3 text-center space-y-1 rounded-b-2xl">
                   <h3 className="text-sm font-bold text-zinc-100 tracking-wide line-clamp-1 drop-shadow-md">
                     {cat.title}
@@ -173,7 +180,7 @@ export default function DestinationsSection() {
           </div>
         </div>
 
-        {/* Popular Destinations Grid */}
+        {/* Popular Destinations Grid (Renders 3x3 for 9 cards) */}
         <div className="space-y-8 text-center">
           <div className="space-y-2 max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-100">
@@ -184,18 +191,18 @@ export default function DestinationsSection() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {destinations.map((dest) => (
               <div
                 key={dest.id}
                 className="bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-3 flex flex-col justify-between space-y-3 hover:border-zinc-700 transition duration-300 group shadow-lg"
               >
-                <div className="relative h-44 w-full rounded-xl overflow-hidden">
+                <div className="relative h-48 w-full rounded-xl overflow-hidden">
                   <Image
                     src={dest.image}
                     alt={dest.title}
                     fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <span className="absolute top-2.5 left-2.5 bg-emerald-500/90 backdrop-blur-md text-slate-950 font-semibold text-[10px] px-2.5 py-0.5 rounded-md">
@@ -272,48 +279,55 @@ export default function DestinationsSection() {
 
       {/* Destination Guide Section */}
       <div
-        className="relative w-full min-h-screen bg-cover bg-center flex flex-col justify-center items-center text-center mt-16 rounded-3xl overflow-hidden"
+        className="relative w-full min-h-[300px] bg-cover bg-center flex flex-col justify-center items-center text-center mt-16 rounded-3xl overflow-hidden p-8"
         style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
       >
-        {/* <div className="absolute inset-0 bg-black/40"></div> */}
+        <div className="absolute inset-0 bg-black/50" />
 
-        {/* <div className="relative z-10 p-5 w-full">
-          <h1 className="text-[3rem] font-bold text-white max-[768px]:text-[2rem]">
-            Destination Guide
-          </h1>
-          <p className="text-2xl text-white mb-5">Holiday in Sri Lanka</p>
+        <div className="relative z-10 w-full max-w-6xl mx-auto space-y-6">
+          <div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+              Destination Guide
+            </h2>
+            <p className="text-lg text-emerald-400 font-medium mt-1">Holiday in Sri Lanka</p>
+          </div>
 
-          {loading && <p className="text-white text-xl mt-5">Loading destinations...</p>}
+          {loading && <p className="text-zinc-300 text-sm">Loading destinations...</p>}
 
           {error && (
-            <p className="text-white text-xl mt-5">
-              Couldn't load destinations. Is the backend server running?
+            <p className="text-amber-400 text-sm bg-amber-950/40 p-3 rounded-xl border border-amber-800/40 max-w-md mx-auto">
+              Couldn&apos;t load destinations guide. Make sure your local API server is active.
             </p>
           )}
 
           {!loading && !error && (
-            <div className="grid grid-cols-3 gap-[50px] justify-center mt-5 w-[90%] max-w-[1200px] mx-auto max-[1024px]:grid-cols-2 max-[768px]:grid-cols-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
               {guideDestinations.map((dest) => (
                 <div
                   key={dest.id}
-                  className="w-full max-w-[250px] h-[320px] mx-auto bg-cover bg-center rounded-2xl relative transition-transform duration-300 ease-in-out cursor-pointer hover:scale-105 max-[768px]:w-[180px] max-[768px]:h-[280px]"
+                  className="group relative h-80 w-full rounded-2xl overflow-hidden bg-cover bg-center transition-transform duration-300 hover:scale-105 shadow-xl"
                   style={{ backgroundImage: `url(${dest.image})` }}
                 >
-                  <div className="absolute bottom-0 w-full bg-black/40 text-white p-3 text-center rounded-b-2xl max-[768px]:p-2">
-                    <h2>{dest.name || dest.title}</h2>
-                    <p>{dest.description}</p>
-                    <button 
-                      aria-label="Favorite destination"
-                      className="bg-transparent border-none text-white text-xl cursor-pointer mt-[5px] hover:text-red-500 active:text-red-500 max-[768px]:text-base"
-                    >
-                      ♥
-                    </button>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4 text-left">
+                    <h3 className="text-base font-bold text-white line-clamp-1">{dest.name || dest.title}</h3>
+                    {dest.description && (
+                      <p className="text-xs text-zinc-300 line-clamp-2 mt-1">{dest.description}</p>
+                    )}
+                    <div className="mt-3 flex justify-between items-center">
+                      <span className="text-xs text-emerald-400 font-medium">{dest.location}</span>
+                      <button 
+                        aria-label="Favorite destination"
+                        className="text-white hover:text-red-500 transition-colors text-lg"
+                      >
+                        ♥
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div> */}
+        </div>
       </div>
     </section>
   );
