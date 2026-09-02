@@ -275,9 +275,9 @@ export default function DestinationsSection() {
         className="relative w-full min-h-screen bg-cover bg-center flex flex-col justify-center items-center text-center mt-16 rounded-3xl overflow-hidden"
         style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
       >
-        <div className="absolute inset-0 bg-black/40"></div>
+        {/* <div className="absolute inset-0 bg-black/40"></div> */}
 
-        <div className="relative z-10 p-5 w-full">
+        {/* <div className="relative z-10 p-5 w-full">
           <h1 className="text-[3rem] font-bold text-white max-[768px]:text-[2rem]">
             Destination Guide
           </h1>
@@ -313,7 +313,7 @@ export default function DestinationsSection() {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </section>
   );
