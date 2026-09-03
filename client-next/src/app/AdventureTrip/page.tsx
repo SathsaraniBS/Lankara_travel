@@ -1,153 +1,322 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { MapPin, Clock, ShieldCheck, CheckCircle2, Compass, Activity } from 'lucide-react';
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Search,
+  Heart,
+  User,
+  Compass,
+  MapPin,
+  Star,
+  Footprints,
+  Ship,
+  Trees,
+  Waves,
+  Globe,
+  Binoculars,
+  ArrowLeft,
+} from "lucide-react";
+
+interface AdventureCard {
+  id: string;
+  title: string;
+  location: string;
+  rating: number;
+  price: number;
+  category: string;
+  image: string;
+}
+
+const categories = [
+  { id: "hiking", label: "Hiking", icon: Footprints },
+  { id: "rafting", label: "Rafting", icon: Ship },
+  { id: "safari", label: "Safari", icon: Binoculars },
+  { id: "surfing", label: "Surfing", icon: Waves },
+  { id: "culture", label: "Culture", icon: Globe },
+  { id: "wildlife", label: "Wildlife", icon: Trees },
+];
+
+const adventureItems: AdventureCard[] = [
+  {
+    id: "1",
+    title: "Sigiriya Rock",
+    location: "Sigiriya Rock",
+    rating: 4.8,
+    price: 750,
+    category: "hiking",
+    image: "/images/sigiriya.jpg",
+  },
+  {
+    id: "2",
+    title: "Ella Tea Fields",
+    location: "Ella Tea Fields",
+    rating: 4.8,
+    price: 750,
+    category: "hiking",
+    image: "/images/ella.jpg",
+  },
+  {
+    id: "3",
+    title: "Yala Safari",
+    location: "Yala Safari",
+    rating: 4.8,
+    price: 750,
+    category: "safari",
+    image: "/images/safari-trip.jpg",
+  },
+  {
+    id: "4",
+    title: "Kitulgala Rafting",
+    location: "Kitulgala",
+    rating: 4.9,
+    price: 680,
+    category: "rafting",
+    image: "/images/adventures_trips.jpg",
+  },
+  {
+    id: "5",
+    title: "Arugam Bay Surf",
+    location: "Arugam Bay",
+    rating: 4.7,
+    price: 620,
+    category: "surfing",
+    image: "/images/Trincomalee.jpg",
+  },
+  {
+    id: "6",
+    title: "Kandy Cultural Tour",
+    location: "Kandy",
+    rating: 4.8,
+    price: 550,
+    category: "culture",
+    image: "/images/Kandy.jpg",
+  },
+];
 
 export default function AdventureTripPage() {
-  const [selectedDate, setSelectedDate] = useState('');
-  const [travelers, setTravelers] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState<string>("hiking");
+  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleBooking = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Adventure trip booking requested for ${travelers} traveler(s) on ${selectedDate}`);
+  const toggleFavorite = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const filteredAdventures = adventureItems.filter((item) => {
+    const matchesCategory =
+      !selectedCategory || item.category === selectedCategory;
+    const matchesSearch =
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.location.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   return (
-    <main className="min-h-screen bg-slate-950 text-white pt-24 pb-16 px-5 max-w-[1500px] mx-auto">
-      {/* Banner / Header Section */}
-      <div className="relative w-full h-[400px] rounded-3xl overflow-hidden mb-10 border border-slate-800">
-        <Image
-          src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?q=80&w=1600&auto=format&fit=crop"
-          alt="Extreme Adventure & Trekking"
-          fill
-          priority
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex flex-col justify-end p-8">
-          <span className="text-emerald-400 font-semibold tracking-wide text-sm uppercase mb-2 flex items-center gap-2">
-            <MapPin size={16} /> Ella Rock & Kitulgala White Water Rafting
-          </span>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white">
-            Extreme Mountain & River Adventure
-          </h1>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Left Column: Details & Highlights */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Quick Specs */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
-            <div className="flex items-center gap-3">
-              <Clock className="text-emerald-400" size={24} />
-              <div>
-                <p className="text-xs text-slate-400">Duration</p>
-                <p className="font-semibold text-sm">3 Days / 2 Nights</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Activity className="text-emerald-400" size={24} />
-              <div>
-                <p className="text-xs text-slate-400">Difficulty</p>
-                <p className="font-semibold text-sm">Moderate - High</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="text-emerald-400" size={24} />
-              <div>
-                <p className="text-xs text-slate-400">Safety</p>
-                <p className="font-semibold text-sm">Certified Instructors</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Overview */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold border-b border-slate-800 pb-2">Trip Overview</h2>
-            <p className="text-slate-300 leading-relaxed text-sm">
-              Gear up for an adrenaline-fueled journey through Sri Lanka's central highlands and raging rivers. 
-              Trek through scenic mountain ridges, leap down jungle waterfalls, and conquer class 3+ rapids 
-              in Kitulgala with professional safety gear and guides.
-            </p>
-          </div>
-
-          {/* Included Features */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold border-b border-slate-800 pb-2">What’s Included</h2>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-300">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-emerald-400" /> Professional Rafting & Safety Gear
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-emerald-400" /> Mountain Hiking & Trekking Guide
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-emerald-400" /> 2 Nights Eco-Lodge Stay
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-emerald-400" /> All Meals & Energy Drinks
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-emerald-400" /> Hotel Pickup & Emergency Support
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Right Column: Booking Form */}
-        <div className="bg-slate-900 border border-slate-800 p-6 rounded-3xl h-fit space-y-6">
-          <div className="border-b border-slate-800 pb-4">
-            <span className="text-xs text-slate-400 uppercase font-semibold">Price per person</span>
-            <div className="text-3xl font-black text-emerald-400 mt-1">
-              $150 <span className="text-sm font-normal text-slate-400">/ traveler</span>
-            </div>
-          </div>
-
-          <form onSubmit={handleBooking} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-2">
-                Select Date
-              </label>
-              <input
-                type="date"
-                required
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-2">
-                Number of Travelers
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={12}
-                value={travelers}
-                onChange={(e) => setTravelers(Number(e.target.value))}
-                className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div className="border-t border-slate-800 pt-4 space-y-2 text-sm text-slate-400">
-              <div className="flex justify-between">
-                <span>Total Amount:</span>
-                <span className="font-bold text-white">${150 * travelers}</span>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-6 rounded-xl transition duration-300 cursor-pointer text-sm"
+    <div className="min-h-screen bg-[#111417] text-zinc-100 flex flex-col items-center p-4 sm:p-6 md:p-8 font-sans">
+      <div className="max-w-6xl w-full bg-[#181d22] border border-zinc-800 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl space-y-8">
+        
+        {/* Navigation Header */}
+        <header className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/#destinations"
+              className="p-2 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 rounded-xl transition"
+              aria-label="Back to home"
             >
-              Book Adventure Now
+              <ArrowLeft size={18} />
+            </Link>
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-lg tracking-wide">
+              <Compass className="w-5 h-5 text-emerald-400" />
+              <span className="text-white">Adventure Trip</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#222930] text-xs text-zinc-200 placeholder-zinc-400 pl-10 pr-4 py-2.5 rounded-xl border border-zinc-700/60 focus:outline-none focus:border-emerald-500 transition"
+              />
+            </div>
+            <button
+              aria-label="Favorites"
+              className="p-2.5 bg-[#222930] border border-zinc-700/60 rounded-xl text-zinc-300 hover:text-white hover:border-zinc-500 transition"
+            >
+              <Heart size={16} />
             </button>
-          </form>
-        </div>
+            <button
+              aria-label="User Profile"
+              className="p-2.5 bg-[#222930] border border-zinc-700/60 rounded-xl text-zinc-300 hover:text-white hover:border-zinc-500 transition"
+            >
+              <User size={16} />
+            </button>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section className="relative rounded-2xl overflow-hidden bg-[#1f262e] border border-zinc-800/80 p-6 sm:p-10 min-h-[300px] flex flex-col justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            
+            {/* Left Hero Content */}
+            <div className="lg:col-span-5 space-y-4 z-10">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-wider uppercase leading-tight">
+                Adventure Trip
+              </h1>
+              <p className="text-xs sm:text-sm text-zinc-300 font-light">
+                Discover the Wild Heart of Sri Lanka
+              </p>
+              <div className="pt-2">
+                <button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                  Explore Adventures
+                </button>
+              </div>
+            </div>
+
+            {/* Right Hero Collage Images */}
+            <div className="lg:col-span-7 grid grid-cols-3 gap-3 h-52 sm:h-64">
+              <div className="relative rounded-xl overflow-hidden h-full">
+                <Image
+                  src="/images/adventures_trips.jpg"
+                  alt="Rafting Adventure"
+                  fill
+                  sizes="(max-width: 1024px) 33vw, 25vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="relative rounded-xl overflow-hidden h-full">
+                <Image
+                  src="/images/ella.jpg"
+                  alt="Trekking Adventure"
+                  fill
+                  sizes="(max-width: 1024px) 33vw, 25vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="relative rounded-xl overflow-hidden h-full">
+                <Image
+                  src="/images/safari-trip.jpg"
+                  alt="Zipline Adventure"
+                  fill
+                  sizes="(max-width: 1024px) 33vw, 25vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Categories Pills */}
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold text-zinc-200">Category</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+            {categories.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-medium border transition min-w-max ${
+                    isActive
+                      ? "bg-[#28323c] text-white border-zinc-600 shadow-sm"
+                      : "bg-[#20272f] text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:bg-[#252e38]"
+                  }`}
+                >
+                  <Icon size={14} className={isActive ? "text-white" : "text-zinc-400"} />
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Adventure Cards Grid */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredAdventures.map((item) => {
+            const isFav = !!favorites[item.id];
+            return (
+              <div
+                key={item.id}
+                className="bg-[#20272f] border border-zinc-800 rounded-2xl p-3 space-y-3 flex flex-col justify-between shadow-lg hover:border-zinc-700 transition"
+              >
+                {/* Image Container with Top Favorite Button */}
+                <div className="relative h-44 w-full rounded-xl overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                  <button
+                    onClick={(e) => toggleFavorite(item.id, e)}
+                    aria-label="Favorite item"
+                    className="absolute top-2.5 right-2.5 bg-black/40 backdrop-blur-md p-1.5 rounded-full text-white hover:text-red-500 transition"
+                  >
+                    <Heart
+                      size={14}
+                      className={isFav ? "fill-red-500 text-red-500" : "text-white"}
+                    />
+                  </button>
+                </div>
+
+                {/* Details */}
+                <div className="space-y-1 px-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-zinc-100">{item.title}</h3>
+                    <button
+                      onClick={(e) => toggleFavorite(item.id, e)}
+                      aria-label="Toggle heart"
+                      className="text-zinc-400 hover:text-red-500 transition"
+                    >
+                      <Heart
+                        size={14}
+                        className={isFav ? "fill-red-500 text-red-500" : "text-zinc-400"}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-[11px] text-zinc-400">
+                    <MapPin size={11} className="text-zinc-400" />
+                    <span>{item.location}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 text-[11px]">
+                    <div className="flex items-center gap-1 text-zinc-300">
+                      <Star size={11} className="fill-amber-400 text-amber-400" />
+                      <span className="font-semibold">{item.rating}</span>
+                      <span className="text-zinc-400 ml-2">${item.price}</span>
+                    </div>
+                    <span className="text-sm font-black text-zinc-100">
+                      ${item.price}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Dual Buttons */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button className="w-full bg-[#2d3742] hover:bg-[#36424f] text-zinc-200 text-xs font-semibold py-2 rounded-xl transition">
+                    Book Now
+                  </button>
+                  <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold py-2 rounded-xl transition">
+                    Book Now
+                  </button>
+                </div>
+
+              </div>
+            );
+          })}
+        </section>
+
       </div>
-    </main>
+    </div>
   );
 }
