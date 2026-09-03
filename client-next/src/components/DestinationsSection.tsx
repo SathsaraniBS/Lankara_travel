@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { MapPin, Navigation } from "lucide-react";
+import { MapPin, Navigation, Heart } from "lucide-react";
 
 interface Category {
   id: string;
@@ -21,6 +21,7 @@ interface Destination {
   categoryTag: string;
   image: string;
   name?: string;
+  subtitle?: string;
   description?: string;
 }
 
@@ -45,9 +46,18 @@ const mockDestinations: Destination[] = [
   { id: "9", title: "Anuradhapura Ancient City", location: "Anuradhapura, Sri Lanka", duration: "4 days Trip", price: 510.0, categoryTag: "History", image: "/images/anuradhapura.jpg" },
 ];
 
+const fallbackGuideDestinations: Destination[] = [
+  { id: "1", title: "COLOMBO", subtitle: "Urban & Nightlife", location: "Colombo", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg" },
+  { id: "2", title: "GALLE", subtitle: "Heritage & Beaches", location: "Galle", duration: "", price: 0, categoryTag: "", image: "/images/galle.jpg" },
+  { id: "3", title: "KANDY", subtitle: "History & Culture", location: "Kandy", duration: "", price: 0, categoryTag: "", image: "/images/Kandy.jpg" },
+  { id: "4", title: "TRINCOMALEE", subtitle: "Beaches & Diving", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/Trincomalee.jpg" },
+  { id: "5", title: "NUWARA ELIYA", subtitle: "Tea Gardens & Cool Climate", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/nuwaraeliya.webp" },
+  { id: "6", title: "JAFFNA", subtitle: "Northern Heritage & Food", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/jaffna.jpg" },
+];
+
 const CATEGORY_ROUTES: Record<string, string> = {
   "Safari Trip": "/SafariTrip",
-  "Adventure Trip": "/FamilyTrip",
+  "Adventure Trip": "/AdventureTrip",
   "Family Trip": "/FamilyTrip",
   "Road Trip": "/RoadTrip",
   "Art & Culture": "/ArtandCulture",
@@ -59,9 +69,9 @@ export default function DestinationsSection() {
   const [destinations, setDestinations] = useState<Destination[]>(mockDestinations);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const [guideDestinations, setGuideDestinations] = useState<Destination[]>([]);
+  const [guideDestinations, setGuideDestinations] = useState<Destination[]>(fallbackGuideDestinations);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
 
   const handleCategoryClick = (title: string) => {
     const route = CATEGORY_ROUTES[title];
@@ -70,6 +80,11 @@ export default function DestinationsSection() {
     } else {
       setSelectedCategory(title);
     }
+  };
+
+  const toggleFavorite = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   useEffect(() => {
@@ -84,7 +99,7 @@ export default function DestinationsSection() {
           }
         }
       } catch (err) {
-        console.warn("Backend API unavailable, using all 9 fallback mock destinations.");
+        console.warn("Backend API unavailable, using fallback mock destinations.");
       }
     }
     fetchDestinations();
@@ -95,19 +110,16 @@ export default function DestinationsSection() {
     async function fetchGuide() {
       try {
         const res = await fetch("http://localhost:8000/destinations");
-        if (!res.ok) {
-          throw new Error(`Server responded with ${res.status}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && Array.isArray(data) && data.length > 0) {
+            setGuideDestinations(data);
+          }
         }
-        const data = await res.json();
-        if (isMounted) {
-          setGuideDestinations(data);
-          setLoading(false);
-        }
-      } catch (err: any) {
-        if (isMounted) {
-          setError(err.message || "Failed to fetch");
-          setLoading(false);
-        }
+      } catch (err) {
+        console.warn("Backend API unavailable, using guide fallback data.");
+      } finally {
+        if (isMounted) setLoading(false);
       }
     }
 
@@ -180,7 +192,7 @@ export default function DestinationsSection() {
           </div>
         </div>
 
-        {/* Popular Destinations Grid (Renders 3x3 for 9 cards) */}
+        {/* Popular Destinations Grid */}
         <div className="space-y-8 text-center">
           <div className="space-y-2 max-w-2xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-100">
@@ -277,54 +289,69 @@ export default function DestinationsSection() {
 
       </div>
 
-      {/* Destination Guide Section */}
+      {/* Destination Guide Section - Styled according to screenshot */}
       <div
-        className="relative w-full min-h-[300px] bg-cover bg-center flex flex-col justify-center items-center text-center mt-16 rounded-3xl overflow-hidden p-8"
+        className="relative w-full min-h-[500px] bg-cover bg-center flex flex-col justify-center items-center text-center mt-16 rounded-3xl overflow-hidden px-4 py-12"
         style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
       >
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto space-y-6">
+        <div className="relative z-10 w-full max-w-5xl mx-auto space-y-8">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight drop-shadow-md">
               Destination Guide
             </h2>
-            <p className="text-lg text-emerald-400 font-medium mt-1">Holiday in Sri Lanka</p>
+            <p className="text-base sm:text-lg text-zinc-200 font-normal mt-1 drop-shadow">
+              Holiday in Sri Lanka
+            </p>
           </div>
 
-          {loading && <p className="text-zinc-300 text-sm">Loading destinations...</p>}
+          {loading ? (
+            <p className="text-zinc-300 text-sm">Loading destinations...</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pt-2">
+              {guideDestinations.map((dest) => {
+                const titleText = (dest.name || dest.title).toUpperCase();
+                const subtitleText = dest.subtitle || dest.description || dest.categoryTag || "Top Attraction";
+                const isFav = !!favorites[dest.id];
 
-          {error && (
-            <p className="text-amber-400 text-sm bg-amber-950/40 p-3 rounded-xl border border-amber-800/40 max-w-md mx-auto">
-              Couldn&apos;t load destinations guide. Make sure your local API server is active.
-            </p>
-          )}
+                return (
+                  <div
+                    key={dest.id}
+                    className="group relative h-[320px] w-full rounded-3xl overflow-hidden transition-transform duration-300 hover:scale-105 shadow-2xl border border-white/10"
+                  >
+                    {/* Background Image */}
+                    <Image
+                      src={dest.image}
+                      alt={titleText}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover"
+                    />
 
-          {!loading && !error && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-              {guideDestinations.map((dest) => (
-                <div
-                  key={dest.id}
-                  className="group relative h-80 w-full rounded-2xl overflow-hidden bg-cover bg-center transition-transform duration-300 hover:scale-105 shadow-xl"
-                  style={{ backgroundImage: `url(${dest.image})` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4 text-left">
-                    <h3 className="text-base font-bold text-white line-clamp-1">{dest.name || dest.title}</h3>
-                    {dest.description && (
-                      <p className="text-xs text-zinc-300 line-clamp-2 mt-1">{dest.description}</p>
-                    )}
-                    <div className="mt-3 flex justify-between items-center">
-                      <span className="text-xs text-emerald-400 font-medium">{dest.location}</span>
-                      <button 
+                    {/* Dark gradient container at the bottom */}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-12 pb-4 px-4 flex flex-col items-center justify-end text-center space-y-1">
+                      <h3 className="text-lg font-black text-white uppercase tracking-wider drop-shadow-md">
+                        {titleText}
+                      </h3>
+                      <p className="text-xs text-zinc-300 font-medium drop-shadow-sm">
+                        {subtitleText}
+                      </p>
+                      
+                      <button
+                        onClick={(e) => toggleFavorite(dest.id, e)}
                         aria-label="Favorite destination"
-                        className="text-white hover:text-red-500 transition-colors text-lg"
+                        className="pt-2 text-white hover:text-red-500 transition-colors focus:outline-none"
                       >
-                        ♥
+                        <Heart
+                          size={18}
+                          className={isFav ? "fill-red-500 text-red-500" : "text-white"}
+                        />
                       </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
