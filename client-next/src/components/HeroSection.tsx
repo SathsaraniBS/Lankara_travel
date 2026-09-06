@@ -13,7 +13,7 @@ export default function HeroSection() {
       />
 
       <h1 className="text-white text-[50px] -mt-[100px] md:text-[70px] md:-mt-[150px] lg:text-[100px] lg:-mt-[100px] text-center font-bold">
-        Ceylon Compass
+         Lankara Travels 
       </h1>
 
       <h3
