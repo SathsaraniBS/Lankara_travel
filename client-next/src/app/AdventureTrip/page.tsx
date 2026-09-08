@@ -16,6 +16,18 @@ import {
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
+// Types
+interface Adventure {
+  id: number;
+  title: string;
+  category: string;
+  location: string;
+  price: number;
+  rating: number;
+  duration: string;
+  image: string;
+}
+
 // Mock categories data
 const categories = [
   { id: "all", label: "All Expeditions", icon: Flame },
@@ -25,7 +37,7 @@ const categories = [
 ];
 
 // Mock adventure listings data
-const adventures = [
+const adventures: Adventure[] = [
   {
     id: 1,
     title: "White Water Rafting",
@@ -80,10 +92,10 @@ export default function AdventureTripPage() {
   return (
     <>
       <div className="w-full min-h-screen bg-slate-950">
-        {/* Optional Top Hero Banner */}
+        {/* Top Hero Banner */}
         <section
           id="hero-banner"
-          className="relative min-h-screen w-full flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat px-4 py-16 text-white"
+          className="relative min-h-[50vh] w-full flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat px-4 py-16 text-white"
           style={{
             backgroundImage: "url('/images/road-trip.png')",
           }}
@@ -256,7 +268,7 @@ export default function AdventureTripPage() {
                         key={item.id}
                         className="group bg-slate-900/50 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-xl hover:border-slate-700 transition duration-300"
                       >
-                        {/* Image Container with Top Favorite Button */}
+                        {/* Image Container */}
                         <div className="relative h-52 w-full rounded-xl overflow-hidden mb-4">
                           <Image
                             src={item.image}

@@ -3,27 +3,29 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  MapPin,
-  Calendar,
-  Users,
-  Compass,
-  ArrowRight,
-  ShieldCheck,
-  Smile,
-  BookOpen,
-  Sliders,
-  ChevronRight,
-  Star,
-  Sparkles,
-  Award,
-  Headphones,
-  Utensils,
-  TreePalm,
-  Landmark,
-  Palmtree,
-  Heart,
-} from "lucide-react";
+// import {
+//   MapPin,
+//   Calendar,
+//   Users,
+//   Compass,
+//   ArrowRight,
+//   ShieldCheck,
+//   Smile,
+//   BookOpen,
+//   Sliders,
+//   ChevronRight,
+//   Star,
+//   Instagram,
+//   Facebook,
+//   Twitter,
+//   Sparkles,
+//   Award,
+//   Headphones,
+//   Utensils,
+//   TreePalms,
+//   Landmark,
+//   Palmtree,
+// } from "lucide-react";
 
 interface DestinationCard {
   id: string;
@@ -154,6 +156,69 @@ export default function FamilyTripPage() {
 
   return (
     <div className="min-h-screen bg-[#fcfbf9] text-zinc-800 font-sans selection:bg-amber-200">
+      
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-50 bg-[#fcfbf9]/90 backdrop-blur-md border-b border-stone-200 px-4 sm:px-8 py-3 transition">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-[#173a2e] flex items-center justify-center text-white font-serif font-bold text-xs">
+              L
+            </div>
+            <div className="flex flex-col">
+              <span className="font-serif text-lg font-bold tracking-tight text-stone-900 leading-none">
+                Lankara
+              </span>
+              <span className="text-[9px] uppercase tracking-widest text-emerald-800 font-medium">
+                Travels
+              </span>
+            </div>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-stone-600">
+            <Link href="/" className="hover:text-stone-900 transition">
+              Home
+            </Link>
+            <Link href="/#destinations" className="hover:text-stone-900 transition">
+              Explore
+            </Link>
+            <Link href="/#destinations" className="hover:text-stone-900 transition">
+              Destinations
+            </Link>
+            <Link href="/ArtandCulture" className="hover:text-stone-900 transition">
+              Art & Culture
+            </Link>
+            <Link href="/GroupTrip" className="hover:text-stone-900 transition">
+              Group Trips
+            </Link>
+            <Link href="/AdventureTrip" className="hover:text-stone-900 transition">
+              Experiences
+            </Link>
+            <Link href="#" className="hover:text-stone-900 transition">
+              Journal
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <button aria-label="Search" className="p-2 text-stone-600 hover:text-stone-900">
+              <Search size={18} />
+            </button>
+            <button aria-label="Favorites" className="p-2 text-stone-600 hover:text-stone-900">
+              <Heart size={18} />
+            </button>
+            <Link
+              href="/FamilyTrip"
+              className="hidden sm:flex items-center gap-1.5 bg-[#173a2e] hover:bg-[#122e24] text-white text-xs font-medium px-4 py-2 rounded-full transition shadow-sm"
+            >
+              <span>Plan My Trip</span>
+              <ArrowRight size={14} />
+            </Link>
+            <button aria-label="User Profile" className="p-1.5 text-stone-700 hover:text-stone-900">
+              <User size={20} />
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative w-full h-[500px] sm:h-[560px] bg-stone-900 overflow-hidden">
         <Image
@@ -177,9 +242,7 @@ export default function FamilyTripPage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-stone-200 max-w-md font-light leading-relaxed drop-shadow">
-            Discover Sri Lanka&apos;s most family-friendly destinations, safe
-            experiences and fun-filled activities — designed for all ages.
-            Create moments your family will cherish forever.
+            Discover Sri Lanka&apos;s most family-friendly destinations, safe experiences and fun-filled activities — designed for all ages. Create moments your family will cherish forever.
           </p>
 
           <div className="flex flex-wrap items-center gap-6 text-xs text-stone-300 pt-2">
@@ -210,6 +273,7 @@ export default function FamilyTripPage() {
       {/* Filter / Search Bar */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 -mt-10 relative z-20">
         <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
+          
           {/* Destination */}
           <div className="p-2 border-b sm:border-b-0 sm:border-r border-stone-200">
             <label className="text-[10px] uppercase font-bold text-stone-400 block mb-1">
@@ -295,6 +359,7 @@ export default function FamilyTripPage() {
               <ArrowRight size={14} />
             </button>
           </div>
+
         </div>
       </section>
 
@@ -309,8 +374,7 @@ export default function FamilyTripPage() {
               Top Places for Family Adventures
             </h2>
             <p className="text-xs text-stone-500 mt-1">
-              From beach getaways to wildlife safaris, explore Sri Lanka&apos;s
-              best family-friendly destinations.
+              From beach getaways to wildlife safaris, explore Sri Lanka&apos;s best family-friendly destinations.
             </p>
           </div>
           <Link
@@ -346,9 +410,7 @@ export default function FamilyTripPage() {
                   >
                     <Heart
                       size={14}
-                      className={
-                        isFav ? "fill-red-500 text-red-500" : "text-white"
-                      }
+                      className={isFav ? "fill-red-500 text-red-500" : "text-white"}
                     />
                   </button>
                   <span className="absolute top-3 left-3 bg-sky-500/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
@@ -404,6 +466,7 @@ export default function FamilyTripPage() {
 
       {/* Middle Section: Why Choose Lankara & Popular Family Experiences */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
         {/* Left Image Box */}
         <div className="lg:col-span-4 relative rounded-2xl overflow-hidden shadow-md min-h-[300px] flex flex-col justify-end p-6 text-white group">
           <Image
@@ -524,10 +587,7 @@ export default function FamilyTripPage() {
                   </p>
                 </div>
               </div>
-              <ChevronRight
-                size={14}
-                className="text-stone-400 group-hover:translate-x-0.5 transition"
-              />
+              <ChevronRight size={14} className="text-stone-400 group-hover:translate-x-0.5 transition" />
             </div>
 
             <div className="flex items-center justify-between p-2.5 rounded-xl border border-stone-100 hover:bg-stone-50 transition cursor-pointer group">
@@ -544,10 +604,7 @@ export default function FamilyTripPage() {
                   </p>
                 </div>
               </div>
-              <ChevronRight
-                size={14}
-                className="text-stone-400 group-hover:translate-x-0.5 transition"
-              />
+              <ChevronRight size={14} className="text-stone-400 group-hover:translate-x-0.5 transition" />
             </div>
 
             <div className="flex items-center justify-between p-2.5 rounded-xl border border-stone-100 hover:bg-stone-50 transition cursor-pointer group">
@@ -564,16 +621,13 @@ export default function FamilyTripPage() {
                   </p>
                 </div>
               </div>
-              <ChevronRight
-                size={14}
-                className="text-stone-400 group-hover:translate-x-0.5 transition"
-              />
+              <ChevronRight size={14} className="text-stone-400 group-hover:translate-x-0.5 transition" />
             </div>
 
             <div className="flex items-center justify-between p-2.5 rounded-xl border border-stone-100 hover:bg-stone-50 transition cursor-pointer group">
               <div className="flex items-center gap-2.5">
                 <div className="p-1.5 bg-emerald-50 text-emerald-700 rounded-lg">
-                  <TreePalm size={16} />
+                  <TreePalms size={16} />
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-stone-900 group-hover:text-emerald-800 transition">
@@ -584,10 +638,7 @@ export default function FamilyTripPage() {
                   </p>
                 </div>
               </div>
-              <ChevronRight
-                size={14}
-                className="text-stone-400 group-hover:translate-x-0.5 transition"
-              />
+              <ChevronRight size={14} className="text-stone-400 group-hover:translate-x-0.5 transition" />
             </div>
 
             <div className="flex items-center justify-between p-2.5 rounded-xl border border-stone-100 hover:bg-stone-50 transition cursor-pointer group">
@@ -604,13 +655,11 @@ export default function FamilyTripPage() {
                   </p>
                 </div>
               </div>
-              <ChevronRight
-                size={14}
-                className="text-stone-400 group-hover:translate-x-0.5 transition"
-              />
+              <ChevronRight size={14} className="text-stone-400 group-hover:translate-x-0.5 transition" />
             </div>
           </div>
         </div>
+
       </section>
 
       {/* Real Families. Amazing Journeys. */}
@@ -624,8 +673,7 @@ export default function FamilyTripPage() {
               Real Families. Amazing Journeys.
             </h2>
             <p className="text-xs text-stone-500 mt-1">
-              See how other families are exploring Sri Lanka and creating
-              unforgettable memories.
+              See how other families are exploring Sri Lanka and creating unforgettable memories.
             </p>
           </div>
           <Link
@@ -659,12 +707,8 @@ export default function FamilyTripPage() {
                     />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-stone-900">
-                      {item.family}
-                    </h4>
-                    <span className="text-[10px] text-stone-400">
-                      {item.location}
-                    </span>
+                    <h4 className="text-xs font-bold text-stone-900">{item.family}</h4>
+                    <span className="text-[10px] text-stone-400">{item.location}</span>
                   </div>
                 </div>
 
@@ -701,8 +745,7 @@ export default function FamilyTripPage() {
               Plan Your Perfect Family Getaway to Sri Lanka
             </h2>
             <p className="text-xs sm:text-sm text-stone-300 font-light leading-relaxed">
-              Create personalized itineraries, explore family-friendly
-              destinations, and make memories that last a lifetime.
+              Create personalized itineraries, explore family-friendly destinations, and make memories that last a lifetime.
             </p>
           </div>
 
@@ -720,6 +763,8 @@ export default function FamilyTripPage() {
           </div>
         </div>
       </section>
+
+
     </div>
   );
-}
+}v
