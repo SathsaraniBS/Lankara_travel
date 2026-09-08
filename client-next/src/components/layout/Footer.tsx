@@ -6,10 +6,11 @@ import Link from "next/link";
 import {
   Mail,
   ChevronRight,
-//   Smartphone,
-//   Apple,
+  // Smartphone,
+  // Apple,
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaYoutube, FaTwitter } from "react-icons/fa";
+
 export default function Footer() {
   const [email, setEmail] = useState("");
 
@@ -66,14 +67,7 @@ export default function Footer() {
             </p>
 
             {/* Social Links */}
-            {/* <div className="flex items-center gap-2 pt-2">
-              <a
-                href="#"
-                aria-label="Instagram"
-                className="w-8 h-8 rounded-full bg-emerald-900/60 border border-emerald-700/50 flex items-center justify-center text-stone-300 hover:text-white hover:bg-emerald-800 transition"
-              >
-                <Instagram size={14} />
-              </a> */}
+            <div className="flex items-center gap-2 pt-2">
               <a
                 href="#"
                 aria-label="Facebook"
@@ -257,9 +251,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 5: Stay Inspired & App Download */}
+          {/* Column 5: Stay Inspired */}
           <div className="lg:col-span-2 space-y-6 border-t md:border-t-0 md:border-l border-emerald-800/40 pt-6 md:pt-0 md:pl-6">
-            
             {/* Newsletter */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
@@ -291,46 +284,6 @@ export default function Footer() {
                 </button>
               </form>
             </div>
-
-            {/* App Downloads */}
-            {/* <div className="space-y-2.5 pt-2 border-t border-emerald-800/30">
-              <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-                <Smartphone size={14} />
-                <span>Download Our App</span>
-              </div>
-              <p className="text-[11px] text-stone-300 font-light">
-                Plan your Sri Lanka journey on the go.
-              </p>
-
-              <div className="flex flex-col gap-2 pt-1"> */}
-                {/* App Store Button */}
-                {/* <a
-                  href="#"
-                  className="flex items-center gap-2.5 bg-emerald-950/90 border border-emerald-700/60 rounded-xl px-3 py-1.5 text-white hover:bg-emerald-900 transition shadow-sm"
-                >
-                  <Apple size={18} className="text-white shrink-0" />
-                  <div className="flex flex-col text-left leading-none">
-                    <span className="text-[9px] text-stone-400">Download on the</span>
-                    <span className="text-xs font-semibold">App Store</span>
-                  </div>
-                </a> */}
-
-                {/* Google Play Button */}
-                {/* <a
-                  href="#"
-                  className="flex items-center gap-2.5 bg-emerald-950/90 border border-emerald-700/60 rounded-xl px-3 py-1.5 text-white hover:bg-emerald-900 transition shadow-sm"
-                >
-                  <div className="w-4 h-4 flex items-center justify-center text-amber-400 font-bold text-xs shrink-0">
-                    ▶
-                  </div>
-                  <div className="flex flex-col text-left leading-none">
-                    <span className="text-[9px] text-stone-400">GET IT ON</span>
-                    <span className="text-xs font-semibold">Google Play</span>
-                  </div>
-                </a>
-              </div>
-            </div> */}
-
           </div>
 
         </div>
