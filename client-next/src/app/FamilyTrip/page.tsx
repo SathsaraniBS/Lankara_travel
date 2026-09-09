@@ -3,29 +3,29 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-// import {
-//   MapPin,
-//   Calendar,
-//   Users,
-//   Compass,
-//   ArrowRight,
-//   ShieldCheck,
-//   Smile,
-//   BookOpen,
-//   Sliders,
-//   ChevronRight,
-//   Star,
-//   Instagram,
-//   Facebook,
-//   Twitter,
-//   Sparkles,
-//   Award,
-//   Headphones,
-//   Utensils,
-//   TreePalms,
-//   Landmark,
-//   Palmtree,
-// } from "lucide-react";
+import {
+  MapPin,
+  Calendar,
+  Users,
+  Compass,
+  ArrowRight,
+  ShieldCheck,
+  Smile,
+  BookOpen,
+  Sliders,
+  ChevronRight,
+  Star,
+  Sparkles,
+  Award,
+  Headphones,
+  Utensils,
+  Landmark,
+  Palmtree,
+  Trees as TreePalms,
+  Search,
+  Heart,
+  User,
+} from "lucide-react";
 
 interface DestinationCard {
   id: string;
@@ -157,67 +157,6 @@ export default function FamilyTripPage() {
   return (
     <div className="min-h-screen bg-[#fcfbf9] text-zinc-800 font-sans selection:bg-amber-200">
       
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-50 bg-[#fcfbf9]/90 backdrop-blur-md border-b border-stone-200 px-4 sm:px-8 py-3 transition">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-[#173a2e] flex items-center justify-center text-white font-serif font-bold text-xs">
-              L
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-lg font-bold tracking-tight text-stone-900 leading-none">
-                Lankara
-              </span>
-              <span className="text-[9px] uppercase tracking-widest text-emerald-800 font-medium">
-                Travels
-              </span>
-            </div>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-stone-600">
-            <Link href="/" className="hover:text-stone-900 transition">
-              Home
-            </Link>
-            <Link href="/#destinations" className="hover:text-stone-900 transition">
-              Explore
-            </Link>
-            <Link href="/#destinations" className="hover:text-stone-900 transition">
-              Destinations
-            </Link>
-            <Link href="/ArtandCulture" className="hover:text-stone-900 transition">
-              Art & Culture
-            </Link>
-            <Link href="/GroupTrip" className="hover:text-stone-900 transition">
-              Group Trips
-            </Link>
-            <Link href="/AdventureTrip" className="hover:text-stone-900 transition">
-              Experiences
-            </Link>
-            <Link href="#" className="hover:text-stone-900 transition">
-              Journal
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <button aria-label="Search" className="p-2 text-stone-600 hover:text-stone-900">
-              <Search size={18} />
-            </button>
-            <button aria-label="Favorites" className="p-2 text-stone-600 hover:text-stone-900">
-              <Heart size={18} />
-            </button>
-            <Link
-              href="/FamilyTrip"
-              className="hidden sm:flex items-center gap-1.5 bg-[#173a2e] hover:bg-[#122e24] text-white text-xs font-medium px-4 py-2 rounded-full transition shadow-sm"
-            >
-              <span>Plan My Trip</span>
-              <ArrowRight size={14} />
-            </Link>
-            <button aria-label="User Profile" className="p-1.5 text-stone-700 hover:text-stone-900">
-              <User size={20} />
-            </button>
-          </div>
-        </div>
-      </header>
 
       {/* Hero Section */}
       <section className="relative w-full h-[500px] sm:h-[560px] bg-stone-900 overflow-hidden">
@@ -273,7 +212,6 @@ export default function FamilyTripPage() {
       {/* Filter / Search Bar */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 -mt-10 relative z-20">
         <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
-          
           {/* Destination */}
           <div className="p-2 border-b sm:border-b-0 sm:border-r border-stone-200">
             <label className="text-[10px] uppercase font-bold text-stone-400 block mb-1">
@@ -359,7 +297,6 @@ export default function FamilyTripPage() {
               <ArrowRight size={14} />
             </button>
           </div>
-
         </div>
       </section>
 
@@ -466,7 +403,6 @@ export default function FamilyTripPage() {
 
       {/* Middle Section: Why Choose Lankara & Popular Family Experiences */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        
         {/* Left Image Box */}
         <div className="lg:col-span-4 relative rounded-2xl overflow-hidden shadow-md min-h-[300px] flex flex-col justify-end p-6 text-white group">
           <Image
@@ -659,7 +595,6 @@ export default function FamilyTripPage() {
             </div>
           </div>
         </div>
-
       </section>
 
       {/* Real Families. Amazing Journeys. */}
@@ -763,8 +698,6 @@ export default function FamilyTripPage() {
           </div>
         </div>
       </section>
-
-
     </div>
   );
-}v
+}
