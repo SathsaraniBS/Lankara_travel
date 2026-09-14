@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Search,
   Heart,
-  User,
   MapPin,
   Calendar,
   Car,
@@ -15,12 +13,7 @@ import {
   Compass,
   Clock,
   Navigation,
-  CheckCircle2,
   Sliders,
-  Map,
-  Instagram,
-  Facebook,
-  Twitter,
   Sparkles,
   Camera,
   Users,
@@ -92,7 +85,6 @@ export default function RoadTripPage() {
 
   return (
     <div className="min-h-screen bg-[#fcfbf9] text-zinc-800 font-sans selection:bg-amber-200">
-
       {/* Hero Section */}
       <section className="relative w-full h-[500px] sm:h-[560px] bg-stone-900 overflow-hidden">
         <Image
@@ -452,7 +444,7 @@ export default function RoadTripPage() {
                   </span>
                 </div>
                 {/* SVG Route Line */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none stroke-emerald-800 stroke-[2] stroke-dasharray-4">
+                <svg className="absolute inset-0 w-full h-full pointer-events-none stroke-emerald-800 stroke-[2]">
                   <path d="M 35 15 Q 110 45, 230 75" fill="none" strokeDasharray="3 3" />
                 </svg>
               </div>
@@ -573,8 +565,6 @@ export default function RoadTripPage() {
           </div>
         </div>
       </section>
-
-
     </div>
   );
 }
