@@ -10,6 +10,8 @@ from routers.flights import router as flights_router
 from routers.hotels import router as hotels_router
 from routers.bookings import router as bookings_router
 from routers.payments import router as payments_router
+from routers.road_trips import router as road_trips_router
+from routers import safari_router
 
 app = FastAPI(
     title="Lankara Travel API",
@@ -36,7 +38,8 @@ app.include_router(flights_router)
 app.include_router(hotels_router)
 app.include_router(bookings_router)
 app.include_router(payments_router)
-
+app.include_router(road_trips_router)
+app.include_router(safari_router.router)  
 @app.get("/")
 async def root():
     return {"message": "Welcome to Lankara Travel API"}
