@@ -4,21 +4,16 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Search,
-  Heart,
-  User,
   MapPin,
   Calendar,
   Users,
   ShieldCheck,
   Compass,
   ArrowRight,
+  Heart,
   Star,
-  CheckCircle2,
   DollarSign,
   UserCheck,
-  ChevronRight,
-  Sparkles,
 } from "lucide-react";
 
 interface GroupTripCard {
@@ -137,7 +132,6 @@ export default function GroupTripPage() {
 
   return (
     <div className="min-h-screen bg-[#fcfbf9] text-zinc-800 font-sans selection:bg-emerald-200">
-      
       {/* Hero Section */}
       <section className="relative w-full h-[500px] sm:h-[560px] bg-stone-900 overflow-hidden">
         <Image
@@ -188,7 +182,6 @@ export default function GroupTripPage() {
       {/* Filter / Search Bar */}
       <section className="max-w-7xl mx-auto px-4 sm:px-8 -mt-10 relative z-20">
         <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
-          
           {/* Destination */}
           <div className="p-2 border-b sm:border-b-0 sm:border-r border-stone-200">
             <label className="text-[10px] uppercase font-bold text-stone-400 block mb-1">
@@ -274,7 +267,6 @@ export default function GroupTripPage() {
               <ArrowRight size={14} />
             </button>
           </div>
-
         </div>
       </section>
 
@@ -384,7 +376,6 @@ export default function GroupTripPage() {
       {/* Why Join a Group Trip Banner */}
       <section className="bg-stone-100/70 border-y border-stone-200 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
           {/* Left Image Collage */}
           <div className="lg:col-span-5 relative h-72 sm:h-80 rounded-2xl overflow-hidden shadow-md">
             <Image
@@ -461,7 +452,6 @@ export default function GroupTripPage() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -566,8 +556,6 @@ export default function GroupTripPage() {
           </div>
         </div>
       </section>
-
-
     </div>
   );
 }
