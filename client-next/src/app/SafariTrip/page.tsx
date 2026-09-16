@@ -18,6 +18,8 @@ import {
   Leaf,
   Headphones,
 } from "lucide-react";
+import Footer from "@/components/layout/Footer";
+
 
 interface SafariDestination {
   id: string;
@@ -195,6 +197,7 @@ export default function SafariTripPage() {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-[#fcfbf9] text-zinc-800 font-sans selection:bg-amber-200">
       
 
@@ -664,7 +667,8 @@ export default function SafariTripPage() {
           </div>
         </div>
       </section>
-
     </div>
+    <Footer/>
+  </>
   );
 }

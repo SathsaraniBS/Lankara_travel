@@ -226,5 +226,7 @@ export default function HotelsPage() {
 
       </div>
     </div>
+     <Footer />
+        </>
   );
 }
