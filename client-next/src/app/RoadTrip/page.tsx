@@ -18,6 +18,7 @@ import {
   Camera,
   Users,
 } from "lucide-react";
+import Footer from "@/components/layout/Footer";
 
 interface RoadTripCard {
   id: string;
@@ -84,6 +85,7 @@ export default function RoadTripPage() {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-[#fcfbf9] text-zinc-800 font-sans selection:bg-amber-200">
       {/* Hero Section */}
       <section className="relative w-full h-[500px] sm:h-[560px] bg-stone-900 overflow-hidden">
@@ -566,5 +568,7 @@ export default function RoadTripPage() {
         </div>
       </section>
     </div>
+    <Footer/>
+  </>
   );
 }

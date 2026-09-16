@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Mail, Phone, MapPin, Send, CheckCircle2, Loader2 } from "lucide-react";
+import Footer from "@/components/layout/Footer";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ export default function ContactPage() {
   };
 
   return (
+    <>
     <main className="min-h-screen bg-slate-950 text-slate-100 pt-28 pb-16 px-6 sm:px-12">
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Header Section */}
@@ -193,5 +195,7 @@ export default function ContactPage() {
         </div>
       </div>
     </main>
+    <Footer />
+    </>
   );
 }

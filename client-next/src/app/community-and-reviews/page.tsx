@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Star, MapPin, Smile, Users, Award, MessageSquareQuote, ChevronLeft, ChevronRight } from "lucide-react";
+import Footer from "@/components/layout/Footer";
 
 interface Review {
   id: number;
@@ -101,235 +102,235 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <div className="relative min-h-screen text-slate-800 pt-24 pb-16 px-4 sm:px-6 overflow-hidden">
-      
-      {/* Background Image & Overlay */}
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src="/images/backimage1.jpg"
-          alt="Travel Background"
-          fill
-          priority
-          className="object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-xs" />
-      </div>
+    <>
+      <div className="relative min-h-screen text-slate-800 pt-24 pb-16 px-4 sm:px-6 overflow-hidden">
 
-      <div className="max-w-6xl mx-auto space-y-12 relative z-10">
-        
-        {/* Header Section */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
-            Loved By Over <span className="text-blue-600">Thousand Travelers</span>
-          </h1>
-          <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto font-medium">
-            Real stories from real travelers who explored, experienced, and created
-            unforgettable memories with Lankara Travel.
-          </p>
+        {/* Background Image & Overlay */}
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/images/backimage1.jpg"
+            alt="Travel Background"
+            fill
+            priority
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-xs" />
         </div>
 
-        {/* Circular Testimonials Layout */}
-        <div className="relative min-h-[520px] flex items-center justify-center py-8">
-          
-          {/* Main Featured Center Review */}
-          <div className="z-10 bg-white/95 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100 max-w-lg text-center flex flex-col items-center space-y-4 transition-all duration-300 relative">
-            
-            {/* Mobile Nav Arrows */}
-            <button
-              onClick={handlePrev}
-              className="lg:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full border border-slate-200 text-slate-600 hover:text-blue-600 cursor-pointer"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              onClick={handleNext}
-              className="lg:hidden absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full border border-slate-200 text-slate-600 hover:text-blue-600 cursor-pointer"
-            >
-              <ChevronRight size={20} />
-            </button>
+        <div className="max-w-6xl mx-auto space-y-12 relative z-10">
 
-            <div className="relative">
-              <Image
-                src={selectedReview.avatar}
-                alt={selectedReview.name}
-                width={110}
-                height={110}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover ring-4 ring-blue-500/20"
-              />
-              <div className="absolute bottom-1 right-1 bg-emerald-500 text-white rounded-full p-1">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                </svg>
+          {/* Header Section */}
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
+              Loved By Over <span className="text-blue-600">Thousand Travelers</span>
+            </h1>
+            <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto font-medium">
+              Real stories from real travelers who explored, experienced, and created
+              unforgettable memories with Lankara Travel.
+            </p>
+          </div>
+
+          {/* Circular Testimonials Layout */}
+          <div className="relative min-h-[520px] flex items-center justify-center py-8">
+
+            {/* Main Featured Center Review */}
+            <div className="z-10 bg-white/95 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-100 max-w-lg text-center flex flex-col items-center space-y-4 transition-all duration-300 relative">
+
+              {/* Mobile Nav Arrows */}
+              <button
+                onClick={handlePrev}
+                className="lg:hidden absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full border border-slate-200 text-slate-600 hover:text-blue-600 cursor-pointer"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                onClick={handleNext}
+                className="lg:hidden absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full border border-slate-200 text-slate-600 hover:text-blue-600 cursor-pointer"
+              >
+                <ChevronRight size={20} />
+              </button>
+
+              <div className="relative">
+                <Image
+                  src={selectedReview.avatar}
+                  alt={selectedReview.name}
+                  width={110}
+                  height={110}
+                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover ring-4 ring-blue-500/20"
+                />
+                <div className="absolute bottom-1 right-1 bg-emerald-500 text-white rounded-full p-1">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">{selectedReview.name}</h3>
+                <p className="text-xs text-slate-500 flex items-center justify-center gap-1 mt-0.5">
+                  <MapPin size={12} className="text-blue-500" /> {selectedReview.location}
+                </p>
+              </div>
+
+              <p className="text-slate-600 text-sm leading-relaxed italic px-2">
+                &ldquo;{selectedReview.quote}&rdquo;
+              </p>
+
+              <div className="flex gap-1 text-amber-400">
+                {Array.from({ length: selectedReview.rating }).map((_, i) => (
+                  <Star key={i} size={18} fill="currentColor" />
+                ))}
               </div>
             </div>
 
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">{selectedReview.name}</h3>
-              <p className="text-xs text-slate-500 flex items-center justify-center gap-1 mt-0.5">
-                <MapPin size={12} className="text-blue-500" /> {selectedReview.location}
-              </p>
-            </div>
-
-            <p className="text-slate-600 text-sm leading-relaxed italic px-2">
-              &ldquo;{selectedReview.quote}&rdquo;
-            </p>
-
-            <div className="flex gap-1 text-amber-400">
-              {Array.from({ length: selectedReview.rating }).map((_, i) => (
-                <Star key={i} size={18} fill="currentColor" />
+            {/* Left Side Small Reviews (Desktop) */}
+            <div className="hidden lg:flex flex-col justify-between absolute left-0 h-full py-4 space-y-6">
+              {reviewsData.slice(1, 4).map((review) => (
+                <div
+                  key={review.id}
+                  onClick={() => setSelectedReview(review)}
+                  className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
+                    }`}
+                >
+                  <Image
+                    src={review.avatar}
+                    alt={review.name}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 rounded-full object-cover shrink-0"
+                  />
+                  <div className="text-left text-xs">
+                    <h4 className="font-bold text-slate-900">{review.name}</h4>
+                    <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
+                      <MapPin size={10} className="text-blue-500" /> {review.location}
+                    </p>
+                    <div className="flex text-amber-400 my-0.5">
+                      {Array.from({ length: review.rating }).map((_, i) => (
+                        <Star key={i} size={10} fill="currentColor" />
+                      ))}
+                    </div>
+                    <p className="text-slate-600 line-clamp-1">{review.quote}</p>
+                  </div>
+                </div>
               ))}
             </div>
+
+            {/* Right Side Small Reviews (Desktop) */}
+            <div className="hidden lg:flex flex-col justify-between absolute right-0 h-full py-4 space-y-6">
+              {reviewsData.slice(4, 7).map((review) => (
+                <div
+                  key={review.id}
+                  onClick={() => setSelectedReview(review)}
+                  className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
+                    }`}
+                >
+                  <Image
+                    src={review.avatar}
+                    alt={review.name}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 rounded-full object-cover shrink-0"
+                  />
+                  <div className="text-left text-xs">
+                    <h4 className="font-bold text-slate-900">{review.name}</h4>
+                    <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
+                      <MapPin size={10} className="text-blue-500" /> {review.location}
+                    </p>
+                    <div className="flex text-amber-400 my-0.5">
+                      {Array.from({ length: review.rating }).map((_, i) => (
+                        <Star key={i} size={10} fill="currentColor" />
+                      ))}
+                    </div>
+                    <p className="text-slate-600 line-clamp-1">{review.quote}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom Center Small Review (Desktop) */}
+            <div className="hidden lg:block absolute bottom-0 left-1/2 -translate-x-1/2">
+              {reviewsData.slice(7, 8).map((review) => (
+                <div
+                  key={review.id}
+                  onClick={() => setSelectedReview(review)}
+                  className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
+                    }`}
+                >
+                  <Image
+                    src={review.avatar}
+                    alt={review.name}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 rounded-full object-cover shrink-0"
+                  />
+                  <div className="text-left text-xs">
+                    <h4 className="font-bold text-slate-900">{review.name}</h4>
+                    <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
+                      <MapPin size={10} className="text-blue-500" /> {review.location}
+                    </p>
+                    <div className="flex text-amber-400 my-0.5">
+                      {Array.from({ length: review.rating }).map((_, i) => (
+                        <Star key={i} size={10} fill="currentColor" />
+                      ))}
+                    </div>
+                    <p className="text-slate-600 line-clamp-1">{review.quote}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
           </div>
 
-          {/* Left Side Small Reviews (Desktop) */}
-          <div className="hidden lg:flex flex-col justify-between absolute left-0 h-full py-4 space-y-6">
-            {reviewsData.slice(1, 4).map((review) => (
-              <div
-                key={review.id}
-                onClick={() => setSelectedReview(review)}
-                className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${
-                  selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
-                }`}
-              >
-                <Image
-                  src={review.avatar}
-                  alt={review.name}
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 rounded-full object-cover shrink-0"
-                />
-                <div className="text-left text-xs">
-                  <h4 className="font-bold text-slate-900">{review.name}</h4>
-                  <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
-                    <MapPin size={10} className="text-blue-500" /> {review.location}
-                  </p>
-                  <div className="flex text-amber-400 my-0.5">
-                    {Array.from({ length: review.rating }).map((_, i) => (
-                      <Star key={i} size={10} fill="currentColor" />
-                    ))}
-                  </div>
-                  <p className="text-slate-600 line-clamp-1">{review.quote}</p>
-                </div>
+          {/* Stats Metrics Bar */}
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/70 p-6 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
+                <Smile size={24} />
               </div>
-            ))}
-          </div>
+              <div className="text-left">
+                <p className="text-lg font-extrabold text-slate-900">4.8/5</p>
+                <p className="text-xs text-slate-500">Average Rating</p>
+                <p className="text-[10px] text-slate-400">Based on 2,350+ reviews</p>
+              </div>
+            </div>
 
-          {/* Right Side Small Reviews (Desktop) */}
-          <div className="hidden lg:flex flex-col justify-between absolute right-0 h-full py-4 space-y-6">
-            {reviewsData.slice(4, 7).map((review) => (
-              <div
-                key={review.id}
-                onClick={() => setSelectedReview(review)}
-                className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${
-                  selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
-                }`}
-              >
-                <Image
-                  src={review.avatar}
-                  alt={review.name}
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 rounded-full object-cover shrink-0"
-                />
-                <div className="text-left text-xs">
-                  <h4 className="font-bold text-slate-900">{review.name}</h4>
-                  <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
-                    <MapPin size={10} className="text-blue-500" /> {review.location}
-                  </p>
-                  <div className="flex text-amber-400 my-0.5">
-                    {Array.from({ length: review.rating }).map((_, i) => (
-                      <Star key={i} size={10} fill="currentColor" />
-                    ))}
-                  </div>
-                  <p className="text-slate-600 line-clamp-1">{review.quote}</p>
-                </div>
+            <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
+                <Users size={24} />
               </div>
-            ))}
-          </div>
+              <div className="text-left">
+                <p className="text-lg font-extrabold text-slate-900">10,000+</p>
+                <p className="text-xs text-slate-500">Happy Travelers</p>
+                <p className="text-[10px] text-slate-400">Joined with us</p>
+              </div>
+            </div>
 
-          {/* Bottom Center Small Review (Desktop) */}
-          <div className="hidden lg:block absolute bottom-0 left-1/2 -translate-x-1/2">
-            {reviewsData.slice(7, 8).map((review) => (
-              <div
-                key={review.id}
-                onClick={() => setSelectedReview(review)}
-                className={`flex items-center gap-3 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200/60 max-w-xs cursor-pointer hover:shadow-md transition ${
-                  selectedReview.id === review.id ? "ring-2 ring-blue-500" : ""
-                }`}
-              >
-                <Image
-                  src={review.avatar}
-                  alt={review.name}
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 rounded-full object-cover shrink-0"
-                />
-                <div className="text-left text-xs">
-                  <h4 className="font-bold text-slate-900">{review.name}</h4>
-                  <p className="text-[11px] text-slate-500 flex items-center gap-0.5">
-                    <MapPin size={10} className="text-blue-500" /> {review.location}
-                  </p>
-                  <div className="flex text-amber-400 my-0.5">
-                    {Array.from({ length: review.rating }).map((_, i) => (
-                      <Star key={i} size={10} fill="currentColor" />
-                    ))}
-                  </div>
-                  <p className="text-slate-600 line-clamp-1">{review.quote}</p>
-                </div>
+            <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
+              <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
+                <Award size={24} />
               </div>
-            ))}
+              <div className="text-left">
+                <p className="text-lg font-extrabold text-slate-900">15,000+</p>
+                <p className="text-xs text-slate-500">Trips Completed</p>
+                <p className="text-[10px] text-slate-400">Successful journeys</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 justify-center">
+              <div className="p-3 bg-sky-50 text-sky-600 rounded-2xl">
+                <MessageSquareQuote size={24} />
+              </div>
+              <div className="text-left">
+                <p className="text-lg font-extrabold text-slate-900">98%</p>
+                <p className="text-xs text-slate-500">Recommendation Rate</p>
+                <p className="text-[10px] text-slate-400">Would recommend us</p>
+              </div>
+            </div>
           </div>
 
         </div>
-
-        {/* Stats Metrics Bar */}
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/70 p-6 shadow-sm grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
-              <Smile size={24} />
-            </div>
-            <div className="text-left">
-              <p className="text-lg font-extrabold text-slate-900">4.8/5</p>
-              <p className="text-xs text-slate-500">Average Rating</p>
-              <p className="text-[10px] text-slate-400">Based on 2,350+ reviews</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
-            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
-              <Users size={24} />
-            </div>
-            <div className="text-left">
-              <p className="text-lg font-extrabold text-slate-900">10,000+</p>
-              <p className="text-xs text-slate-500">Happy Travelers</p>
-              <p className="text-[10px] text-slate-400">Joined with us</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 justify-center md:border-r border-slate-100 pr-4">
-            <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
-              <Award size={24} />
-            </div>
-            <div className="text-left">
-              <p className="text-lg font-extrabold text-slate-900">15,000+</p>
-              <p className="text-xs text-slate-500">Trips Completed</p>
-              <p className="text-[10px] text-slate-400">Successful journeys</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 justify-center">
-            <div className="p-3 bg-sky-50 text-sky-600 rounded-2xl">
-              <MessageSquareQuote size={24} />
-            </div>
-            <div className="text-left">
-              <p className="text-lg font-extrabold text-slate-900">98%</p>
-              <p className="text-xs text-slate-500">Recommendation Rate</p>
-              <p className="text-[10px] text-slate-400">Would recommend us</p>
-            </div>
-          </div>
-        </div>
-
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
