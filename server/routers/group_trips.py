@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from database import get_db
 import models.group_trip as models
 
-router = APIRouter(
+group_trips_router = APIRouter(
     prefix="/group-trips",
     tags=["Group Trips"]
 )
@@ -39,7 +39,7 @@ class TestimonialSchema(BaseModel):
 
 # --- Endpoints ---
 
-@router.get("", response_model=List[GroupTripSchema])
+@group_trips_router.get("", response_model=List[GroupTripSchema])
 def get_group_trips(
     destination: Optional[str] = Query(None),
     trip_type: Optional[str] = Query(None),
@@ -58,6 +58,6 @@ def get_group_trips(
     return query.all()
 
 
-@router.get("/testimonials", response_model=List[TestimonialSchema])
+@group_trips_router.get("/testimonials", response_model=List[TestimonialSchema])
 def get_testimonials(db: Session = Depends(get_db)):
     return db.query(models.Testimonial).all()
