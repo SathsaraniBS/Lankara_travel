@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from database import get_db
 import models.safari as models
 
-router = APIRouter(
+safari_router = APIRouter(
     prefix="/safari",
     tags=["Safari"]
 )
@@ -50,9 +50,7 @@ class SafariExperienceSchema(BaseModel):
 
 # --- Endpoints ---
 
-@app_router := router
-
-@app_router.get("/destinations", response_model=List[SafariDestinationSchema])
+@safari_router.get("/destinations", response_model=List[SafariDestinationSchema])
 def get_destinations(
     destination: Optional[str] = Query(None),
     trip_type: Optional[str] = Query(None),
@@ -85,7 +83,7 @@ def get_destinations(
         for d in results
     ]
 
-@app_router.get("/categories", response_model=List[WildlifeCategorySchema])
+@safari_router.get("/categories", response_model=List[WildlifeCategorySchema])
 def get_categories(db: Session = Depends(get_db)):
     categories = db.query(models.WildlifeCategory).all()
     return [
@@ -98,7 +96,7 @@ def get_categories(db: Session = Depends(get_db)):
         for c in categories
     ]
 
-@app_router.get("/experiences", response_model=List[SafariExperienceSchema])
+@safari_router.get("/experiences", response_model=List[SafariExperienceSchema])
 def get_experiences(db: Session = Depends(get_db)):
     experiences = db.query(models.SafariExperience).all()
     return [
