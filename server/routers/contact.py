@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
-from sqlalchemy.orm import Session
-from database import get_db
-import models.contact as models
-import schemas.contact as schemas
+import os
 import smtplib
 from email.message import EmailMessage
-import os
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
+from sqlalchemy.orm import Session
+
+from database import get_db
+from models import contact as models
+from schemas import contact as schemas
 
 router = APIRouter(
     prefix="/api/contact",
@@ -69,6 +70,7 @@ def submit_contact_form(
 
     except Exception as e:
         db.rollback()
+        print(f"Error submitting contact form: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to submit contact message."
