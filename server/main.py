@@ -13,6 +13,7 @@ from routers.payments import router as payments_router
 from routers.road_trips import router as road_trips_router
 from routers.safari import safari_router
 from routers.group_trips import group_trips_router
+from routers.contact import router as contact_router  # Contact router එක එකතු කරන ලදී
 
 app = FastAPI(
     title="Lankara Travel API",
@@ -23,7 +24,10 @@ app = FastAPI(
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,6 +46,8 @@ app.include_router(payments_router)
 app.include_router(road_trips_router)
 app.include_router(safari_router)  
 app.include_router(group_trips_router)
+app.include_router(contact_router)  
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to Lankara Travel API"}
@@ -69,18 +75,6 @@ async def create_review(
                 buffer.write(await image.read())
 
             image_url = f"/static/uploads/reviews/{image.filename}"
-
-        # TODO: Insert review data into PostgreSQL via SQLAlchemy session
-        # review = Review(
-        #     name=name,
-        #     location=location,
-        #     rating=rating,
-        #     quote=quote,
-        #     destination_id=destination_id,
-        #     image_url=image_url
-        # )
-        # db.add(review)
-        # db.commit()
 
         return {
             "status": "success",
