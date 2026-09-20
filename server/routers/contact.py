@@ -13,7 +13,6 @@ router = APIRouter(
     tags=["Contact"]
 )
 
-# Optional helper function for background email sending
 def send_contact_email(name: str, email: str, subject: str, message: str):
     smtp_host = os.getenv("SMTP_HOST", "smtp.gmail.com")
     smtp_port = int(os.getenv("SMTP_PORT", 465))
@@ -40,7 +39,8 @@ def send_contact_email(name: str, email: str, subject: str, message: str):
         print(f"Failed to send email: {e}")
 
 
-@router.post("", response_model=schemas.ContactResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def submit_contact_form(
     payload: schemas.ContactCreate,
     background_tasks: BackgroundTasks,
@@ -56,8 +56,9 @@ def submit_contact_form(
         )
         db.add(db_message)
         db.commit()
+        db.refresh(db_message) 
 
-        # 2. Trigger background email task (non-blocking)
+        # 2. Trigger background email task
         background_tasks.add_task(
             send_contact_email,
             payload.name,
@@ -73,5 +74,5 @@ def submit_contact_form(
         print(f"Error submitting contact form: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to submit contact message."
+            detail=f"Failed to submit contact message: {str(e)}"
         )
