@@ -13,7 +13,7 @@ from routers.payments import router as payments_router
 from routers.road_trips import router as road_trips_router
 from routers.safari import safari_router
 from routers.group_trips import group_trips_router
-from routers.contact import router as contact_router  # Contact router එක එකතු කරන ලදී
+from routers.contact import router as contact_router  
 
 app = FastAPI(
     title="Lankara Travel API",

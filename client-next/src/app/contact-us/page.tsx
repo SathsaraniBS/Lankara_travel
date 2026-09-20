@@ -28,9 +28,10 @@ export default function ContactPage() {
     setError(null);
 
     try {
-      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+      const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+      const cleanBaseUrl = envUrl.replace(/\/api\/?$/, "").replace(/\/$/, "");
       
-      const response = await fetch(`${baseUrl}/api/contact/`, {
+      const response = await fetch(`${cleanBaseUrl}/api/contact/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
