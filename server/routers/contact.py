@@ -2,7 +2,7 @@ import os
 import smtplib
 from email.message import EmailMessage
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import contact as models
@@ -41,13 +41,13 @@ def send_contact_email(name: str, email: str, subject: str, message: str):
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def submit_contact_form(
+async def submit_contact_form(
     payload: schemas.ContactCreate,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     try:
-        # 1. Save to PostgreSQL database
+        # 1. Save to PostgreSQL database (Async await)
         db_message = models.ContactMessage(
             name=payload.name,
             email=payload.email,
@@ -55,8 +55,8 @@ def submit_contact_form(
             message=payload.message
         )
         db.add(db_message)
-        db.commit()
-        db.refresh(db_message) 
+        await db.commit()
+        await db.refresh(db_message)
 
         # 2. Trigger background email task
         background_tasks.add_task(
@@ -70,7 +70,7 @@ def submit_contact_form(
         return {"message": "Message sent successfully!"}
 
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         print(f"Error submitting contact form: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
