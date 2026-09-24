@@ -23,68 +23,8 @@ import Footer from "@/components/layout/Footer";
 export default function ArticlePage() {
   return (
     <>
-      <div className="min-h-screen bg-[#faf9f6] text-gray-800 font-sans">
-        {/* Header / Navbar */}
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-emerald-700 flex items-center justify-center text-white font-bold text-lg">
-                🌴
-              </div>
-              <span className="text-xl font-serif font-bold text-emerald-950 tracking-wide">
-                Lankara
-                <span className="block text-[9px] font-sans tracking-widest text-emerald-700 uppercase">
-                  Travels
-                </span>
-              </span>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-700">
-              <Link href="/" className="hover:text-emerald-700 transition">
-                Home
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Explore
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Destinations
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Art & Culture
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Plan Trip
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Experiences
-              </Link>
-              <Link
-                href="#"
-                className="text-emerald-700 font-semibold border-b-2 border-emerald-700 pb-1"
-              >
-                Journal
-              </Link>
-            </nav>
-
-            {/* Actions */}
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-600 hover:text-emerald-700 transition">
-                <Search className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-emerald-700 transition">
-                <Heart className="w-5 h-5" />
-              </button>
-              <button className="bg-emerald-800 hover:bg-emerald-900 text-white px-5 py-2 rounded-full text-sm font-medium transition flex items-center gap-1">
-                Plan My Trip <ArrowRight className="w-4 h-4 ml-1" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-emerald-700 transition">
-                <User className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </header>
+      {/* <div className="min-h-screen bg-[#faf9f6] text-gray-800 font-sans"> */}
+      <div className="min-h-screen bg-[#fcfbf9] text-zinc-800 font-sans selection:bg-amber-200">
 
         {/* Hero Banner Section */}
         <section className="relative w-full h-[480px] bg-slate-900 overflow-hidden">
