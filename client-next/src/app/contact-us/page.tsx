@@ -14,18 +14,17 @@ import {
   Upload,
   ChevronDown,
   ChevronRight,
-  Instagram,
-  Facebook,
-  Twitter,
   HelpCircle,
   CheckCircle2,
   AlertCircle,
   Loader2,
+  Share2,
+  Globe,
+  MessageCircle,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
 export default function ContactUsPage() {
-  // Form State connected to your backend API requirements
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -49,7 +48,6 @@ export default function ContactUsPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Form Submit connected to server API endpoint
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -116,67 +114,7 @@ export default function ContactUsPage() {
   return (
     <div className="min-h-screen bg-[#faf9f6] text-gray-800 font-sans flex flex-col justify-between">
       <div>
-        {/* Navigation Header */}
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-emerald-700 flex items-center justify-center text-white font-bold text-lg">
-                🌴
-              </div>
-              <span className="text-xl font-serif font-bold text-emerald-950 tracking-wide">
-                Lankara
-                <span className="block text-[9px] font-sans tracking-widest text-emerald-700 uppercase">
-                  Travels
-                </span>
-              </span>
-            </Link>
-
-            {/* Navigation Links */}
-            <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-700">
-              <Link href="/" className="hover:text-emerald-700 transition">
-                Home
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Explore
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Destinations
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Art & Culture
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Plan Trip
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Experiences
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Journal
-              </Link>
-              <Link href="#" className="hover:text-emerald-700 transition">
-                Community
-              </Link>
-            </nav>
-
-            {/* Actions */}
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-600 hover:text-emerald-700 transition">
-                <Search className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-emerald-700 transition">
-                <Heart className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-emerald-700 transition">
-                <User className="w-5 h-5" />
-              </button>
-              <button className="bg-emerald-800 hover:bg-emerald-900 text-white px-5 py-2 rounded-full text-sm font-medium transition flex items-center gap-1">
-                Plan My Trip <ArrowRight className="w-4 h-4 ml-1" />
-              </button>
-            </div>
-          </div>
-        </header>
+      
 
         {/* Hero Banner Section */}
         <section className="relative w-full h-[380px] bg-slate-900 overflow-hidden">
@@ -285,8 +223,8 @@ export default function ContactUsPage() {
 
                 {/* Social Media Links Card */}
                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-900 text-white flex items-center justify-center shrink-0 text-sm font-bold">
-                    💬
+                  <div className="w-10 h-10 rounded-full bg-emerald-900 text-white flex items-center justify-center shrink-0">
+                    <Share2 className="w-4 h-4" />
                   </div>
                   <div className="text-xs space-y-2">
                     <h3 className="font-semibold text-gray-900 text-sm">Follow Us</h3>
@@ -295,14 +233,14 @@ export default function ContactUsPage() {
                       Stay updated with our latest offers, travel tips and stories.
                     </p>
                     <div className="flex items-center space-x-3 text-emerald-800 pt-1">
-                      <Link href="#" className="hover:text-emerald-600">
-                        <Instagram className="w-4 h-4" />
+                      <Link href="#" className="hover:text-emerald-600 transition">
+                        <Globe className="w-4 h-4" />
                       </Link>
-                      <Link href="#" className="hover:text-emerald-600">
-                        <Facebook className="w-4 h-4" />
+                      <Link href="#" className="hover:text-emerald-600 transition">
+                        <MessageCircle className="w-4 h-4" />
                       </Link>
-                      <Link href="#" className="hover:text-emerald-600">
-                        <Twitter className="w-4 h-4" />
+                      <Link href="#" className="hover:text-emerald-600 transition">
+                        <Share2 className="w-4 h-4" />
                       </Link>
                     </div>
                   </div>
