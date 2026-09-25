@@ -67,9 +67,23 @@ export default function ContactUsPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.detail || "Failed to submit message. Please try again."
-        );
+
+        let errorMessage = "Failed to submit message. Please try again.";
+
+        if (errorData.detail) {
+          if (typeof errorData.detail === "string") {
+            errorMessage = errorData.detail;
+          } else if (Array.isArray(errorData.detail)) {
+            // Converts FastAPI validation error array into a readable string
+            errorMessage = errorData.detail
+              .map((err: any) => `${err.loc?.join(".") || "field"}: ${err.msg}`)
+              .join(", ");
+          } else if (typeof errorData.detail === "object") {
+            errorMessage = JSON.stringify(errorData.detail);
+          }
+        }
+
+        throw new Error(errorMessage);
       }
 
       setSubmitted(true);
@@ -77,7 +91,11 @@ export default function ContactUsPage() {
 
       setTimeout(() => setSubmitted(false), 5000);
     } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again later.");
+      setError(
+        typeof err?.message === "string"
+          ? err.message
+          : "Something went wrong. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
@@ -114,8 +132,6 @@ export default function ContactUsPage() {
   return (
     <div className="min-h-screen bg-[#faf9f6] text-gray-800 font-sans flex flex-col justify-between">
       <div>
-      
-
         {/* Hero Banner Section */}
         <section className="relative w-full h-[380px] bg-slate-900 overflow-hidden">
           <Image
@@ -279,7 +295,7 @@ export default function ContactUsPage() {
               {error && (
                 <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs flex items-center gap-3">
                   <AlertCircle size={18} className="text-rose-600 shrink-0" />
-                  <span>{error}</span>
+                  <span>{typeof error === "string" ? error : String(error)}</span>
                 </div>
               )}
 
