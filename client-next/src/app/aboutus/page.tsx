@@ -12,8 +12,8 @@ import {
   Headphones,
   MapPin,
   ArrowRight,
-  Linkedin,
-  Instagram,
+  Share2,
+  Globe,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
@@ -348,13 +348,13 @@ export default function AboutUsPage() {
                         href="#"
                         className="hover:text-emerald-800 transition"
                       >
-                        <Linkedin className="w-3.5 h-3.5" />
+                        <Globe className="w-3.5 h-3.5" />
                       </Link>
                       <Link
                         href="#"
                         className="hover:text-emerald-800 transition"
                       >
-                        <Instagram className="w-3.5 h-3.5" />
+                        <Share2 className="w-3.5 h-3.5" />
                       </Link>
                     </div>
                   </div>
