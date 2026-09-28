@@ -32,8 +32,8 @@ def submit_contact_form(
 
     except Exception as e:
         db.rollback()
-        print(f"Database Error: {str(e)}") 
+        print("DATABASE ERROR TRACEBACK:", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to submit message: {str(e)}"
+            detail=f"Database error: {str(e)}"
         )
