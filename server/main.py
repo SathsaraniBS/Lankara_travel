@@ -1,4 +1,3 @@
-# server/main.py
 import os
 from typing import Optional
 from fastapi import FastAPI, Form, UploadFile, File, HTTPException, status
@@ -21,19 +20,24 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS Configuration
+# CORS Configuration - Updated to allow requests from Next.js frontend
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000"
-    ],
+    allow_origins=origins,
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Ensure upload directory exists & mount static files route
+# Ensure static upload directory exists & mount static files route
 os.makedirs("static/uploads/reviews", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -47,6 +51,7 @@ app.include_router(road_trips_router)
 app.include_router(safari_router)  
 app.include_router(group_trips_router)
 app.include_router(contact_router)  
+
 
 @app.get("/")
 async def root():
@@ -67,7 +72,7 @@ async def create_review(
         image_url = None
 
         # Handle optional image upload
-        if image:
+        if image and image.filename:
             upload_dir = "static/uploads/reviews"
             file_path = os.path.join(upload_dir, image.filename)
             

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MapPin, Navigation, Heart } from "lucide-react";
 
@@ -23,6 +24,7 @@ interface Destination {
   name?: string;
   subtitle?: string;
   description?: string;
+  slug?: string;
 }
 
 const categoriesData: Category[] = [
@@ -47,12 +49,12 @@ const mockDestinations: Destination[] = [
 ];
 
 const fallbackGuideDestinations: Destination[] = [
-  { id: "1", title: "COLOMBO", subtitle: "Urban & Nightlife", location: "Colombo", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg" },
-  { id: "2", title: "GALLE", subtitle: "Heritage & Beaches", location: "Galle", duration: "", price: 0, categoryTag: "", image: "/images/galle.jpg" },
-  { id: "3", title: "KANDY", subtitle: "History & Culture", location: "Kandy", duration: "", price: 0, categoryTag: "", image: "/images/Kandy.jpg" },
-  { id: "4", title: "TRINCOMALEE", subtitle: "Beaches & Diving", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/Trincomalee.jpg" },
-  { id: "5", title: "NUWARA ELIYA", subtitle: "Tea Gardens & Cool Climate", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/nuwaraeliya.webp" },
-  { id: "6", title: "JAFFNA", subtitle: "Northern Heritage & Food", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/jaffna.jpg" },
+  { id: "1", title: "COLOMBO", subtitle: "Urban & Nightlife", location: "Colombo", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg", slug: "colombo" },
+  { id: "2", title: "GALLE", subtitle: "Heritage & Beaches", location: "Galle", duration: "", price: 0, categoryTag: "", image: "/images/galle.jpg", slug: "galle" },
+  { id: "3", title: "KANDY", subtitle: "History & Culture", location: "Kandy", duration: "", price: 0, categoryTag: "", image: "/images/Kandy.jpg", slug: "kandy" },
+  { id: "4", title: "TRINCOMALEE", subtitle: "Beaches & Diving", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/Trincomalee.jpg", slug: "trincomalee" },
+  { id: "5", title: "NUWARA ELIYA", subtitle: "Tea Gardens & Cool Climate", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/nuwaraeliya.webp", slug: "nuwara-eliya" },
+  { id: "6", title: "JAFFNA", subtitle: "Northern Heritage & Food", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/jaffna.jpg", slug: "jaffna" },
 ];
 
 const CATEGORY_ROUTES: Record<string, string> = {
@@ -83,8 +85,16 @@ export default function DestinationsSection() {
   };
 
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Helper function to extract or format slug
+  const getCitySlug = (dest: Destination) => {
+    if (dest.slug) return dest.slug.toLowerCase();
+    const rawName = dest.name || dest.title || dest.location || "";
+    return rawName.toLowerCase().replace(/\s+/g, "-");
   };
 
   useEffect(() => {
@@ -289,7 +299,7 @@ export default function DestinationsSection() {
 
       </div>
 
-      {/* Destination Guide Section - Styled according to screenshot */}
+      {/* Destination Guide Section - Updated with dynamic Link routing */}
       <div
         className="relative w-full min-h-[500px] bg-cover bg-center flex flex-col justify-center items-center text-center mt-16 rounded-3xl overflow-hidden px-4 py-12"
         style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
@@ -314,11 +324,13 @@ export default function DestinationsSection() {
                 const titleText = (dest.name || dest.title).toUpperCase();
                 const subtitleText = dest.subtitle || dest.description || dest.categoryTag || "Top Attraction";
                 const isFav = !!favorites[dest.id];
+                const citySlug = getCitySlug(dest);
 
                 return (
-                  <div
+                  <Link
                     key={dest.id}
-                    className="group relative h-[320px] w-full rounded-3xl overflow-hidden transition-transform duration-300 hover:scale-105 shadow-2xl border border-white/10"
+                    href={`/destinations/${citySlug}`}
+                    className="group relative h-[320px] w-full rounded-3xl overflow-hidden transition-transform duration-300 hover:scale-105 shadow-2xl border border-white/10 cursor-pointer block"
                   >
                     {/* Background Image */}
                     <Image
@@ -349,7 +361,7 @@ export default function DestinationsSection() {
                         />
                       </button>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
