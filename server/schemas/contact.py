@@ -17,7 +17,7 @@ class ContactResponse(BaseModel):
     phone: Optional[str] = None
     subject: str
     message: str
-    created_at: Optional[datetime] = None  
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
