@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import os
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, status, Form, UploadFile, File
 from sqlalchemy.orm import Session
 
 from database import get_db
 from models.contact import ContactMessage
-from schemas.contact import ContactCreate, ContactResponse
+from schemas.contact import ContactResponse
 
 router = APIRouter(
     prefix="/api/contact",
@@ -11,17 +13,31 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
-def submit_contact_form(
-    payload: ContactCreate, 
+async def submit_contact_form(
+    name: str = Form(...),
+    email: str = Form(...),
+    phone: Optional[str] = Form(None),
+    subject: str = Form(...),
+    message: str = Form(...),
+    file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
     try:
+        # File එකක් Upload කර තිබේ නම් එය Save කිරීම
+        file_path = None
+        if file and file.filename:
+            upload_dir = "static/uploads/contact"
+            os.makedirs(upload_dir, exist_ok=True)
+            file_path = os.path.join(upload_dir, file.filename)
+            with open(file_path, "wb") as buffer:
+                buffer.write(await file.read())
+
         new_message = ContactMessage(
-            name=payload.name,
-            email=payload.email,
-            phone=payload.phone,
-            subject=payload.subject,
-            message=payload.message
+            name=name,
+            email=email,
+            phone=phone,
+            subject=subject,
+            message=message
         )
         
         db.add(new_message)
