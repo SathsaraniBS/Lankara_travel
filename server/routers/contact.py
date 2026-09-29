@@ -1,78 +1,95 @@
-import os
-from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Form, UploadFile, File, Request
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from pydantic import ValidationError
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.datastructures import UploadFile
 
-from database import get_db
-from models.contact import ContactMessage
+from database import get_db  # adjust to your async session dependency
+from models.contact import Contact
 from schemas.contact import ContactCreate, ContactResponse
-
-router = APIRouter(
-    prefix="/api/contact",
-    tags=["Contact"]
+from services.contact_service import (
+    enforce_rate_limit,
+    save_attachment,
+    send_contact_notification,
 )
 
-@router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
-async def submit_contact_form(
+router = APIRouter(prefix="/api/contact", tags=["contact"])
+
+FIELDS = ("name", "email", "phone", "subject", "message")
+
+
+@router.post("/", response_model=ContactResponse, status_code=201)
+async def submit_contact(
     request: Request,
-    db: Session = Depends(get_db)
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
 ):
-    try:
-        content_type = request.headers.get("content-type", "")
+    """
+    Accepts the Contact Us form.
+    - application/json          -> no attachment
+    - multipart/form-data       -> optional `file` field
+    """
+    await enforce_rate_limit(request)
 
-        # Handle FormData (multipart/form-data)
-        if "multipart/form-data" in content_type:
-            form = await request.form()
-            name = form.get("name")
-            email = form.get("email")
-            phone = form.get("phone")
-            subject = form.get("subject")
-            message = form.get("message")
-            upload_file: Optional[UploadFile] = form.get("file")
+    content_type = request.headers.get("content-type", "")
+    upload: UploadFile | None = None
 
-            if upload_file and upload_file.filename:
-                upload_dir = "static/uploads/contact"
-                os.makedirs(upload_dir, exist_ok=True)
-                file_path = os.path.join(upload_dir, upload_file.filename)
-                with open(file_path, "wb") as buffer:
-                    buffer.write(await upload_file.read())
-
-        # Handle JSON Body (application/json)
-        else:
-            json_body = await request.json()
-            contact_data = ContactCreate(**json_body)
-            name = contact_data.name
-            email = contact_data.email
-            phone = contact_data.phone
-            subject = contact_data.subject
-            message = contact_data.message
-
-        if not name or not email or not subject or not message:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Missing required fields."
-            )
-
-        new_message = ContactMessage(
-            name=name,
-            email=email,
-            phone=phone,
-            subject=subject,
-            message=message
-        )
-
-        db.add(new_message)
-        db.commit()
-        db.refresh(new_message)
-
-        return new_message
-
-    except HTTPException as http_exc:
-        raise http_exc
-    except Exception as e:
-        db.rollback()
-        print("DATABASE ERROR TRACEBACK:", str(e))
+    if content_type.startswith("multipart/form-data"):
+        form = await request.form()
+        raw = {k: form.get(k) for k in FIELDS}
+        candidate = form.get("file")
+        if isinstance(candidate, UploadFile) and candidate.filename:
+            upload = candidate
+    elif content_type.startswith("application/json"):
+        try:
+            raw = await request.json()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid JSON body.")
+        if not isinstance(raw, dict):
+            raise HTTPException(status_code=400, detail="Invalid request body.")
+    else:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Database error: {str(e)}"
+            status_code=415,
+            detail="Content-Type must be application/json or multipart/form-data.",
         )
+
+    # Validate manually so we can return the same `detail` shape the frontend parses
+    try:
+        payload = ContactCreate.model_validate(raw)
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=[
+                {"loc": list(e["loc"]), "msg": e["msg"]}
+                for e in exc.errors(include_url=False, include_context=False)
+            ],
+        )
+
+    attachment_name = attachment_path = None
+    if upload:
+        attachment_name, attachment_path = await save_attachment(upload)
+
+    contact = Contact(
+        name=payload.name,
+        email=str(payload.email),
+        phone=payload.phone,
+        subject=payload.subject,
+        message=payload.message,
+        attachment_name=attachment_name,
+        attachment_path=attachment_path,
+    )
+    db.add(contact)
+    await db.commit()
+    await db.refresh(contact)
+
+    background_tasks.add_task(
+        send_contact_notification,
+        name=contact.name,
+        email=contact.email,
+        phone=contact.phone,
+        subject=contact.subject,
+        message=contact.message,
+        attachment_path=attachment_path,
+        attachment_name=attachment_name,
+    )
+
+    return ContactResponse(id=contact.id)
