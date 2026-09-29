@@ -7,12 +7,8 @@ import {
   Phone,
   Mail,
   MapPin,
-  Search,
-  Heart,
-  User,
   ArrowRight,
   Upload,
-  ChevronDown,
   ChevronRight,
   HelpCircle,
   CheckCircle2,
@@ -33,6 +29,7 @@ export default function ContactUsPage() {
     message: "",
   });
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +45,12 @@ export default function ContactUsPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -57,13 +60,32 @@ export default function ContactUsPage() {
       const envUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
       const cleanBaseUrl = envUrl.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
-      const response = await fetch(`${cleanBaseUrl}/api/contact/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      let response: Response;
+
+      if (selectedFile) {
+        // Send multipart form data if a file is attached
+        const bodyFormData = new FormData();
+        bodyFormData.append("name", formData.name);
+        bodyFormData.append("email", formData.email);
+        bodyFormData.append("phone", formData.phone);
+        bodyFormData.append("subject", formData.subject);
+        bodyFormData.append("message", formData.message);
+        bodyFormData.append("file", selectedFile);
+
+        response = await fetch(`${cleanBaseUrl}/api/contact/`, {
+          method: "POST",
+          body: bodyFormData,
+        });
+      } else {
+        // Send JSON payload if no file is attached
+        response = await fetch(`${cleanBaseUrl}/api/contact/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -74,7 +96,6 @@ export default function ContactUsPage() {
           if (typeof errorData.detail === "string") {
             errorMessage = errorData.detail;
           } else if (Array.isArray(errorData.detail)) {
-            // Converts FastAPI validation error array into a readable string
             errorMessage = errorData.detail
               .map((err: any) => `${err.loc?.join(".") || "field"}: ${err.msg}`)
               .join(", ");
@@ -88,6 +109,7 @@ export default function ContactUsPage() {
 
       setSubmitted(true);
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setSelectedFile(null);
 
       setTimeout(() => setSubmitted(false), 5000);
     } catch (err: any) {
@@ -143,7 +165,6 @@ export default function ContactUsPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
 
-          {/* Hero Content */}
           <div className="relative z-10 max-w-7xl mx-auto h-full px-6 flex flex-col justify-center">
             <div className="mb-2 flex items-center gap-2">
               <span className="text-amber-400 text-xs font-semibold uppercase tracking-widest flex items-center gap-1">
@@ -164,7 +185,6 @@ export default function ContactUsPage() {
             </p>
           </div>
 
-          {/* Decorative Text Badge */}
           <div className="absolute right-12 bottom-12 hidden lg:block text-right text-white/80">
             <p className="font-serif italic text-2xl font-light tracking-wide">
               Good Vibes <br /> Better Journeys ♡
@@ -189,9 +209,7 @@ export default function ContactUsPage() {
                 </p>
               </div>
 
-              {/* Info Cards */}
               <div className="space-y-4">
-                {/* Phone Card */}
                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-emerald-900 text-white flex items-center justify-center shrink-0">
                     <Phone className="w-4 h-4" />
@@ -199,16 +217,11 @@ export default function ContactUsPage() {
                   <div className="text-xs space-y-1">
                     <h3 className="font-semibold text-gray-900 text-sm">Phone</h3>
                     <p className="text-emerald-700 font-semibold">+94 11 234 5678</p>
-                    <p className="text-gray-400 text-[11px]">
-                      Mon - Fri: 9:00 AM - 6:00 PM (SLT)
-                    </p>
-                    <p className="text-gray-400 text-[11px]">
-                      Sat: 9:00 AM - 1:00 PM (SLT)
-                    </p>
+                    <p className="text-gray-400 text-[11px]">Mon - Fri: 9:00 AM - 6:00 PM (SLT)</p>
+                    <p className="text-gray-400 text-[11px]">Sat: 9:00 AM - 1:00 PM (SLT)</p>
                   </div>
                 </div>
 
-                {/* Email Card */}
                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-emerald-900 text-white flex items-center justify-center shrink-0">
                     <Mail className="w-4 h-4" />
@@ -216,13 +229,10 @@ export default function ContactUsPage() {
                   <div className="text-xs space-y-1">
                     <h3 className="font-semibold text-gray-900 text-sm">Email</h3>
                     <p className="text-emerald-700 font-semibold">info@lankaratravel.com</p>
-                    <p className="text-gray-400 text-[11px]">
-                      We usually respond within 24 hours.
-                    </p>
+                    <p className="text-gray-400 text-[11px]">We usually respond within 24 hours.</p>
                   </div>
                 </div>
 
-                {/* Office Location Card */}
                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-emerald-900 text-white flex items-center justify-center shrink-0">
                     <MapPin className="w-4 h-4" />
@@ -237,7 +247,6 @@ export default function ContactUsPage() {
                   </div>
                 </div>
 
-                {/* Social Media Links Card */}
                 <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-emerald-900 text-white flex items-center justify-center shrink-0">
                     <Share2 className="w-4 h-4" />
@@ -284,7 +293,6 @@ export default function ContactUsPage() {
                 </p>
               </div>
 
-              {/* Status Notifications */}
               {submitted && (
                 <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs flex items-center gap-3">
                   <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
@@ -301,88 +309,72 @@ export default function ContactUsPage() {
 
               <form className="space-y-5" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Full Name */}
                   <div className="space-y-1.5">
                     <label htmlFor="name" className="text-xs font-semibold text-gray-700">
                       Full Name <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="John Doe"
-                        required
-                        className="w-full pl-9 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-xs outline-none focus:border-emerald-600 focus:bg-white transition"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="John Doe"
+                      required
+                      className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-xs outline-none focus:border-emerald-600 focus:bg-white transition"
+                    />
                   </div>
 
-                  {/* Email Address */}
                   <div className="space-y-1.5">
                     <label htmlFor="email" className="text-xs font-semibold text-gray-700">
                       Email Address <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="john@example.com"
-                        required
-                        className="w-full pl-9 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-xs outline-none focus:border-emerald-600 focus:bg-white transition"
-                      />
-                    </div>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="john@example.com"
+                      required
+                      className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-xs outline-none focus:border-emerald-600 focus:bg-white transition"
+                    />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Phone Number */}
                   <div className="space-y-1.5">
                     <label htmlFor="phone" className="text-xs font-semibold text-gray-700">
                       Phone Number
                     </label>
-                    <div className="relative">
-                      <Phone className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="+94 77 123 4567"
-                        className="w-full pl-9 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-xs outline-none focus:border-emerald-600 focus:bg-white transition"
-                      />
-                    </div>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="+94 77 123 4567"
+                      className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-xs outline-none focus:border-emerald-600 focus:bg-white transition"
+                    />
                   </div>
 
-                  {/* Subject */}
                   <div className="space-y-1.5">
                     <label htmlFor="subject" className="text-xs font-semibold text-gray-700">
                       Subject <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        id="subject"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        placeholder="How can we help you?"
-                        required
-                        className="w-full pl-4 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-xs outline-none focus:border-emerald-600 focus:bg-white transition"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      placeholder="How can we help you?"
+                      required
+                      className="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-xs outline-none focus:border-emerald-600 focus:bg-white transition"
+                    />
                   </div>
                 </div>
 
-                {/* Message */}
                 <div className="space-y-1.5">
                   <label htmlFor="message" className="text-xs font-semibold text-gray-700">
                     Your Message <span className="text-red-500">*</span>
@@ -405,7 +397,7 @@ export default function ContactUsPage() {
                     <Upload className="w-4 h-4 text-emerald-700" />
                     <div>
                       <p className="text-xs font-medium text-gray-700">
-                        Attach Files (Optional)
+                        {selectedFile ? selectedFile.name : "Attach Files (Optional)"}
                       </p>
                       <p className="text-[10px] text-gray-400">
                         You can upload images or documents (max 5MB).
@@ -414,11 +406,10 @@ export default function ContactUsPage() {
                   </div>
                   <label className="cursor-pointer bg-white border border-gray-200 hover:border-emerald-600 text-gray-700 text-xs px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1">
                     <Upload className="w-3.5 h-3.5 text-gray-500" /> Choose File
-                    <input type="file" className="hidden" />
+                    <input type="file" onChange={handleFileChange} className="hidden" />
                   </label>
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -441,9 +432,7 @@ export default function ContactUsPage() {
 
           {/* Map & FAQ Section */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pt-6">
-            {/* Map Block */}
             <div className="lg:col-span-5 bg-emerald-50/40 rounded-2xl p-4 border border-emerald-100/60 overflow-hidden relative min-h-[360px] flex flex-col justify-between">
-              {/* Map Visual */}
               <div className="relative w-full h-80 rounded-xl overflow-hidden bg-slate-200">
                 <Image
                   src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop"
@@ -453,7 +442,6 @@ export default function ContactUsPage() {
                 />
                 <div className="absolute inset-0 bg-emerald-900/10" />
 
-                {/* Map Pin Badge */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-900 text-white text-xs px-3 py-2 rounded-xl shadow-lg flex items-center gap-2 border border-emerald-700">
                   <MapPin className="w-4 h-4 text-emerald-400" />
                   <div>
@@ -470,7 +458,6 @@ export default function ContactUsPage() {
               </div>
             </div>
 
-            {/* Frequently Asked Questions */}
             <div className="lg:col-span-7 bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center">
@@ -488,10 +475,7 @@ export default function ContactUsPage() {
 
               <div className="space-y-3 pt-2">
                 {faqs.map((faq, idx) => (
-                  <div
-                    key={idx}
-                    className="border border-gray-100 rounded-xl overflow-hidden"
-                  >
+                  <div key={idx} className="border border-gray-100 rounded-xl overflow-hidden">
                     <button
                       onClick={() => toggleFaq(idx)}
                       className="w-full text-left p-4 flex items-center justify-between text-xs font-semibold text-gray-800 hover:bg-gray-50 transition"
@@ -523,7 +507,6 @@ export default function ContactUsPage() {
             </div>
           </div>
 
-          {/* Banner Promo Card */}
           <div className="relative rounded-2xl overflow-hidden p-8 md:p-12 text-white bg-slate-900 flex flex-col md:flex-row items-center justify-between">
             <Image
               src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
@@ -557,7 +540,6 @@ export default function ContactUsPage() {
         </main>
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
