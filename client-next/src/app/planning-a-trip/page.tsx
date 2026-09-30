@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -8,26 +6,48 @@ import {
   Plus,
   Clock,
   Route,
-  Calendar,
-  Users,
-  ArrowRight,
   Star,
-  GripVertical,
   Compass,
   ChevronRight,
-  Heart,
-  Search,
+  GripVertical,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
+import TripPlannerForm from "@/components/planning/TripPlannerForm";
 
-export default function PlanningATripPage() {
-  const [fromLocation, setFromLocation] = useState("Colombo");
-  const [toLocation, setToLocation] = useState("Sigiriya");
-  const [travelDates, setTravelDates] = useState("12 Apr 2025 - 16 Apr 2025");
-  const [travelType, setTravelType] = useState("Family Trip");
+// Types matching FastAPI / Pydantic schemas
+export interface District {
+  id: string;
+  name: string;
+  category: string;
+  places: string;
+  image: string;
+}
 
-  // Sample data matching UI screenshot
-  const popularDistricts = [
+export interface PopularTrip {
+  id?: string;
+  title: string;
+  route: string;
+  duration: string;
+  tag: string;
+  image: string;
+}
+
+export interface PlanItem {
+  id?: string;
+  day: string;
+  location: string;
+  image: string;
+}
+
+interface InitialPlannerData {
+  districts: District[];
+  popularTrips: PopularTrip[];
+  initialTripPlan: PlanItem[];
+}
+
+// Fallback data in case FastAPI server is unreachable during build or runtime
+const fallbackData: InitialPlannerData = {
+  districts: [
     {
       id: "colombo",
       name: "Colombo",
@@ -56,9 +76,8 @@ export default function PlanningATripPage() {
       places: "9+ places",
       image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=600&auto=format&fit=crop",
     },
-  ];
-
-  const popularTrips = [
+  ],
+  popularTrips: [
     {
       title: "5 Days Cultural Tour",
       route: "Colombo • Kandy • Sigiriya • Dambulla",
@@ -87,9 +106,8 @@ export default function PlanningATripPage() {
       tag: "Family",
       image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop",
     },
-  ];
-
-  const [tripPlan, setTripPlan] = useState([
+  ],
+  initialTripPlan: [
     {
       day: "Day 1",
       location: "Colombo",
@@ -110,7 +128,31 @@ export default function PlanningATripPage() {
       location: "Galle",
       image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=200&auto=format&fit=crop",
     },
-  ]);
+  ],
+};
+
+// Server-side fetching function connecting to FastAPI
+async function getPlannerData(): Promise<InitialPlannerData> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+  try {
+    const res = await fetch(`${apiUrl}/api/v1/planner/overview`, {
+      next: { revalidate: 3600 }, // Cache on server for 1 hour
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch planner data: ${res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.warn("FastAPI backend error, using local fallback data:", error);
+    return fallbackData;
+  }
+}
+
+export default async function PlanningATripPage() {
+  const { districts, popularTrips, initialTripPlan } = await getPlannerData();
 
   return (
     <div className="min-h-screen bg-[#faf9f6] text-gray-800 font-sans flex flex-col justify-between">
@@ -172,88 +214,8 @@ export default function PlanningATripPage() {
 
         {/* Main Content Container */}
         <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
-          {/* Plan Your Trip Filter Bar */}
-          <section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-            <div className="mb-4">
-              <div className="flex items-center gap-2 text-emerald-900 font-serif font-bold text-lg">
-                <Compass className="w-5 h-5 text-emerald-700" />
-                <h2>Plan Your Trip</h2>
-              </div>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Choose your preferences and let us help you create the perfect itinerary.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-              {/* From */}
-              <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
-                <div className="w-full">
-                  <label className="block text-[10px] uppercase font-semibold text-gray-400">From</label>
-                  <input
-                    type="text"
-                    value={fromLocation}
-                    onChange={(e) => setFromLocation(e.target.value)}
-                    className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* To */}
-              <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
-                <div className="w-full">
-                  <label className="block text-[10px] uppercase font-semibold text-gray-400">To</label>
-                  <input
-                    type="text"
-                    value={toLocation}
-                    onChange={(e) => setToLocation(e.target.value)}
-                    className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Travel Dates */}
-              <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
-                <Calendar className="w-4 h-4 text-emerald-700 shrink-0" />
-                <div className="w-full">
-                  <label className="block text-[10px] uppercase font-semibold text-gray-400">Travel Dates</label>
-                  <input
-                    type="text"
-                    value={travelDates}
-                    onChange={(e) => setTravelDates(e.target.value)}
-                    className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Travel Type */}
-              <div className="md:col-span-2 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
-                <Users className="w-4 h-4 text-emerald-700 shrink-0" />
-                <div className="w-full">
-                  <label className="block text-[10px] uppercase font-semibold text-gray-400">Travel Type</label>
-                  <select
-                    value={travelType}
-                    onChange={(e) => setTravelType(e.target.value)}
-                    className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none cursor-pointer"
-                  >
-                    <option value="Family Trip">Family Trip</option>
-                    <option value="Solo Trip">Solo Trip</option>
-                    <option value="Honeymoon">Honeymoon</option>
-                    <option value="Friends Trip">Friends Trip</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <div className="md:col-span-1">
-                <button className="w-full bg-emerald-900 hover:bg-emerald-950 text-white p-3 rounded-xl flex items-center justify-center transition shadow-md group">
-                  <span className="hidden">Plan</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
-            </div>
-          </section>
+          {/* Plan Your Trip Interactive Filter Form (Client Component) */}
+          <TripPlannerForm />
 
           {/* How It Works Section */}
           <section className="space-y-4">
@@ -263,7 +225,6 @@ export default function PlanningATripPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Step 1 */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative space-y-3">
                 <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
                   1
@@ -277,7 +238,6 @@ export default function PlanningATripPage() {
                 </p>
               </div>
 
-              {/* Step 2 */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative space-y-3">
                 <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
                   2
@@ -291,7 +251,6 @@ export default function PlanningATripPage() {
                 </p>
               </div>
 
-              {/* Step 3 */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative space-y-3">
                 <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
                   3
@@ -305,7 +264,6 @@ export default function PlanningATripPage() {
                 </p>
               </div>
 
-              {/* Step 4 */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative space-y-3">
                 <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
                   4
@@ -336,7 +294,7 @@ export default function PlanningATripPage() {
                     <p className="text-xs text-gray-500">Discover the best places across all 25 districts.</p>
                   </div>
                   <Link
-                    href="#"
+                    href="/districts"
                     className="text-xs text-emerald-800 font-semibold hover:underline flex items-center gap-1"
                   >
                     View All Districts →
@@ -344,7 +302,7 @@ export default function PlanningATripPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  {popularDistricts.map((district) => (
+                  {districts.map((district) => (
                     <div
                       key={district.id}
                       className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition group"
@@ -381,7 +339,7 @@ export default function PlanningATripPage() {
                     <p className="text-xs text-gray-500">Get inspired with our ready-to-plan itineraries.</p>
                   </div>
                   <Link
-                    href="#"
+                    href="/trips"
                     className="text-xs text-emerald-800 font-semibold hover:underline flex items-center gap-1"
                   >
                     View All Trips →
@@ -391,7 +349,7 @@ export default function PlanningATripPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   {popularTrips.map((trip, idx) => (
                     <div
-                      key={idx}
+                      key={trip.id || idx}
                       className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group"
                     >
                       <div>
@@ -434,9 +392,9 @@ export default function PlanningATripPage() {
 
                 {/* Day Items List */}
                 <div className="space-y-2.5">
-                  {tripPlan.map((item, idx) => (
+                  {initialTripPlan.map((item, idx) => (
                     <div
-                      key={idx}
+                      key={item.id || idx}
                       className="bg-gray-50/60 p-2 rounded-xl border border-gray-100 flex items-center justify-between group hover:bg-white transition"
                     >
                       <div className="flex items-center gap-3">
