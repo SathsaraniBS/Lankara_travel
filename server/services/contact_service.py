@@ -10,7 +10,7 @@ import redis.asyncio as aioredis
 from fastapi import HTTPException, Request
 from starlette.datastructures import UploadFile
 
-from app.config import settings  # needs the fields listed in the integration notes
+from config import settings
 
 logger = logging.getLogger(__name__)
 
