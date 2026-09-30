@@ -1,168 +1,515 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, MapPin, Users, DollarSign, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  MapPin,
+  Plus,
+  Clock,
+  Route,
+  Calendar,
+  Users,
+  ArrowRight,
+  Star,
+  GripVertical,
+  Compass,
+  ChevronRight,
+  Heart,
+  Search,
+} from "lucide-react";
+import Footer from "@/components/layout/Footer";
 
 export default function PlanningATripPage() {
-  const [destination, setDestination] = useState("");
-  const [days, setDays] = useState(3);
-  const [travelers, setTravelers] = useState(2);
-  const [budget, setBudget] = useState("Medium");
-  const [planGenerated, setPlanGenerated] = useState(false);
+  const [fromLocation, setFromLocation] = useState("Colombo");
+  const [toLocation, setToLocation] = useState("Sigiriya");
+  const [travelDates, setTravelDates] = useState("12 Apr 2025 - 16 Apr 2025");
+  const [travelType, setTravelType] = useState("Family Trip");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPlanGenerated(true);
-  };
-
-  const topDestinations = [
-    { title: "Ella", desc: "Hiking, tea plantations, and scenic train views.", days: "2-3 Days" },
-    { title: "Sigiriya & Dambulla", desc: "Ancient rock fortress and cave temples.", days: "1-2 Days" },
-    { title: "Mirissa", desc: "Whale watching, surfing, and golden beaches.", days: "3-4 Days" },
-    { title: "Kandy", desc: "Cultural heart of Sri Lanka & Temple of the Tooth.", days: "2 Days" },
+  // Sample data matching UI screenshot
+  const popularDistricts = [
+    {
+      id: "colombo",
+      name: "Colombo",
+      category: "Capital City",
+      places: "12+ places",
+      image: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=600&auto=format&fit=crop",
+    },
+    {
+      id: "kandy",
+      name: "Kandy",
+      category: "Culture",
+      places: "10+ places",
+      image: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=600&auto=format&fit=crop",
+    },
+    {
+      id: "ella",
+      name: "Ella",
+      category: "Nature",
+      places: "8+ places",
+      image: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=600&auto=format&fit=crop",
+    },
+    {
+      id: "galle",
+      name: "Galle",
+      category: "Heritage",
+      places: "9+ places",
+      image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=600&auto=format&fit=crop",
+    },
   ];
 
-  const handleSelectDestination = (title: string) => {
-    setDestination(title);
-    setPlanGenerated(false);
-  };
+  const popularTrips = [
+    {
+      title: "5 Days Cultural Tour",
+      route: "Colombo • Kandy • Sigiriya • Dambulla",
+      duration: "5 Days",
+      tag: "Cultural",
+      image: "https://images.unsplash.com/photo-1578637387939-43c525550085?q=80&w=600&auto=format&fit=crop",
+    },
+    {
+      title: "7 Days Nature & Adventure",
+      route: "Ella • Nuwara Eliya • Yala",
+      duration: "7 Days",
+      tag: "Nature",
+      image: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=600&auto=format&fit=crop",
+    },
+    {
+      title: "3 Days Beach Getaway",
+      route: "Bentota • Unawatuna • Mirissa",
+      duration: "3 Days",
+      tag: "Beach",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop",
+    },
+    {
+      title: "Family Trip (7 Days)",
+      route: "Colombo • Pinnawala • Kandy • Galle",
+      duration: "7 Days",
+      tag: "Family",
+      image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop",
+    },
+  ];
+
+  const [tripPlan, setTripPlan] = useState([
+    {
+      day: "Day 1",
+      location: "Colombo",
+      image: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=200&auto=format&fit=crop",
+    },
+    {
+      day: "Day 2",
+      location: "Kandy",
+      image: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=200&auto=format&fit=crop",
+    },
+    {
+      day: "Day 3",
+      location: "Ella",
+      image: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=200&auto=format&fit=crop",
+    },
+    {
+      day: "Day 4",
+      location: "Galle",
+      image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=200&auto=format&fit=crop",
+    },
+  ]);
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 pt-28 pb-16 px-6 sm:px-12">
-      <div className="max-w-6xl mx-auto space-y-12">
-        {/* Header Section */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200">
-            Plan Your Dream Trip
-          </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Customize your ideal Sri Lankan itinerary based on your preferences, budget, and travel duration.
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#faf9f6] text-gray-800 font-sans flex flex-col justify-between">
+      <div>
+        {/* Hero Section */}
+        <section className="relative w-full h-[420px] bg-slate-900 overflow-hidden">
+          <Image
+            src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=1600&auto=format&fit=crop"
+            alt="Sigiriya Sri Lanka Travel Banner"
+            fill
+            className="object-cover opacity-65"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
 
-        {/* Trip Planner Form & Recommendations */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* Planner Form */}
-          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 p-8 rounded-2xl flex flex-col justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-2">
-                <Sparkles size={24} /> Customized Itinerary Generator
-              </h2>
+          <div className="relative z-10 max-w-7xl mx-auto h-full px-6 flex flex-col justify-center">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-amber-400 text-xs font-semibold uppercase tracking-widest flex items-center gap-1">
+                🗺 PLAN YOUR TRIP
+              </span>
+            </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                    <MapPin size={18} className="text-emerald-400" /> Preferred Region / City
-                  </label>
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-white max-w-xl leading-tight">
+              Plan Your Perfect <br />
+              Sri Lanka Journey
+            </h1>
+
+            <p className="text-gray-200 text-xs md:text-sm mt-3 max-w-md leading-relaxed">
+              Discover amazing places, create your itinerary, find nearby attractions and make the most of your trip with Lankara Travels.
+            </p>
+
+            {/* Feature Badges */}
+            <div className="mt-8 flex flex-wrap gap-3 text-xs text-white/90">
+              <div className="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/20 flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                <span>All 25 Districts & Top Places</span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/20 flex items-center gap-2">
+                <Plus className="w-3.5 h-3.5 text-amber-400" />
+                <span>Plan & Add Your Places</span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/20 flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-amber-400" />
+                <span>Get Distance & Travel Time</span>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/20 flex items-center gap-2">
+                <Route className="w-3.5 h-3.5 text-amber-400" />
+                <span>Smart Route Suggestions</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute right-12 bottom-12 hidden lg:block text-right text-white/80">
+            <p className="font-serif italic text-2xl font-light tracking-wide">
+              Your dream trip <br /> starts here ♡
+            </p>
+          </div>
+        </section>
+
+        {/* Main Content Container */}
+        <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
+          {/* Plan Your Trip Filter Bar */}
+          <section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <div className="mb-4">
+              <div className="flex items-center gap-2 text-emerald-900 font-serif font-bold text-lg">
+                <Compass className="w-5 h-5 text-emerald-700" />
+                <h2>Plan Your Trip</h2>
+              </div>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Choose your preferences and let us help you create the perfect itinerary.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+              {/* From */}
+              <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+                <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
+                <div className="w-full">
+                  <label className="block text-[10px] uppercase font-semibold text-gray-400">From</label>
                   <input
                     type="text"
-                    placeholder="e.g. Ella, Mirissa, Kandy"
-                    value={destination}
-                    onChange={(e) => {
-                      setDestination(e.target.value);
-                      setPlanGenerated(false);
-                    }}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+                    value={fromLocation}
+                    onChange={(e) => setFromLocation(e.target.value)}
+                    className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
                   />
                 </div>
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                      <Calendar size={18} className="text-emerald-400" /> Duration (Days)
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={30}
-                      value={days}
-                      onChange={(e) => setDays(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                      <Users size={18} className="text-emerald-400" /> Travelers
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={10}
-                      value={travelers}
-                      onChange={(e) => setTravelers(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                      <DollarSign size={18} className="text-emerald-400" /> Budget Range
-                    </label>
-                    <select
-                      value={budget}
-                      onChange={(e) => setBudget(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-100 focus:outline-none focus:border-emerald-500 transition cursor-pointer"
-                    >
-                      <option value="Budget">Budget</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Luxury">Luxury</option>
-                    </select>
-                  </div>
+              {/* To */}
+              <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+                <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
+                <div className="w-full">
+                  <label className="block text-[10px] uppercase font-semibold text-gray-400">To</label>
+                  <input
+                    type="text"
+                    value={toLocation}
+                    onChange={(e) => setToLocation(e.target.value)}
+                    className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
+                  />
                 </div>
+              </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-lg transition duration-300 cursor-pointer"
-                >
-                  Create Trip Plan
+              {/* Travel Dates */}
+              <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+                <Calendar className="w-4 h-4 text-emerald-700 shrink-0" />
+                <div className="w-full">
+                  <label className="block text-[10px] uppercase font-semibold text-gray-400">Travel Dates</label>
+                  <input
+                    type="text"
+                    value={travelDates}
+                    onChange={(e) => setTravelDates(e.target.value)}
+                    className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Travel Type */}
+              <div className="md:col-span-2 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+                <Users className="w-4 h-4 text-emerald-700 shrink-0" />
+                <div className="w-full">
+                  <label className="block text-[10px] uppercase font-semibold text-gray-400">Travel Type</label>
+                  <select
+                    value={travelType}
+                    onChange={(e) => setTravelType(e.target.value)}
+                    className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none cursor-pointer"
+                  >
+                    <option value="Family Trip">Family Trip</option>
+                    <option value="Solo Trip">Solo Trip</option>
+                    <option value="Honeymoon">Honeymoon</option>
+                    <option value="Friends Trip">Friends Trip</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="md:col-span-1">
+                <button className="w-full bg-emerald-900 hover:bg-emerald-950 text-white p-3 rounded-xl flex items-center justify-center transition shadow-md group">
+                  <span className="hidden">Plan</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
-              </form>
+              </div>
+            </div>
+          </section>
+
+          {/* How It Works Section */}
+          <section className="space-y-4">
+            <div>
+              <h2 className="text-xl font-serif font-bold text-gray-900">How It Works?</h2>
+              <p className="text-xs text-gray-500">Plan your trip in just a few simple steps.</p>
             </div>
 
-            {/* Generated Plan Confirmation Summary */}
-            {planGenerated && (
-              <div className="mt-8 p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-xl space-y-3">
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-lg">
-                  <CheckCircle2 size={22} /> Itinerary Summary Ready!
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Step 1 */}
+              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative space-y-3">
+                <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
+                  1
                 </div>
-                <p className="text-slate-300 text-sm">
-                  We have prepared a customized <strong className="text-emerald-300">{days}-day</strong> trip plan to{" "}
-                  <strong className="text-emerald-300">{destination || "Sri Lanka"}</strong> for{" "}
-                  <strong className="text-emerald-300">{travelers} traveler(s)</strong> under a{" "}
-                  <strong className="text-emerald-300">{budget}</strong> budget tier.
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <h3 className="font-semibold text-gray-900 text-xs">Choose Your Locations</h3>
+                <p className="text-[11px] text-gray-500 leading-relaxed">
+                  Select places from all 25 districts or explore our popular destinations.
                 </p>
               </div>
-            )}
-          </div>
 
-          {/* Suggested Destinations */}
-          <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6">
-            <h2 className="text-xl font-bold text-slate-100">Popular Travel Routes</h2>
-            
-            <div className="space-y-4">
-              {topDestinations.map((item, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleSelectDestination(item.title)}
-                  className="bg-slate-950 p-4 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition cursor-pointer space-y-1 group"
-                >
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-emerald-400 group-hover:text-emerald-300 transition flex items-center gap-1.5">
-                      {item.title}
-                      <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </h3>
-                    <span className="text-xs text-slate-500 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                      {item.days}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400">{item.desc}</p>
+              {/* Step 2 */}
+              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative space-y-3">
+                <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
+                  2
                 </div>
-              ))}
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                  <Plus className="w-4 h-4" />
+                </div>
+                <h3 className="font-semibold text-gray-900 text-xs">Add to Your Plan</h3>
+                <p className="text-[11px] text-gray-500 leading-relaxed">
+                  Save the places you like and build your personalised itinerary.
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative space-y-3">
+                <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
+                  3
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                  <Route className="w-4 h-4" />
+                </div>
+                <h3 className="font-semibold text-gray-900 text-xs">Get Route & Time</h3>
+                <p className="text-[11px] text-gray-500 leading-relaxed">
+                  We'll show you distance, travel time and the best route.
+                </p>
+              </div>
+
+              {/* Step 4 */}
+              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative space-y-3">
+                <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center">
+                  4
+                </div>
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                  <Star className="w-4 h-4" />
+                </div>
+                <h3 className="font-semibold text-gray-900 text-xs">Enjoy Your Trip</h3>
+                <p className="text-[11px] text-gray-500 leading-relaxed">
+                  Get nearby places, tips and emergency assistance if needed.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Grid Layout: Explore Sri Lanka & Side Trip Plan */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column - Explore Sri Lanka */}
+            <div className="lg:col-span-8 space-y-8">
+              {/* District Explorer */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-serif font-bold text-gray-900 flex items-center gap-2">
+                      <Compass className="w-5 h-5 text-emerald-800" />
+                      Explore Sri Lanka
+                    </h2>
+                    <p className="text-xs text-gray-500">Discover the best places across all 25 districts.</p>
+                  </div>
+                  <Link
+                    href="#"
+                    className="text-xs text-emerald-800 font-semibold hover:underline flex items-center gap-1"
+                  >
+                    View All Districts →
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {popularDistricts.map((district) => (
+                    <div
+                      key={district.id}
+                      className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition group"
+                    >
+                      <div className="relative h-28 w-full overflow-hidden">
+                        <Image
+                          src={district.image}
+                          alt={district.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition duration-300"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-semibold text-gray-900 text-xs">{district.name}</h3>
+                        <p className="text-[10px] text-gray-400">{district.category}</p>
+                        <div className="mt-2 pt-2 border-t border-gray-50 flex items-center justify-between text-[10px] text-gray-500">
+                          <span>{district.places}</span>
+                          <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Popular Trip Ideas */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-serif font-bold text-gray-900 flex items-center gap-2">
+                      <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
+                      Popular Trip Ideas
+                    </h2>
+                    <p className="text-xs text-gray-500">Get inspired with our ready-to-plan itineraries.</p>
+                  </div>
+                  <Link
+                    href="#"
+                    className="text-xs text-emerald-800 font-semibold hover:underline flex items-center gap-1"
+                  >
+                    View All Trips →
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {popularTrips.map((trip, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group"
+                    >
+                      <div>
+                        <div className="relative h-28 w-full overflow-hidden">
+                          <Image
+                            src={trip.image}
+                            alt={trip.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition duration-300"
+                          />
+                        </div>
+                        <div className="p-3 space-y-1">
+                          <h3 className="font-semibold text-gray-900 text-xs leading-snug">{trip.title}</h3>
+                          <p className="text-[10px] text-gray-400 line-clamp-1">{trip.route}</p>
+                        </div>
+                      </div>
+                      <div className="p-3 pt-0 flex items-center gap-2 text-[10px] text-gray-500">
+                        <span className="bg-gray-100 px-2 py-0.5 rounded text-[9px] font-medium">{trip.duration}</span>
+                        <span className="bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded text-[9px] font-medium">{trip.tag}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Your Trip Plan Card & Assistance */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* Trip Plan Widget */}
+              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <Route className="w-4 h-4 text-emerald-800" />
+                    <h3 className="font-serif font-bold text-gray-900 text-sm">Your Trip Plan</h3>
+                  </div>
+                  <button className="text-[10px] text-emerald-800 font-semibold hover:underline">
+                    View All
+                  </button>
+                </div>
+
+                {/* Day Items List */}
+                <div className="space-y-2.5">
+                  {tripPlan.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-gray-50/60 p-2 rounded-xl border border-gray-100 flex items-center justify-between group hover:bg-white transition"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0">
+                          <Image src={item.image} alt={item.location} fill className="object-cover" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900 text-xs">{item.location}</h4>
+                          <p className="text-[10px] text-gray-400">{item.day}</p>
+                        </div>
+                      </div>
+                      <GripVertical className="w-4 h-4 text-gray-300 cursor-grab opacity-60 group-hover:opacity-100" />
+                    </div>
+                  ))}
+                </div>
+
+                <button className="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1">
+                  <Plus className="w-3.5 h-3.5" /> Add More Places
+                </button>
+              </div>
+
+              {/* Assistance Card */}
+              <div className="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 space-y-3">
+                <div className="flex items-center gap-2 text-emerald-900 font-semibold text-xs">
+                  <Compass className="w-4 h-4 text-emerald-700" />
+                  <h4>Need help planning?</h4>
+                </div>
+                <p className="text-[11px] text-gray-600 leading-relaxed">
+                  Our travel experts are here to assist you with custom itineraries and special requests.
+                </p>
+                <Link
+                  href="/contact-us"
+                  className="inline-flex items-center gap-1.5 bg-emerald-900 hover:bg-emerald-950 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-sm"
+                >
+                  Contact Us →
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+
+          {/* Bottom Banner Promo Card */}
+          <div className="relative rounded-2xl overflow-hidden p-8 md:p-12 text-white bg-slate-900 flex flex-col md:flex-row items-center justify-between">
+            <Image
+              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
+              alt="Beach Sri Lanka"
+              fill
+              className="object-cover opacity-30"
+            />
+            <div className="relative z-10 space-y-2 max-w-lg">
+              <span className="font-serif italic text-xs text-amber-400">
+                Small steps, Big adventures ♡
+              </span>
+              <h3 className="text-2xl md:text-3xl font-serif font-bold">
+                Ready to Plan Your Trip?
+              </h3>
+              <p className="text-xs text-gray-200">
+                Let Lankara Travels be part of your journey to discover the real Sri Lanka.
+              </p>
+            </div>
+            <div className="relative z-10 mt-6 md:mt-0 flex flex-col items-end gap-3">
+              <button className="bg-amber-400 hover:bg-amber-500 text-gray-900 text-xs font-semibold px-6 py-3 rounded-full transition flex items-center gap-1 shadow-md">
+                Start Planning →
+              </button>
+              <div className="flex items-center gap-2 text-[10px] text-white/80 uppercase tracking-widest">
+                <span>Beaches</span> • <span>Mountains</span> • <span>Culture</span> • <span>Wildlife</span>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
-    </main>
+
+      {/* Footer Component */}
+      <Footer />
+    </div>
   );
 }
