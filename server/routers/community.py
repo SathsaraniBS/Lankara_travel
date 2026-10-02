@@ -10,7 +10,8 @@ from schemas.community import (
     ReviewCreate, ReviewResponse, CommunityStats, 
     StoryCreate, StoryResponse, RatingBreakdown
 )
-from auth.dependencies import get_current_user  # JWT Auth handler
+# from auth.dependencies import get_current_user  # JWT Auth handler
+from ..auth import get_current_user
 from redis_client import redis_client  # Redis instance
 
 router = APIRouter(prefix="/api/v1/community", tags=["Community & Reviews"])
