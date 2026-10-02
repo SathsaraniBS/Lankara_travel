@@ -45,7 +45,26 @@ interface InitialPlannerData {
   initialTripPlan: PlanItem[];
 }
 
-// Fallback data in case FastAPI server is unreachable during build or runtime
+// Fallback image path inside public/images folder
+const DEFAULT_PLACEHOLDER = "/images/sigiriya.jpg";
+
+// Helper function to safely parse local image paths from public/images
+function getImageUrl(url?: string): string {
+  if (!url || typeof url !== "string" || url.trim() === "") {
+    return DEFAULT_PLACEHOLDER;
+  }
+  const trimmed = url.trim();
+
+  // If full external URL, return as is
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+
+  // Ensure relative path starts with '/' for public folder access
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
+// Fallback data using local images inside public/images/
 const fallbackData: InitialPlannerData = {
   districts: [
     {
@@ -53,28 +72,28 @@ const fallbackData: InitialPlannerData = {
       name: "Colombo",
       category: "Capital City",
       places: "12+ places",
-      image: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=600&auto=format&fit=crop",
+      image: "/images/colombo.jpg",
     },
     {
       id: "kandy",
       name: "Kandy",
       category: "Culture",
       places: "10+ places",
-      image: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=600&auto=format&fit=crop",
+      image: "/images/Kandy.jpg",
     },
     {
       id: "ella",
       name: "Ella",
       category: "Nature",
       places: "8+ places",
-      image: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=600&auto=format&fit=crop",
+      image: "/images/ella.jpg",
     },
     {
       id: "galle",
       name: "Galle",
       category: "Heritage",
       places: "9+ places",
-      image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=600&auto=format&fit=crop",
+      image: "/images/galle.jpg",
     },
   ],
   popularTrips: [
@@ -83,50 +102,50 @@ const fallbackData: InitialPlannerData = {
       route: "Colombo • Kandy • Sigiriya • Dambulla",
       duration: "5 Days",
       tag: "Cultural",
-      image: "https://images.unsplash.com/photo-1578637387939-43c525550085?q=80&w=600&auto=format&fit=crop",
+      image: "/images/sigiriya.jpg",
     },
     {
       title: "7 Days Nature & Adventure",
       route: "Ella • Nuwara Eliya • Yala",
       duration: "7 Days",
       tag: "Nature",
-      image: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=600&auto=format&fit=crop",
+      image: "/images/nuwaraeliya.webp",
     },
     {
       title: "3 Days Beach Getaway",
       route: "Bentota • Unawatuna • Mirissa",
       duration: "3 Days",
       tag: "Beach",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600&auto=format&fit=crop",
+      image: "/images/unawatuna.jpg",
     },
     {
       title: "Family Trip (7 Days)",
       route: "Colombo • Pinnawala • Kandy • Galle",
       duration: "7 Days",
       tag: "Family",
-      image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop",
+      image: "/images/colombo.jpg",
     },
   ],
   initialTripPlan: [
     {
       day: "Day 1",
       location: "Colombo",
-      image: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=200&auto=format&fit=crop",
+      image: "/images/colombo.jpg",
     },
     {
       day: "Day 2",
       location: "Kandy",
-      image: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=200&auto=format&fit=crop",
+      image: "/images/Kandy.jpg",
     },
     {
       day: "Day 3",
       location: "Ella",
-      image: "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=200&auto=format&fit=crop",
+      image: "/images/ella.jpg",
     },
     {
       day: "Day 4",
       location: "Galle",
-      image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=200&auto=format&fit=crop",
+      image: "/images/galle.jpg",
     },
   ],
 };
@@ -160,7 +179,7 @@ export default async function PlanningATripPage() {
         {/* Hero Section */}
         <section className="relative w-full h-[420px] bg-slate-900 overflow-hidden">
           <Image
-            src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?q=80&w=1600&auto=format&fit=crop"
+            src="/images/sigiriya.jpg"
             alt="Sigiriya Sri Lanka Travel Banner"
             fill
             className="object-cover opacity-65"
@@ -309,7 +328,7 @@ export default async function PlanningATripPage() {
                     >
                       <div className="relative h-28 w-full overflow-hidden">
                         <Image
-                          src={district.image}
+                          src={getImageUrl(district.image)}
                           alt={district.name}
                           fill
                           className="object-cover group-hover:scale-105 transition duration-300"
@@ -355,7 +374,7 @@ export default async function PlanningATripPage() {
                       <div>
                         <div className="relative h-28 w-full overflow-hidden">
                           <Image
-                            src={trip.image}
+                            src={getImageUrl(trip.image)}
                             alt={trip.title}
                             fill
                             className="object-cover group-hover:scale-105 transition duration-300"
@@ -397,7 +416,7 @@ export default async function PlanningATripPage() {
                     >
                       <div className="flex items-center gap-3">
                         <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0">
-                          <Image src={item.image} alt={item.location} fill className="object-cover" />
+                          <Image src={getImageUrl(item.image)} alt={item.location} fill className="object-cover" />
                         </div>
                         <div>
                           <h4 className="font-semibold text-gray-900 text-xs">{item.location}</h4>
@@ -436,7 +455,7 @@ export default async function PlanningATripPage() {
           {/* Bottom Banner */}
           <div className="relative rounded-2xl overflow-hidden p-8 md:p-12 text-white bg-slate-900 flex flex-col md:flex-row items-center justify-between">
             <Image
-              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
+              src="/images/unawatuna.jpg"
               alt="Beach Sri Lanka"
               fill
               className="object-cover opacity-30"
