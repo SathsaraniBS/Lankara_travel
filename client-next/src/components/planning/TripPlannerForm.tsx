@@ -1,130 +1,129 @@
 "use client";
 
 import React, { useState } from "react";
-import { MapPin, Calendar, Users, ArrowRight, Compass } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { MapPin, Calendar, Users, ArrowRight } from "lucide-react";
 
 export default function TripPlannerForm() {
+  const router = useRouter();
+
   const [fromLocation, setFromLocation] = useState("Colombo");
   const [toLocation, setToLocation] = useState("Sigiriya");
-  const [travelDates, setTravelDates] = useState("12 Apr 2025 - 16 Apr 2025");
+  const [startDate, setStartDate] = useState("2025-04-12");
+  const [endDate, setEndDate] = useState("2025-04-16");
   const [travelType, setTravelType] = useState("Family Trip");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-      const response = await fetch(`${apiUrl}/api/v1/planner/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from_location: fromLocation,
-          to_location: toLocation,
-          dates: travelDates,
-          travel_type: travelType,
-        }),
-      });
+    const queryParams = new URLSearchParams({
+      from: fromLocation,
+      to: toLocation,
+      startDate,
+      endDate,
+      type: travelType,
+    });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate plan");
-      }
-
-      const data = await response.json();
-      console.log("Generated Plan:", data);
-      // Optional: Redirect or update store
-    } catch (error) {
-      console.error("Error generating trip plan:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    router.push(`/trip-results?${queryParams.toString()}`);
   };
 
   return (
-    <section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-      <div className="mb-4">
-        <div className="flex items-center gap-2 text-emerald-900 font-serif font-bold text-lg">
-          <Compass className="w-5 h-5 text-emerald-700" />
-          <h2>Plan Your Trip</h2>
-        </div>
-        <p className="text-xs text-gray-500 mt-0.5">
+    <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-4">
+      <div>
+        <h2 className="text-xl font-serif font-bold text-gray-900 flex items-center gap-2">
+          🗺️ Plan Your Trip
+        </h2>
+        <p className="text-xs text-gray-500">
           Choose your preferences and let us help you create the perfect itinerary.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-        {/* From */}
-        <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+        {/* FROM */}
+        <div className="md:col-span-3 bg-gray-50/70 p-3 rounded-2xl border border-gray-100 flex items-center gap-3">
           <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
           <div className="w-full">
-            <label className="block text-[10px] uppercase font-semibold text-gray-400">From</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              FROM
+            </label>
             <input
               type="text"
               value={fromLocation}
               onChange={(e) => setFromLocation(e.target.value)}
-              className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
+              className="w-full bg-transparent text-xs font-semibold text-gray-800 focus:outline-none"
+              placeholder="Starting Location"
+              required
             />
           </div>
         </div>
 
-        {/* To */}
-        <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+        {/* TO */}
+        <div className="md:col-span-3 bg-gray-50/70 p-3 rounded-2xl border border-gray-100 flex items-center gap-3">
           <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
           <div className="w-full">
-            <label className="block text-[10px] uppercase font-semibold text-gray-400">To</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              TO
+            </label>
             <input
               type="text"
               value={toLocation}
               onChange={(e) => setToLocation(e.target.value)}
-              className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
+              className="w-full bg-transparent text-xs font-semibold text-gray-800 focus:outline-none"
+              placeholder="Destination Location"
+              required
             />
           </div>
         </div>
 
-        {/* Travel Dates */}
-        <div className="md:col-span-3 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+        {/* TRAVEL DATES */}
+        <div className="md:col-span-3 bg-gray-50/70 p-3 rounded-2xl border border-gray-100 flex items-center gap-3">
           <Calendar className="w-4 h-4 text-emerald-700 shrink-0" />
           <div className="w-full">
-            <label className="block text-[10px] uppercase font-semibold text-gray-400">Travel Dates</label>
-            <input
-              type="text"
-              value={travelDates}
-              onChange={(e) => setTravelDates(e.target.value)}
-              className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none"
-            />
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              TRAVEL DATES
+            </label>
+            <div className="flex items-center gap-1 text-xs font-semibold text-gray-800">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="bg-transparent text-xs font-semibold focus:outline-none w-full"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Travel Type */}
-        <div className="md:col-span-2 bg-gray-50/70 border border-gray-200 rounded-xl p-3 flex items-center gap-3">
+        {/* TRAVEL TYPE */}
+        <div className="md:col-span-2 bg-gray-50/70 p-3 rounded-2xl border border-gray-100 flex items-center gap-3">
           <Users className="w-4 h-4 text-emerald-700 shrink-0" />
           <div className="w-full">
-            <label className="block text-[10px] uppercase font-semibold text-gray-400">Travel Type</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              TRAVEL TYPE
+            </label>
             <select
               value={travelType}
               onChange={(e) => setTravelType(e.target.value)}
-              className="w-full bg-transparent text-xs font-semibold text-gray-800 outline-none cursor-pointer"
+              className="w-full bg-transparent text-xs font-semibold text-gray-800 focus:outline-none cursor-pointer"
             >
-              <option value="Family Trip">Family Trip</option>
               <option value="Solo Trip">Solo Trip</option>
-              <option value="Honeymoon">Honeymoon</option>
+              <option value="Couples Trip">Couples Trip</option>
+              <option value="Family Trip">Family Trip</option>
               <option value="Friends Trip">Friends Trip</option>
             </select>
           </div>
         </div>
 
-        {/* Submit Button */}
-        <div className="md:col-span-1">
+        {/* SUBMIT BUTTON */}
+        <div className="md:col-span-1 flex justify-center">
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-emerald-900 hover:bg-emerald-950 text-white p-3 rounded-xl flex items-center justify-center transition shadow-md group disabled:opacity-50"
+            className="w-full h-12 bg-emerald-800 hover:bg-emerald-900 text-white rounded-2xl flex items-center justify-center transition shadow-md"
+            title="Generate Itinerary"
           >
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-5 h-5" />
           </button>
         </div>
       </form>
-    </section>
+    </div>
   );
 }
