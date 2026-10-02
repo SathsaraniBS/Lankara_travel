@@ -170,6 +170,61 @@ async function getPlannerData(): Promise<InitialPlannerData> {
   }
 }
 
+const toggleFavorite = (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Helper function to extract or format slug
+  const getCitySlug = (dest: Destination) => {
+    if (dest.slug) return dest.slug.toLowerCase();
+    const rawName = dest.name || dest.title || dest.location || "";
+    return rawName.toLowerCase().replace(/\s+/g, "-");
+  };
+
+  useEffect(() => {
+    async function fetchDestinations() {
+      try {
+        const query = selectedCategory ? `?category=${encodeURIComponent(selectedCategory)}` : "";
+        const res = await fetch(`http://localhost:8000/api/v1/destinations${query}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setDestinations(data);
+          }
+        }
+      } catch (err) {
+        console.warn("Backend API unavailable, using fallback mock destinations.");
+      }
+    }
+    fetchDestinations();
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchGuide() {
+      try {
+        const res = await fetch("http://localhost:8000/destinations");
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && Array.isArray(data) && data.length > 0) {
+            setGuideDestinations(data);
+          }
+        }
+      } catch (err) {
+        console.warn("Backend API unavailable, using guide fallback data.");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    fetchGuide();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
 export default async function PlanningATripPage() {
   const { districts, popularTrips, initialTripPlan } = await getPlannerData();
 
@@ -313,11 +368,11 @@ export default async function PlanningATripPage() {
                     <p className="text-xs text-gray-500">Discover the best places across all 25 districts.</p>
                   </div>
                   <Link
-                    href="/districts"
-                    className="text-xs text-emerald-800 font-semibold hover:underline flex items-center gap-1"
-                  >
-                    View All Districts →
-                  </Link>
+                    key={dest.id}
+                    href={`/destinations/${citySlug}`}
+                    className="group relative h-[320px] w-full rounded-3xl overflow-hidden transition-transform duration-300 hover:scale-105 shadow-2xl border border-white/10 cursor-pointer block"
+                  ></Link>
+                  
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
