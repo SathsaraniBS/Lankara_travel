@@ -137,7 +137,7 @@ async function getPlannerData(): Promise<InitialPlannerData> {
 
   try {
     const res = await fetch(`${apiUrl}/api/v1/planner/overview`, {
-      next: { revalidate: 3600 }, // Cache on server for 1 hour
+      next: { revalidate: 3600 }, // SSR Cache for 1 hour
     });
 
     if (!res.ok) {
@@ -214,7 +214,7 @@ export default async function PlanningATripPage() {
 
         {/* Main Content Container */}
         <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
-          {/* Plan Your Trip Interactive Filter Form (Client Component) */}
+          {/* Plan Your Trip Interactive Form (Client Component) */}
           <TripPlannerForm />
 
           {/* How It Works Section */}
@@ -279,7 +279,7 @@ export default async function PlanningATripPage() {
             </div>
           </section>
 
-          {/* Grid Layout: Explore Sri Lanka & Side Trip Plan */}
+          {/* Main Grid: Explore Sri Lanka & Side Trip Plan */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Column - Explore Sri Lanka */}
             <div className="lg:col-span-8 space-y-8">
@@ -376,9 +376,8 @@ export default async function PlanningATripPage() {
               </div>
             </div>
 
-            {/* Right Column - Your Trip Plan Card & Assistance */}
+            {/* Right Column - Trip Plan Card */}
             <div className="lg:col-span-4 space-y-6">
-              {/* Trip Plan Widget */}
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                 <div className="flex items-center justify-between pb-2 border-b border-gray-100">
                   <div className="flex items-center gap-2">
@@ -390,7 +389,6 @@ export default async function PlanningATripPage() {
                   </button>
                 </div>
 
-                {/* Day Items List */}
                 <div className="space-y-2.5">
                   {initialTripPlan.map((item, idx) => (
                     <div
@@ -435,7 +433,7 @@ export default async function PlanningATripPage() {
             </div>
           </div>
 
-          {/* Bottom Banner Promo Card */}
+          {/* Bottom Banner */}
           <div className="relative rounded-2xl overflow-hidden p-8 md:p-12 text-white bg-slate-900 flex flex-col md:flex-row items-center justify-between">
             <Image
               src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1200&auto=format&fit=crop"
@@ -466,7 +464,6 @@ export default async function PlanningATripPage() {
         </main>
       </div>
 
-      {/* Footer Component */}
       <Footer />
     </div>
   );
