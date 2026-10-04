@@ -55,6 +55,10 @@ const fallbackGuideDestinations: Destination[] = [
   { id: "4", title: "TRINCOMALEE", subtitle: "Beaches & Diving", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/Trincomalee.jpg", slug: "trincomalee" },
   { id: "5", title: "NUWARA ELIYA", subtitle: "Tea Gardens & Cool Climate", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/nuwaraeliya.webp", slug: "nuwara-eliya" },
   { id: "6", title: "JAFFNA", subtitle: "Northern Heritage & Food", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/jaffna.jpg", slug: "jaffna" },
+  { id: "7",title: "ELLA", subtitle: "Cool Climate", location: "Ella", duration: "", price: 0, categoryTag: "", image: "/images/ella.jpg", slug: "ella" },
+  { id: "8",title: "SIGIRIYA", subtitle: "History ", location: "Sigiriya", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "sigiriya" },
+  { id: "7",title: "ANURADHAPURA", subtitle: "Culture", location: "Anuradhapura", duration: "", price: 0, categoryTag: "", image: "/images/anuradhapura.jpg", slug: "anuradhapura" },
+
 ];
 
 const CATEGORY_ROUTES: Record<string, string> = {

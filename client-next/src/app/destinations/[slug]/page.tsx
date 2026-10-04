@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { MapPin, Calendar, Compass, ArrowLeft, Heart } from "lucide-react";
+import { MapPin, Calendar, Compass, ArrowLeft } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
 interface DestinationData {
@@ -78,9 +78,33 @@ const localDestinationsData: Record<string, DestinationData> = {
       },
     ],
   },
+  ella: {
+    name: "Ella",
+    tagline: "Nature & Adventure",
+    hero_image: "/images/ella.jpg",
+    description:
+      "A small, quiet mountain town in Sri Lanka’s central highlands, famous for breathtaking views, lush tea plantations, hiking trails, and iconic waterfalls.",
+    best_time_to_visit: "January to May",
+    top_attractions: [
+      {
+        title: "Nine Arches Bridge",
+        image: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=600&auto=format&fit=crop",
+        desc: "Colonial-era railway viaduct bridge surrounded by dense jungle and tea fields.",
+      },
+      {
+        title: "Little Adam's Peak",
+        image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop",
+        desc: "Popular hiking spot offering easy trails and stunning 360-degree panoramic mountain views.",
+      },
+      {
+        title: "Ella Rock",
+        image: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=600&auto=format&fit=crop",
+        desc: "Challenging trek through tea gardens and forest leading to dramatic clifftop views.",
+      },
+    ],
+  },
 };
 
-// MUST be exported as DEFAULT
 export default function DestinationDetailPage() {
   const params = useParams();
   const slug = (params?.slug as string)?.toLowerCase();
@@ -156,10 +180,10 @@ export default function DestinationDetailPage() {
 
           <div className="relative z-10 max-w-7xl mx-auto h-full px-6 flex flex-col justify-between py-8">
             <Link
-              href="/destinations"
+              href="/planning-a-trip"
               className="inline-flex items-center gap-2 text-white/90 hover:text-amber-400 text-xs font-semibold bg-black/40 backdrop-blur-md px-4 py-2 rounded-full w-fit transition border border-white/10"
             >
-              <ArrowLeft className="w-4 h-4" /> Back to All Destinations
+              <ArrowLeft className="w-4 h-4" /> Back to Planning
             </Link>
 
             <div className="space-y-2 mb-4">
