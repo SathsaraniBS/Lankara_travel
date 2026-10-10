@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
 from typing import List, Optional
+
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from database import get_db
 from models.road_trip import RoadTrip
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/v1/road-trips", tags=["Road Trips"])
+
 
 class RoadTripResponse(BaseModel):
     id: str
@@ -17,34 +21,33 @@ class RoadTripResponse(BaseModel):
     image: str
     travelStyle: str
 
-    class Config:
-        from_attributes = True
 
 @router.get("", response_model=List[RoadTripResponse])
-def get_road_trips(
+async def get_road_trips(
     destination: Optional[str] = Query(None),
     duration: Optional[str] = Query(None),
     travel_style: Optional[str] = Query(None),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
-    query = db.query(RoadTrip)
+    query = select(RoadTrip)
 
     if destination:
-        query = query.filter(RoadTrip.title.ilike(f"%{destination}%"))
+        query = query.where(RoadTrip.title.ilike(f"%{destination}%"))
 
     if travel_style:
-        query = query.filter(RoadTrip.travel_style == travel_style)
+        query = query.where(RoadTrip.travel_style == travel_style)
 
     if duration == "1-2":
-        query = query.filter(RoadTrip.min_days <= 2)
+        query = query.where(RoadTrip.min_days <= 2)
     elif duration == "3-5":
-        query = query.filter(RoadTrip.min_days >= 3, RoadTrip.min_days <= 5)
+        query = query.where(RoadTrip.min_days >= 3, RoadTrip.min_days <= 5)
     elif duration == "7+":
-        query = query.filter(RoadTrip.min_days >= 7)
+        query = query.where(RoadTrip.min_days >= 7)
 
-    results = query.all()
-    
-    # Map snake_case model to camelCase JSON output
+    result = await db.execute(query.order_by(RoadTrip.title))
+    items = result.scalars().all()
+
+    # Map snake_case model to the camelCase JSON the frontend expects
     return [
         RoadTripResponse(
             id=item.id,
@@ -54,6 +57,7 @@ def get_road_trips(
             duration=item.duration,
             distance=item.distance,
             image=item.image,
-            travelStyle=item.travel_style
-        ) for item in results
+            travelStyle=item.travel_style,
+        )
+        for item in items
     ]

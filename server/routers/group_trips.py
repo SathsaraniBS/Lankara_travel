@@ -1,18 +1,24 @@
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
 from typing import List, Optional
-from pydantic import BaseModel
+
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from database import get_db
 import models.group_trip as models
 
 group_trips_router = APIRouter(
     prefix="/group-trips",
-    tags=["Group Trips"]
+    tags=["Group Trips"],
 )
+
 
 # --- Pydantic Schemas ---
 
 class GroupTripSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     title: str
     tag: str
@@ -22,11 +28,10 @@ class GroupTripSchema(BaseModel):
     price: float
     image: str
 
-    class Config:
-        from_attributes = True
-
 
 class TestimonialSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     quote: str
     name: str
@@ -34,30 +39,32 @@ class TestimonialSchema(BaseModel):
     rating: int
     avatar: str
 
-    class Config:
-        from_attributes = True
 
 # --- Endpoints ---
 
 @group_trips_router.get("", response_model=List[GroupTripSchema])
-def get_group_trips(
+async def get_group_trips(
     destination: Optional[str] = Query(None),
     trip_type: Optional[str] = Query(None),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
-    query = db.query(models.GroupTrip)
-    
+    query = select(models.GroupTrip)
+
     if destination:
-        query = query.filter(
-            (models.GroupTrip.location.ilike(f"%{destination}%")) |
-            (models.GroupTrip.title.ilike(f"%{destination}%"))
+        query = query.where(
+            or_(
+                models.GroupTrip.location.ilike(f"%{destination}%"),
+                models.GroupTrip.title.ilike(f"%{destination}%"),
+            )
         )
     if trip_type:
-        query = query.filter(models.GroupTrip.trip_type.ilike(f"%{trip_type}%"))
+        query = query.where(models.GroupTrip.trip_type.ilike(f"%{trip_type}%"))
 
-    return query.all()
+    result = await db.execute(query.order_by(models.GroupTrip.title))
+    return result.scalars().all()
 
 
 @group_trips_router.get("/testimonials", response_model=List[TestimonialSchema])
-def get_testimonials(db: Session = Depends(get_db)):
-    return db.query(models.Testimonial).all()
+async def get_testimonials(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(models.Testimonial))
+    return result.scalars().all()
