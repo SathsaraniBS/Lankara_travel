@@ -1,6 +1,7 @@
 cd C:\travel-test\server
 uvicorn main:app --reload
 
+admin email = admin@lankaratravel.com
 this is tech stack use this project.Frontend:      Next.js + TypeScript + Tailwind
 Backend:       FastAPI (Python)
 Database:      PostgreSQL + SQLAlchemy + Redis
