@@ -8,7 +8,7 @@ from alembic import op
 import sqlalchemy as sa
 
 revision = "a1c0ntact001"
-down_revision = "<PUT_YOUR_LATEST_REVISION_ID_HERE>"  # run `alembic heads` to find it
+down_revision = "c2584b0b6580"
 branch_labels = None
 depends_on = None
 

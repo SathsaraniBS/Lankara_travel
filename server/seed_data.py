@@ -1,41 +1,52 @@
 """
-Lankara Travel - Seed Data Script
-Sample flights, hotels, and test users database insert .
+Lankara Travel - Seed Data Script (development only)
 
-Run: python seed_data.py
+Run from the server folder:   python seed_data.py
+
+Passwords are NEVER stored in this file. Put them in server/.env:
+    SEED_ADMIN_PASSWORD=...   # creates the admin account (12+ characters)
+    SEED_USER_PASSWORD=...    # creates the sample users (12+ characters)
+
+The script is safe to run more than once: rows that already exist are skipped.
+Do not run it against a production database.
 """
 
 import asyncio
-from datetime import datetime, timedelta
+import os
+from datetime import datetime, timedelta, timezone
 
-from database import AsyncSessionLocal
-from models.user import User
+from sqlalchemy import select
+
+from auth import hash_password
+from database import AsyncSessionLocal, engine
 from models.flight import Flight
 from models.hotel import Hotel
-from auth import hash_password
+from models.user import User
+
+# database.py is imported above, which also loads server/.env
+engine.sync_engine.echo = False  # silence SQL logs for this script
+
+MIN_PASSWORD_LENGTH = 12
 
 
 # ============================================================
-# Sample Users
+# Sample Users (passwords come from the environment)
 # ============================================================
 SAMPLE_USERS = [
     {
         "email": "kasun@example.com",
-        "password": "password123",
         "full_name": "Kasun Perera",
         "phone_number": "0771111111",
         "is_admin": False,
     },
     {
         "email": "nimali@example.com",
-        "password": "password123",
         "full_name": "Nimali Silva",
         "phone_number": "0772222222",
         "is_admin": False,
     },
     {
         "email": "admin@lankaratravel.com",
-        "password": "Ladmin#2?/56",
         "full_name": "Lankara Admin",
         "phone_number": "0773333333",
         "is_admin": True,
@@ -163,62 +174,113 @@ SAMPLE_HOTELS = [
 ]
 
 
-async def seed_users(db):
-    print("🌱 Seeding users...")
-    for user_data in SAMPLE_USERS:
-        new_user = User(
-            email=user_data["email"],
-            hashed_password=hash_password(user_data["password"]),
-            full_name=user_data["full_name"],
-            phone_number=user_data["phone_number"],
-            is_admin=user_data["is_admin"],
+def _utc_now() -> datetime:
+    # The columns are timezone-naive DateTime, so store naive UTC values
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def _password_for(user_data: dict) -> str | None:
+    env_name = "SEED_ADMIN_PASSWORD" if user_data["is_admin"] else "SEED_USER_PASSWORD"
+    password = os.getenv(env_name)
+    if not password:
+        print(f"   - skipped {user_data['email']}: {env_name} is not set in server/.env")
+        return None
+    if len(password) < MIN_PASSWORD_LENGTH:
+        print(
+            f"   - skipped {user_data['email']}: {env_name} must be at least "
+            f"{MIN_PASSWORD_LENGTH} characters"
         )
-        db.add(new_user)
+        return None
+    return password
+
+
+async def seed_users(db) -> None:
+    print("Seeding users...")
+    created = 0
+    for user_data in SAMPLE_USERS:
+        existing = await db.execute(select(User.id).where(User.email == user_data["email"]))
+        if existing.scalar_one_or_none() is not None:
+            print(f"   - exists, left unchanged: {user_data['email']}")
+            continue
+
+        password = _password_for(user_data)
+        if password is None:
+            continue
+
+        db.add(
+            User(
+                email=user_data["email"],
+                hashed_password=hash_password(password),
+                full_name=user_data["full_name"],
+                phone_number=user_data["phone_number"],
+                is_admin=user_data["is_admin"],
+            )
+        )
+        created += 1
+
     await db.commit()
-    print(f"   ✅ {len(SAMPLE_USERS)} users created")
+    print(f"   {created} user(s) created")
 
 
-async def seed_flights(db):
-    print("🌱 Seeding flights...")
-    now = datetime.utcnow()
+async def seed_flights(db) -> None:
+    print("Seeding flights...")
+    now = _utc_now()
+    created = 0
     for flight_data in SAMPLE_FLIGHTS:
+        existing = await db.execute(
+            select(Flight.id).where(Flight.flight_number == flight_data["flight_number"])
+        )
+        if existing.scalars().first() is not None:
+            continue
+
         departure_time = now + timedelta(hours=flight_data["departure_offset_hours"])
         arrival_time = departure_time + timedelta(hours=flight_data["duration_hours"])
 
-        new_flight = Flight(
-            airline=flight_data["airline"],
-            flight_number=flight_data["flight_number"],
-            departure_city=flight_data["departure_city"],
-            destination_city=flight_data["destination_city"],
-            departure_time=departure_time,
-            arrival_time=arrival_time,
-            price=flight_data["price"],
-            seats_available=flight_data["seats_available"],
+        db.add(
+            Flight(
+                airline=flight_data["airline"],
+                flight_number=flight_data["flight_number"],
+                departure_city=flight_data["departure_city"],
+                destination_city=flight_data["destination_city"],
+                departure_time=departure_time,
+                arrival_time=arrival_time,
+                price=flight_data["price"],
+                seats_available=flight_data["seats_available"],
+            )
         )
-        db.add(new_flight)
+        created += 1
+
     await db.commit()
-    print(f"   ✅ {len(SAMPLE_FLIGHTS)} flights created")
+    print(f"   {created} flight(s) created")
 
 
-async def seed_hotels(db):
-    print("🌱 Seeding hotels...")
+async def seed_hotels(db) -> None:
+    print("Seeding hotels...")
+    created = 0
     for hotel_data in SAMPLE_HOTELS:
-        new_hotel = Hotel(
-            name=hotel_data["name"],
-            city=hotel_data["city"],
-            address=hotel_data["address"],
-            price_per_night=hotel_data["price_per_night"],
-            rating=hotel_data["rating"],
-            rooms_available=hotel_data["rooms_available"],
+        existing = await db.execute(select(Hotel.id).where(Hotel.name == hotel_data["name"]))
+        if existing.scalars().first() is not None:
+            continue
+
+        db.add(
+            Hotel(
+                name=hotel_data["name"],
+                city=hotel_data["city"],
+                address=hotel_data["address"],
+                price_per_night=hotel_data["price_per_night"],
+                rating=hotel_data["rating"],
+                rooms_available=hotel_data["rooms_available"],
+            )
         )
-        db.add(new_hotel)
+        created += 1
+
     await db.commit()
-    print(f"   ✅ {len(SAMPLE_HOTELS)} hotels created")
+    print(f"   {created} hotel(s) created")
 
 
-async def main():
+async def main() -> None:
     print("=" * 50)
-    print("  Lankara Travel - Database Seeding")
+    print("  Lankara Travel - Database Seeding (development only)")
     print("=" * 50)
 
     async with AsyncSessionLocal() as db:
@@ -226,12 +288,11 @@ async def main():
         await seed_flights(db)
         await seed_hotels(db)
 
+    await engine.dispose()
+
     print("=" * 50)
-    print("  ✅ Seeding complete!")
+    print("  Seeding complete")
     print("=" * 50)
-    print("\n📋 Test Login Credentials:")
-    print("   Email: kasun@example.com | Password: password123")
-    print("   Email: admin@lankaratravel.com | Password: admin123456")
 
 
 if __name__ == "__main__":
