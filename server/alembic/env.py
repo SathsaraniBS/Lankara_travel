@@ -1,31 +1,41 @@
+import asyncio
 import os
 import sys
-import asyncio
 from logging.config import fileConfig
-from dotenv import load_dotenv
 
+from alembic import context
+from dotenv import load_dotenv
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from alembic import context
+# --- Make the server package importable and load server/.env -------------
+SERVER_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if SERVER_DIR not in sys.path:
+    sys.path.insert(0, SERVER_DIR)
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+load_dotenv(os.path.join(SERVER_DIR, ".env"))
 
-load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not set. Add it to server/.env before running Alembic."
+    )
 
+# --- Import the metadata AFTER the check above ----------------------------
+# database.py builds the engine at import time, so it needs DATABASE_URL first.
+from database import Base  # noqa: E402
 
-from database import Base
-from models.user import User
-from models.flight import Flight
-from models.hotel import Hotel
-from models.booking import Booking
-from models.payment import Payment
+# models/__init__.py imports every model (users, flights, hotels, bookings,
+# payments, community, contact, group trips, road trips, safari), so
+# Base.metadata knows every table and autogenerate sees them all.
+import models  # noqa: E402,F401
 
-
+# --- Alembic config -------------------------------------------------------
 config = context.config
 
-config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
+# ConfigParser treats "%" as interpolation syntax, so it must be escaped
+config.set_main_option("sqlalchemy.url", DATABASE_URL.replace("%", "%%"))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -34,12 +44,14 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
+    """Run migrations in 'offline' mode (emit SQL without a DB connection)."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        compare_type=True,
     )
 
     with context.begin_transaction():
@@ -47,7 +59,11 @@ def run_migrations_offline() -> None:
 
 
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=True,
+    )
 
     with context.begin_transaction():
         context.run_migrations()

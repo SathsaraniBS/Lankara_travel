@@ -1,12 +1,27 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Text, Integer, Float, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+
+from sqlalchemy import (
+    CheckConstraint,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
-from database import Base  # Adjust import based on your setup
+from sqlalchemy.orm import relationship
+
+from database import Base
+
 
 class Review(Base):
     __tablename__ = "reviews"
+    __table_args__ = (
+        CheckConstraint("rating >= 1 AND rating <= 5", name="ck_reviews_rating_range"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
@@ -39,6 +54,9 @@ class Story(Base):
 
 class StoryLike(Base):
     __tablename__ = "story_likes"
+    __table_args__ = (
+        UniqueConstraint("story_id", "user_id", name="uq_story_likes_story_user"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     story_id = Column(UUID(as_uuid=True), ForeignKey("stories.id"), nullable=False)
