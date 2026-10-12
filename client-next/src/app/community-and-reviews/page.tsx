@@ -375,7 +375,7 @@ export default function CommunityAndReviewsPage() {
                     </div>
                     <div className="relative h-24 w-full mt-2">
                       <Image
-                        src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600"
+                        src="/images/mirissa beach.jpg"
                         alt="Mirissa Beach"
                         fill
                         className="object-cover"
@@ -413,7 +413,7 @@ export default function CommunityAndReviewsPage() {
                     </div>
                     <div className="relative h-24 w-full mt-2">
                       <Image
-                        src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&q=80&w=600"
+                        src="/images/sigiriya.jpg"
                         alt="Sigiriya"
                         fill
                         className="object-cover"
@@ -451,7 +451,7 @@ export default function CommunityAndReviewsPage() {
                     </div>
                     <div className="relative h-24 w-full mt-2">
                       <Image
-                        src="https://images.unsplash.com/photo-1546708973-b339540b5162?auto=format&fit=crop&q=80&w=600"
+                        src="/images/Kandy6.jpg"
                         alt="Kandy"
                         fill
                         className="object-cover"
@@ -586,7 +586,6 @@ export default function CommunityAndReviewsPage() {
               ))
             ) : (
               <>
-                {/* Fallback Static Cards - Fixed image paths with leading slash */}
                 <div className="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between">
                   <div>
                     <div className="relative h-48 w-full overflow-hidden">

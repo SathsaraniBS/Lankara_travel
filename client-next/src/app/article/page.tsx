@@ -23,7 +23,6 @@ import Footer from "@/components/layout/Footer";
 export default function ArticlePage() {
   return (
     <>
-      {/* <div className="min-h-screen bg-[#faf9f6] text-gray-800 font-sans"> */}
       <div className="min-h-screen bg-[#fcfbf9] text-zinc-800 font-sans selection:bg-amber-200">
 
         {/* Hero Banner Section */}
@@ -294,7 +293,7 @@ export default function ArticlePage() {
                 </h3>
               </div>
               <div className="relative z-10 mt-4 md:mt-0">
-                <button className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-6 py-3 rounded-full transition flex items-center gap-1">
+                <button className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-6 py-3 rounded-full transition flex items-center gap-1 cursor-pointer">
                   Plan Your Trip <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
               </div>
@@ -353,10 +352,10 @@ export default function ArticlePage() {
 
           {/* Right Column - Sidebar */}
           <aside className="lg:col-span-4 space-y-8">
-            {/* Top Featured Guides Banner */}
+            {/* Top Featured Guides Banner - Fixed path with leading slash and encoded space */}
             <div className="relative rounded-2xl overflow-hidden p-6 text-white min-h-[160px] flex flex-col justify-end">
               <Image
-                src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop"
+                src="/images/travel%20guide.png"
                 alt="Featured Guide"
                 fill
                 className="object-cover"
@@ -442,7 +441,7 @@ export default function ArticlePage() {
                   placeholder="Your email address"
                   className="bg-white/10 border border-white/20 text-white text-xs placeholder-gray-400 rounded-lg px-3 py-2 flex-1 outline-none focus:border-emerald-400"
                 />
-                <button className="bg-amber-400 hover:bg-amber-500 text-gray-900 text-xs font-semibold px-4 py-2 rounded-lg transition shrink-0">
+                <button className="bg-amber-400 hover:bg-amber-500 text-gray-900 text-xs font-semibold px-4 py-2 rounded-lg transition shrink-0 cursor-pointer">
                   Subscribe →
                 </button>
               </div>
