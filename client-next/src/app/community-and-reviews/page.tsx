@@ -19,7 +19,7 @@ interface ReviewUser {
 
 interface Review {
   id: string;
-  rating: int;
+  rating: number;
   comment: string;
   location_name?: string;
   image_url?: string;
@@ -58,13 +58,11 @@ interface Story {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function CommunityAndReviewsPage() {
-  // States for backend data
   const [stats, setStats] = useState<CommunityStats | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // States for review modal & form
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedRating, setSelectedRating] = useState<number>(5);
   const [comment, setComment] = useState<string>("");
@@ -73,7 +71,6 @@ export default function CommunityAndReviewsPage() {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string>("");
 
-  // Fetch initial data from FastAPI backend
   useEffect(() => {
     async function fetchCommunityData() {
       try {
@@ -106,7 +103,6 @@ export default function CommunityAndReviewsPage() {
     fetchCommunityData();
   }, []);
 
-  // Handle Review Submission
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) {
@@ -118,7 +114,7 @@ export default function CommunityAndReviewsPage() {
     setSubmitError("");
 
     try {
-      const token = localStorage.getItem("token"); // Auth JWT
+      const token = localStorage.getItem("token");
       const res = await fetch(`${API_BASE_URL}/api/v1/community/reviews`, {
         method: "POST",
         headers: {
@@ -150,7 +146,6 @@ export default function CommunityAndReviewsPage() {
     }
   };
 
-  // Handle Story Like Toggle
   const handleToggleLike = async (storyId: string) => {
     try {
       const token = localStorage.getItem("token");
@@ -263,7 +258,7 @@ export default function CommunityAndReviewsPage() {
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#124E3F] hover:bg-[#0E3D31] text-white font-medium text-xs px-5 py-2.5 rounded-full flex items-center gap-2 transition-colors shadow-sm"
+              className="bg-[#124E3F] hover:bg-[#0E3D31] text-white font-medium text-xs px-5 py-2.5 rounded-full flex items-center gap-2 transition-colors shadow-sm cursor-pointer"
             >
               <PenSquare className="w-3.5 h-3.5" />
               Write a Review →
@@ -287,7 +282,6 @@ export default function CommunityAndReviewsPage() {
                   </div>
                 </div>
 
-                {/* Rating Breakdown Bars */}
                 <div className="mt-6 space-y-2.5">
                   {(stats?.breakdown || [
                     { stars: 5, percentage: "78%" },
@@ -355,7 +349,6 @@ export default function CommunityAndReviewsPage() {
                 ))
               ) : (
                 <>
-                  {/* Default Static Fallbacks when DB is empty */}
                   <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
                     <div className="p-4">
                       <div className="flex items-center gap-2.5 mb-3">
@@ -501,7 +494,7 @@ export default function CommunityAndReviewsPage() {
 
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="w-full bg-[#124E3F] hover:bg-[#0E3D31] text-white font-medium text-xs py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm"
+                  className="w-full bg-[#124E3F] hover:bg-[#0E3D31] text-white font-medium text-xs py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
                 >
                   Write a Review <ArrowRight className="w-3.5 h-3.5" />
                 </button>
@@ -551,7 +544,7 @@ export default function CommunityAndReviewsPage() {
                       />
                       <button
                         onClick={() => handleToggleLike(story.id)}
-                        className={`absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white transition-colors ${
+                        className={`absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white transition-colors cursor-pointer ${
                           story.is_liked_by_me ? "text-red-500" : "text-slate-600 hover:text-red-500"
                         }`}
                       >
@@ -593,17 +586,17 @@ export default function CommunityAndReviewsPage() {
               ))
             ) : (
               <>
-                {/* Fallback Static Cards */}
+                {/* Fallback Static Cards - Fixed image paths with leading slash */}
                 <div className="bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between">
                   <div>
                     <div className="relative h-48 w-full overflow-hidden">
                       <Image
-                        src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&q=80&w=600"
+                        src="/images/ella.jpg"
                         alt="Ella"
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white text-slate-600 hover:text-red-500 transition-colors">
+                      <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white text-slate-600 hover:text-red-500 transition-colors cursor-pointer">
                         <Heart className="w-4 h-4" />
                       </button>
                     </div>
@@ -644,12 +637,12 @@ export default function CommunityAndReviewsPage() {
                   <div>
                     <div className="relative h-48 w-full overflow-hidden">
                       <Image
-                        src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=600"
+                        src="/images/mirissa.webp"
                         alt="Mirissa"
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white text-slate-600 hover:text-red-500 transition-colors">
+                      <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white text-slate-600 hover:text-red-500 transition-colors cursor-pointer">
                         <Heart className="w-4 h-4" />
                       </button>
                     </div>
@@ -690,12 +683,12 @@ export default function CommunityAndReviewsPage() {
                   <div>
                     <div className="relative h-48 w-full overflow-hidden">
                       <Image
-                        src="https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&q=80&w=600"
+                        src="/images/safari-trip.jpg"
                         alt="Yala Safari"
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white text-slate-600 hover:text-red-500 transition-colors">
+                      <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white text-slate-600 hover:text-red-500 transition-colors cursor-pointer">
                         <Heart className="w-4 h-4" />
                       </button>
                     </div>
@@ -736,12 +729,12 @@ export default function CommunityAndReviewsPage() {
                   <div>
                     <div className="relative h-48 w-full overflow-hidden">
                       <Image
-                        src="https://images.unsplash.com/photo-1546708973-b339540b5162?auto=format&fit=crop&q=80&w=600"
+                        src="/images/Kandy.jpg"
                         alt="Kandy"
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white text-slate-600 hover:text-red-500 transition-colors">
+                      <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-1.5 rounded-full hover:bg-white text-slate-600 hover:text-red-500 transition-colors cursor-pointer">
                         <Heart className="w-4 h-4" />
                       </button>
                     </div>
@@ -885,7 +878,7 @@ export default function CommunityAndReviewsPage() {
             </p>
             <Link
               href="/plan-trip"
-              className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-xs px-6 py-3 rounded-full transition-colors shadow-lg"
+              className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold text-xs px-6 py-3 rounded-full transition-colors shadow-lg cursor-pointer"
             >
               Plan My Trip <ArrowRight className="w-4 h-4" />
             </Link>
@@ -899,7 +892,7 @@ export default function CommunityAndReviewsPage() {
           <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -973,7 +966,7 @@ export default function CommunityAndReviewsPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-[#124E3F] hover:bg-[#0E3D31] text-white font-medium text-xs py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                className="w-full bg-[#124E3F] hover:bg-[#0E3D31] text-white font-medium text-xs py-3 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 cursor-pointer"
               >
                 {submitting ? (
                   <>

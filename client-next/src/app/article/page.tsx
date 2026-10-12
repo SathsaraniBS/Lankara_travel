@@ -132,7 +132,7 @@ export default function ArticlePage() {
             <div className="relative rounded-2xl overflow-hidden shadow-lg group">
               <div className="relative h-80 w-full">
                 <Image
-                  src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=1200&auto=format&fit=crop"
+                  src="/images/sigiriya.jpg"
                   alt="Sigiriya Fortress"
                   fill
                   className="object-cover group-hover:scale-105 transition duration-500"
