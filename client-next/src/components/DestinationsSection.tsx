@@ -55,10 +55,9 @@ const fallbackGuideDestinations: Destination[] = [
   { id: "4", title: "TRINCOMALEE", subtitle: "Beaches & Diving", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/Trincomalee.jpg", slug: "trincomalee" },
   { id: "5", title: "NUWARA ELIYA", subtitle: "Tea Gardens & Cool Climate", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/nuwaraeliya.webp", slug: "nuwara-eliya" },
   { id: "6", title: "JAFFNA", subtitle: "Northern Heritage & Food", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/jaffna.jpg", slug: "jaffna" },
-  { id: "7",title: "ELLA", subtitle: "Cool Climate", location: "Ella", duration: "", price: 0, categoryTag: "", image: "/images/ella.jpg", slug: "ella" },
-  { id: "8",title: "SIGIRIYA", subtitle: "History ", location: "Sigiriya", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "sigiriya" },
-  { id: "7",title: "ANURADHAPURA", subtitle: "Culture", location: "Anuradhapura", duration: "", price: 0, categoryTag: "", image: "/images/anuradhapura.jpg", slug: "anuradhapura" },
-
+  { id: "7", title: "ELLA", subtitle: "Cool Climate", location: "Ella", duration: "", price: 0, categoryTag: "", image: "/images/ella.jpg", slug: "ella" },
+  { id: "8", title: "SIGIRIYA", subtitle: "History ", location: "Sigiriya", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "sigiriya" },
+  { id: "9", title: "ANURADHAPURA", subtitle: "Culture", location: "Anuradhapura", duration: "", price: 0, categoryTag: "", image: "/images/anuradhapura.jpg", slug: "anuradhapura" },
 ];
 
 const CATEGORY_ROUTES: Record<string, string> = {
@@ -94,7 +93,6 @@ export default function DestinationsSection() {
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Helper function to extract or format slug
   const getCitySlug = (dest: Destination) => {
     if (dest.slug) return dest.slug.toLowerCase();
     const rawName = dest.name || dest.title || dest.location || "";
@@ -218,9 +216,9 @@ export default function DestinationsSection() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {destinations.map((dest) => (
+            {destinations.map((dest, index) => (
               <div
-                key={dest.id}
+                key={`${dest.id}-${index}`}
                 className="bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-3 flex flex-col justify-between space-y-3 hover:border-zinc-700 transition duration-300 group shadow-lg"
               >
                 <div className="relative h-48 w-full rounded-xl overflow-hidden">
@@ -303,7 +301,7 @@ export default function DestinationsSection() {
 
       </div>
 
-      {/* Destination Guide Section - Updated with dynamic Link routing */}
+      {/* Destination Guide Section */}
       <div
         className="relative w-full min-h-[500px] bg-cover bg-center flex flex-col justify-center items-center text-center mt-16 rounded-3xl overflow-hidden px-4 py-12"
         style={{ backgroundImage: "url('/images/backimage2.jpg')" }}
@@ -324,7 +322,7 @@ export default function DestinationsSection() {
             <p className="text-zinc-300 text-sm">Loading destinations...</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pt-2">
-              {guideDestinations.map((dest) => {
+              {guideDestinations.map((dest, index) => {
                 const titleText = (dest.name || dest.title).toUpperCase();
                 const subtitleText = dest.subtitle || dest.description || dest.categoryTag || "Top Attraction";
                 const isFav = !!favorites[dest.id];
@@ -332,7 +330,7 @@ export default function DestinationsSection() {
 
                 return (
                   <Link
-                    key={dest.id}
+                    key={`${dest.id}-${index}`}
                     href={`/destinations/${citySlug}`}
                     className="group relative h-[320px] w-full rounded-3xl overflow-hidden transition-transform duration-300 hover:scale-105 shadow-2xl border border-white/10 cursor-pointer block"
                   >
