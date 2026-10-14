@@ -198,7 +198,7 @@ export default function ArticlePage() {
                 <div className="grid grid-cols-2 gap-4 mt-5">
                   <div className="relative h-28 rounded-lg overflow-hidden">
                     <Image
-                      src="https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=400&auto=format&fit=crop"
+                      src="/images/sigiriya image.jpg"
                       alt="Sigiriya Rock Fortress"
                       fill
                       className="object-cover"
@@ -352,7 +352,7 @@ export default function ArticlePage() {
 
           {/* Right Column - Sidebar */}
           <aside className="lg:col-span-4 space-y-8">
-            {/* Top Featured Guides Banner - Fixed path with leading slash and encoded space */}
+            {/* Top Featured Guides Banner */}
             <div className="relative rounded-2xl overflow-hidden p-6 text-white min-h-[160px] flex flex-col justify-end">
               <Image
                 src="/images/travel%20guide.png"
@@ -382,12 +382,12 @@ export default function ArticlePage() {
                   {
                     title: "10 Hidden Beaches in Sri Lanka You Need to Visit",
                     time: "5 min read",
-                    img: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=200&auto=format&fit=crop",
+                    img: "/images/mirissa beach.jpg",
                   },
                   {
                     title: "Best Things to Do in Ella",
                     time: "6 min read",
-                    img: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?q=80&w=200&auto=format&fit=crop",
+                    img: "/images/ella2.jpeg",
                   },
                   {
                     title: "A Complete Guide to Nuwara Eliya",
