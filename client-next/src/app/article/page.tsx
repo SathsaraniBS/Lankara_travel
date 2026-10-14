@@ -352,7 +352,7 @@ export default function ArticlePage() {
 
           {/* Right Column - Sidebar */}
           <aside className="lg:col-span-4 space-y-8">
-            {/* Top Featured Guides Banner - Fixed path with leading slash and encoded space */}
+            {/* Top Featured Guides Banner */}
             <div className="relative rounded-2xl overflow-hidden p-6 text-white min-h-[160px] flex flex-col justify-end">
               <Image
                 src="/images/travel%20guide.png"
@@ -387,7 +387,7 @@ export default function ArticlePage() {
                   {
                     title: "Best Things to Do in Ella",
                     time: "6 min read",
-                    img: "images/ella2.jpeg",
+                    img: "/images/ella2.jpeg",
                   },
                   {
                     title: "A Complete Guide to Nuwara Eliya",
