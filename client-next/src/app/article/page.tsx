@@ -392,12 +392,12 @@ export default function ArticlePage() {
                   {
                     title: "A Complete Guide to Nuwara Eliya",
                     time: "7 min read",
-                    img: "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=200&auto=format&fit=crop",
+                    img: "/images/nuwaraeliya.webp",
                   },
                   {
                     title: "Sri Lankan Food You Must Try",
                     time: "5 min read",
-                    img: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=200&auto=format&fit=crop",
+                    img: "/images/street-food.webp",
                   },
                 ].map((item, idx) => (
                   <div
