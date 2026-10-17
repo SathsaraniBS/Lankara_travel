@@ -1,7 +1,7 @@
 import os
 import uuid
 from typing import Optional
-from fastapi import FastAPI, Form, UploadFile, File, HTTPException, status
+from fastapi import FastAPI, Form, UploadFile, File, HTTPException, status, Query, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -22,9 +22,6 @@ app = FastAPI(
 )
 
 # CORS Configuration
-# The Next.js app now calls this API from its own server (via /api/backend proxy),
-# so browsers no longer hit FastAPI directly. These origins are only kept for
-# local development tools (Swagger UI etc.).
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -59,6 +56,30 @@ app.include_router(safari_router)
 app.include_router(group_trips_router)
 app.include_router(contact_router)
 
+# Destinations Router & Endpoints
+destinations_router = APIRouter(prefix="/api/v1/destinations", tags=["destinations"])
+root_destinations_router = APIRouter(tags=["destinations"])
+
+@destinations_router.get("")
+@destinations_router.get("/")
+def get_destinations(category: Optional[str] = None):
+    destinations_list = [
+        {"id": "1", "name": "Sigiriya", "category": "Culture", "image": "/images/sigiriya.jpg", "description": "Ancient rock fortress and palace." },
+        {"id": "2", "name": "Ella", "category": "Hiking", "image": "/images/ella.jpg", "description": "Scenic mountain village with stunning views." },
+        {"id": "3", "name": "Mirissa", "category": "Beaches", "image": "/images/mirissa.webp", "description": "Whale watching and golden sand beaches." },
+        {"id": "4", "name": "Kandy", "category": "Culture", "image": "/images/Kandy.jpg", "description": "Home to the Temple of the Sacred Tooth Relic." }
+    ]
+    if category:
+        destinations_list = [d for d in destinations_list if d["category"].lower() == category.lower()]
+    return destinations_list
+
+@root_destinations_router.get("/destinations")
+def get_root_destinations(category: Optional[str] = None):
+    return get_destinations(category)
+
+app.include_router(destinations_router)
+app.include_router(root_destinations_router)
+
 
 @app.get("/")
 async def root():
@@ -78,8 +99,6 @@ def detect_image_extension(data: bytes) -> Optional[str]:
 
 
 # Review Submission Endpoint
-# NOTE: reviews are not persisted to the database yet - this only stores the
-# optional image and echoes the payload back.
 @app.post("/api/v1/reviews", status_code=status.HTTP_201_CREATED)
 async def create_review(
     name: str = Form(..., min_length=1, max_length=100),
