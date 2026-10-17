@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
-// Data Models matching FastAPI & PostgreSQL schema
 interface Trip {
   id: string;
   title: string;
@@ -113,7 +112,6 @@ const fallbackProfile: UserProfile = {
   ],
 };
 
-// SSR Server-side Fetch function
 async function getUserProfile(token: string): Promise<UserProfile> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -140,10 +138,10 @@ export default async function ProfilePage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value || cookieStore.get("token")?.value;
 
-  // Optional: Redirect to login if token is missing (Uncomment if strict auth needed)
-  // if (!token) {
-  //   redirect("/login");
-  // }
+  // Strict Authentication: Uncomment this redirect if you want users to be forced to login first
+  if (!token) {
+    redirect("/login");
+  }
 
   const profile = token ? await getUserProfile(token) : fallbackProfile;
 
@@ -342,7 +340,7 @@ export default async function ProfilePage() {
                       </h3>
                       <p className="text-[11px] text-gray-400">Update your personal information and profile details.</p>
                     </div>
-                    <button className="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs rounded-lg transition flex items-center gap-1">
+                    <button className="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer">
                       <Edit2 className="w-3 h-3" /> Edit
                     </button>
                   </div>
@@ -412,7 +410,7 @@ export default async function ProfilePage() {
                     </p>
                   </div>
 
-                  <button className="relative z-10 w-fit px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-sm mt-4">
+                  <button className="relative z-10 w-fit px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-sm mt-4 cursor-pointer">
                     Upload Photo →
                   </button>
                 </div>
