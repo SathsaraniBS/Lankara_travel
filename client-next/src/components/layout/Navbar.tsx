@@ -3,17 +3,29 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Menu, X, User } from "lucide-react";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [click, setClick] = useState(false);
   const [token, setToken] = useState<string | null>(null);
 
+  // Re-read the token on every route change (e.g. right after login/logout),
+  // so Sign in / Register buttons switch to My Profile / Sign out immediately.
   useEffect(() => {
     const activeToken = localStorage.getItem("access_token");
     setToken(activeToken);
+  }, [pathname]);
+
+  // Keep multiple tabs in sync (login/logout in another tab)
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "access_token") setToken(e.newValue);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   const closeMobileMenu = () => setClick(false);
@@ -21,17 +33,22 @@ export default function Navbar() {
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    // Remove the cookie too, because /profile checks the cookie on the server
+    document.cookie = "access_token=; path=/; max-age=0; samesite=lax";
+    document.cookie = "token=; path=/; max-age=0; samesite=lax";
     setToken(null);
     closeMobileMenu();
     router.push("/login");
+    router.refresh();
   };
 
-  // "Planning a Trip" click 
+  // "Planning a Trip" click
   const handlePlanningTripClick = (e: React.MouseEvent) => {
     e.preventDefault();
     closeMobileMenu();
 
-    const activeToken = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    const activeToken =
+      typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
 
     if (activeToken) {
       router.push("/planning-a-trip");
@@ -47,8 +64,12 @@ export default function Navbar() {
     { to: "/planning-a-trip", label: "Planning a Trip", isProtected: true },
     { to: "/article", label: "Article" },
     { to: "/community-and-reviews", label: "Community and Reviews" },
-    {to: "/profile", label: "My Profile" },
+    { to: "/profile", label: "My Profile" },
   ];
+
+  // In the mobile menu, "My Profile" is already shown in the logged-in block,
+  // so hide it from the list when logged in to avoid a duplicate item.
+  const mobileNavLinks = navLinks.filter((link) => !(token && link.to === "/profile"));
 
   return (
     <nav className="fixed top-0 left-0 w-full h-20 flex items-center z-50 bg-gradient-to-b from-black/70 via-black/40 to-transparent backdrop-blur-[2px]">
@@ -85,7 +106,7 @@ export default function Navbar() {
         {/* Mobile Menu Dropdown */}
         {click && (
           <ul className="flex md:hidden flex-col w-full h-[90vh] absolute top-20 left-0 bg-[#242222]/95 backdrop-blur-md z-10 list-none">
-            {navLinks.map((link) => (
+            {mobileNavLinks.map((link) => (
               <li key={link.to} className="w-full">
                 {link.isProtected ? (
                   <button
