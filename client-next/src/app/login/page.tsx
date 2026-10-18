@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import api from "@/lib/api";
 
+const TOKEN_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -26,9 +28,25 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
-      const { access_token } = response.data;
+      const access_token: string | undefined = response.data?.access_token;
+
+      if (!access_token) {
+        setError("Login failed: no token received from server.");
+        return;
+      }
+
+      // 1) localStorage -> used by Navbar and client-side API calls
       localStorage.setItem("access_token", access_token);
-      router.push("/");
+
+      // 2) cookie -> /profile is a Server Component and reads the token
+      //    from cookies on the server. Without this cookie it redirects
+      //    back to /login.
+      document.cookie = `access_token=${access_token}; path=/; max-age=${TOKEN_MAX_AGE}; samesite=lax`;
+
+      // Go to the user dashboard (profile page), then refresh so server
+      // components re-read the new cookie.
+      router.push("/profile");
+      router.refresh();
     } catch (err: any) {
       if (err.response?.status === 401) {
         setError("Incorrect email or password");
