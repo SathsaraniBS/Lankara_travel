@@ -12,7 +12,6 @@ export default function Navbar() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // LocalStorage හි access_token පරීක්ෂා කිරීම
     const activeToken = localStorage.getItem("access_token");
     setToken(activeToken);
   }, []);
@@ -27,7 +26,7 @@ export default function Navbar() {
     router.push("/login");
   };
 
-  // "Planning a Trip" click කළ විට Login තත්ත්වය පරීක්ෂා කිරීම
+  // "Planning a Trip" click 
   const handlePlanningTripClick = (e: React.MouseEvent) => {
     e.preventDefault();
     closeMobileMenu();
@@ -48,6 +47,7 @@ export default function Navbar() {
     { to: "/planning-a-trip", label: "Planning a Trip", isProtected: true },
     { to: "/article", label: "Article" },
     { to: "/community-and-reviews", label: "Community and Reviews" },
+    {to: "/profile", label: "My Profile" },
   ];
 
   return (
