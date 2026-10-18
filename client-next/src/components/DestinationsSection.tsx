@@ -15,11 +15,11 @@ interface Category {
 
 interface Destination {
   id: string;
-  title: string;
-  location: string;
-  duration: string;
-  price: number;
-  categoryTag: string;
+  title?: string;
+  location?: string;
+  duration?: string;
+  price?: number;
+  categoryTag?: string;
   image: string;
   name?: string;
   subtitle?: string;
@@ -223,32 +223,32 @@ export default function DestinationsSection() {
               >
                 <div className="relative h-48 w-full rounded-xl overflow-hidden">
                   <Image
-                    src={dest.image}
-                    alt={dest.title}
+                    src={dest.image || "/images/sigiriya.jpg"}
+                    alt={dest.name || dest.title || "Destination image"}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <span className="absolute top-2.5 left-2.5 bg-emerald-500/90 backdrop-blur-md text-slate-950 font-semibold text-[10px] px-2.5 py-0.5 rounded-md">
-                    {dest.categoryTag}
+                    {dest.categoryTag || "Featured"}
                   </span>
                 </div>
 
                 <div className="space-y-2 text-left px-1">
-                  <h3 className="text-sm font-bold text-zinc-100 line-clamp-1">{dest.title}</h3>
+                  <h3 className="text-sm font-bold text-zinc-100 line-clamp-1">{dest.title || dest.name}</h3>
                   <div className="flex items-center justify-between text-zinc-400 text-[11px]">
                     <span className="flex items-center gap-1">
-                      <MapPin size={12} className="text-emerald-500" /> {dest.location}
+                      <MapPin size={12} className="text-emerald-500" /> {dest.location || "Sri Lanka"}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Navigation size={12} className="text-emerald-500" /> {dest.duration}
+                      <Navigation size={12} className="text-emerald-500" /> {dest.duration || "3 days Trip"}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 px-1">
                   <span className="text-sm font-extrabold text-zinc-100">
-                    ${dest.price.toFixed(2)}
+                    ${Number(dest.price || 0).toFixed(2)}
                   </span>
                   <button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition-colors">
                     Book Now
@@ -323,7 +323,7 @@ export default function DestinationsSection() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pt-2">
               {guideDestinations.map((dest, index) => {
-                const titleText = (dest.name || dest.title).toUpperCase();
+                const titleText = (dest.name || dest.title || "Destination").toUpperCase();
                 const subtitleText = dest.subtitle || dest.description || dest.categoryTag || "Top Attraction";
                 const isFav = !!favorites[dest.id];
                 const citySlug = getCitySlug(dest);
@@ -336,7 +336,7 @@ export default function DestinationsSection() {
                   >
                     {/* Background Image */}
                     <Image
-                      src={dest.image}
+                      src={dest.image || "/images/sigiriya.jpg"}
                       alt={titleText}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
