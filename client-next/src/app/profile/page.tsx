@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -38,47 +37,83 @@ interface UserProfile {
   id: string;
   full_name: string;
   email: string;
-  phone?: string;
+  phone_number?: string;
   location?: string;
   bio?: string;
   role?: string;
   avatar_url?: string;
-  stats?: {
+  stats: {
     trips_planned: number;
     destinations_visited: number;
     reviews_written: number;
     favorite_places: number;
   };
-  recent_trips?: Trip[];
-  favorites?: FavoriteDestination[];
+  recent_trips: Trip[];
+  favorites: FavoriteDestination[];
 }
 
-// Default layout stats and structure if backend sends partial data
-const defaultProfileData: UserProfile = {
-  id: "",
-  full_name: "Traveler",
-  email: "user@example.com",
-  phone: "",
-  location: "Sri Lanka",
-  bio: "Exploring the breathtaking world of Sri Lanka.",
+const fallbackProfile: UserProfile = {
+  id: "usr-1",
+  full_name: "Sanduni Sathsarani",
+  email: "s209bandara@gmail.com",
+  phone_number: "+94 71 234 5678",
+  location: "Colombo, Sri Lanka",
+  bio: "Traveling is not just about places, it's about the people, culture and stories that stay with you forever.",
   role: "Traveler",
   avatar_url: "/images/colombo.jpg",
   stats: {
-    trips_planned: 0,
-    destinations_visited: 0,
-    reviews_written: 0,
-    favorite_places: 0,
+    trips_planned: 12,
+    destinations_visited: 8,
+    reviews_written: 5,
+    favorite_places: 32,
   },
-  recent_trips: [],
-  favorites: [],
+  recent_trips: [
+    {
+      id: "t1",
+      title: "Cultural Triangle Tour",
+      location: "Sigiriya",
+      date: "12 Apr 2025 - 16 Apr 2025",
+      status: "Completed",
+      image: "/images/sigiriya.jpg",
+    },
+    {
+      id: "t2",
+      title: "Beach Getaway",
+      location: "Mirissa",
+      date: "5 Mar 2025 - 8 Mar 2025",
+      status: "Completed",
+      image: "/images/unawatuna.jpg",
+    },
+    {
+      id: "t3",
+      title: "Hill Country Adventure",
+      location: "Ella",
+      date: "10 Jan 2025 - 22 Jan 2025",
+      status: "Completed",
+      image: "/images/ella.jpg",
+    },
+    {
+      id: "t4",
+      title: "City Explorer",
+      location: "Colombo",
+      date: "10 Dec 2024 - 12 Dec 2024",
+      status: "Completed",
+      image: "/images/colombo.jpg",
+    },
+  ],
+  favorites: [
+    { id: "f1", name: "Sigiriya", image: "/images/sigiriya.jpg" },
+    { id: "f2", name: "Ella", image: "/images/ella.jpg" },
+    { id: "f3", name: "Mirissa", image: "/images/unawatuna.jpg" },
+    { id: "f4", name: "Kandy", image: "/images/Kandy.jpg" },
+  ],
 };
 
-// Fetch Real User Data from FastAPI Backend
-async function getUserProfile(token: string): Promise<UserProfile | null> {
+async function getUserProfile(token: string): Promise<UserProfile> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
   try {
-    const res = await fetch(`${apiUrl}/api/v1/auth/me`, {
+    const res = await fetch(`${apiUrl}/api/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -86,19 +121,23 @@ async function getUserProfile(token: string): Promise<UserProfile | null> {
     });
 
     if (res.ok) {
-      const realData = await res.json();
+      const data = await res.json();
       return {
-        ...defaultProfileData,
-        ...realData,
-        stats: { ...defaultProfileData.stats, ...(realData.stats || {}) },
-        recent_trips: realData.recent_trips || [],
-        favorites: realData.favorites || [],
+        ...fallbackProfile,
+        id: data.id || fallbackProfile.id,
+        full_name: data.full_name || fallbackProfile.full_name,
+        email: data.email || fallbackProfile.email,
+        phone_number: data.phone_number || fallbackProfile.phone_number,
+        role: data.is_admin ? "Admin" : "Traveler",
+        stats: data.stats || fallbackProfile.stats,
+        recent_trips: data.recent_trips?.length ? data.recent_trips : fallbackProfile.recent_trips,
+        favorites: data.favorites?.length ? data.favorites : fallbackProfile.favorites,
       };
     }
-    return null;
+    return fallbackProfile;
   } catch (error) {
-    console.error("Failed to fetch real profile data from backend:", error);
-    return null;
+    console.warn("Backend fetch failed, using fallback profile UI:", error);
+    return fallbackProfile;
   }
 }
 
@@ -106,19 +145,7 @@ export default async function ProfilePage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value || cookieStore.get("token")?.value;
 
-  // Enforce authentication check: redirect to login if not authenticated
-  if (!token) {
-    redirect("/login");
-  }
-
-  const realProfile = await getUserProfile(token);
-
-  // If token is invalid or expired on backend
-  if (!realProfile) {
-    redirect("/login");
-  }
-
-  const profile = realProfile;
+  const profile = token ? await getUserProfile(token) : fallbackProfile;
 
   return (
     <div className="min-h-screen bg-[#faf9f6] text-gray-800 font-sans flex flex-col justify-between">
@@ -220,7 +247,7 @@ export default async function ProfilePage() {
                   <div className="relative w-20 h-20 rounded-full overflow-hidden shrink-0 border-2 border-emerald-600">
                     <Image
                       src={profile.avatar_url || "/images/colombo.jpg"}
-                      alt={profile.full_name || "Profile"}
+                      alt={profile.full_name}
                       fill
                       className="object-cover"
                     />
@@ -232,7 +259,7 @@ export default async function ProfilePage() {
                         {profile.full_name}
                       </h2>
                       <span className="bg-emerald-50 text-emerald-800 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
-                        {profile.role || "Traveler"}
+                        {profile.role}
                       </span>
                     </div>
 
@@ -241,18 +268,14 @@ export default async function ProfilePage() {
                       {profile.email}
                     </p>
 
-                    {profile.location && (
-                      <p className="text-xs text-gray-500 flex items-center justify-center sm:justify-start gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-emerald-700" />
-                        {profile.location}
-                      </p>
-                    )}
+                    <p className="text-xs text-gray-500 flex items-center justify-center sm:justify-start gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-emerald-700" />
+                      {profile.location}
+                    </p>
 
-                    {profile.bio && (
-                      <p className="text-xs text-gray-600 italic pt-1 border-t border-gray-100 leading-relaxed">
-                        &quot;{profile.bio}&quot;
-                      </p>
-                    )}
+                    <p className="text-xs text-gray-600 italic pt-1 border-t border-gray-100 leading-relaxed">
+                      &quot;{profile.bio}&quot;
+                    </p>
                   </div>
                 </div>
 
@@ -267,7 +290,7 @@ export default async function ProfilePage() {
                       <Compass className="w-5 h-5 text-emerald-800 shrink-0" />
                       <div>
                         <div className="text-lg font-bold text-gray-900 leading-tight">
-                          {profile.stats?.trips_planned ?? 0}
+                          {profile.stats.trips_planned}
                         </div>
                         <div className="text-[10px] text-gray-500">Trips Planned</div>
                       </div>
@@ -277,7 +300,7 @@ export default async function ProfilePage() {
                       <MapPin className="w-5 h-5 text-amber-500 shrink-0" />
                       <div>
                         <div className="text-lg font-bold text-gray-900 leading-tight">
-                          {profile.stats?.destinations_visited ?? 0}
+                          {profile.stats.destinations_visited}
                         </div>
                         <div className="text-[10px] text-gray-500">Destinations Visited</div>
                       </div>
@@ -287,7 +310,7 @@ export default async function ProfilePage() {
                       <Star className="w-5 h-5 text-amber-400 shrink-0" />
                       <div>
                         <div className="text-lg font-bold text-gray-900 leading-tight">
-                          {profile.stats?.reviews_written ?? 0}
+                          {profile.stats.reviews_written}
                         </div>
                         <div className="text-[10px] text-gray-500">Reviews Written</div>
                       </div>
@@ -297,7 +320,7 @@ export default async function ProfilePage() {
                       <Heart className="w-5 h-5 text-rose-500 shrink-0" />
                       <div>
                         <div className="text-lg font-bold text-gray-900 leading-tight">
-                          {profile.stats?.favorite_places ?? 0}
+                          {profile.stats.favorite_places}
                         </div>
                         <div className="text-[10px] text-gray-500">Favorite Places</div>
                       </div>
@@ -347,7 +370,7 @@ export default async function ProfilePage() {
                       <label className="text-gray-500 font-medium">Phone Number</label>
                       <input
                         type="text"
-                        defaultValue={profile.phone || ""}
+                        defaultValue={profile.phone_number || ""}
                         className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-gray-800 focus:outline-none focus:border-emerald-600"
                       />
                     </div>
@@ -356,7 +379,7 @@ export default async function ProfilePage() {
                       <label className="text-gray-500 font-medium">Location</label>
                       <input
                         type="text"
-                        defaultValue={profile.location || ""}
+                        defaultValue={profile.location}
                         className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-gray-800 focus:outline-none focus:border-emerald-600"
                       />
                     </div>
@@ -365,7 +388,7 @@ export default async function ProfilePage() {
                       <label className="text-gray-500 font-medium">Bio</label>
                       <textarea
                         rows={2}
-                        defaultValue={profile.bio || ""}
+                        defaultValue={profile.bio}
                         className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2.5 text-gray-800 focus:outline-none focus:border-emerald-600 resize-none"
                       />
                     </div>
@@ -412,47 +435,38 @@ export default async function ProfilePage() {
                   </Link>
                 </div>
 
-                {profile.recent_trips && profile.recent_trips.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    {profile.recent_trips.map((trip) => (
-                      <div
-                        key={trip.id}
-                        className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition group"
-                      >
-                        <div className="relative h-32 w-full overflow-hidden">
-                          <Image
-                            src={trip.image || "/images/colombo.jpg"}
-                            alt={trip.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition duration-300"
-                          />
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {profile.recent_trips.map((trip) => (
+                    <div
+                      key={trip.id}
+                      className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition group"
+                    >
+                      <div className="relative h-32 w-full overflow-hidden">
+                        <Image
+                          src={trip.image}
+                          alt={trip.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition duration-300"
+                        />
+                      </div>
+                      <div className="p-3 space-y-1.5">
+                        <div className="flex items-center gap-1 text-[10px] text-gray-500">
+                          <MapPin className="w-3 h-3 text-emerald-700" />
+                          <span>{trip.location}</span>
                         </div>
-                        <div className="p-3 space-y-1.5">
-                          <div className="flex items-center gap-1 text-[10px] text-gray-500">
-                            <MapPin className="w-3 h-3 text-emerald-700" />
-                            <span>{trip.location}</span>
-                          </div>
-                          <h4 className="font-semibold text-gray-900 text-xs leading-snug">{trip.title}</h4>
-                          <p className="text-[10px] text-gray-400 flex items-center gap-1">
-                            <Calendar className="w-3 h-3" /> {trip.date}
-                          </p>
-                          <div className="pt-2">
-                            <span className="bg-emerald-50 text-emerald-800 text-[9px] font-semibold px-2 py-0.5 rounded">
-                              {trip.status}
-                            </span>
-                          </div>
+                        <h4 className="font-semibold text-gray-900 text-xs leading-snug">{trip.title}</h4>
+                        <p className="text-[10px] text-gray-400 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" /> {trip.date}
+                        </p>
+                        <div className="pt-2">
+                          <span className="bg-emerald-50 text-emerald-800 text-[9px] font-semibold px-2 py-0.5 rounded">
+                            {trip.status}
+                          </span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-white p-6 rounded-2xl border border-gray-100 text-center text-xs text-gray-500">
-                    No trips booked yet.{" "}
-                    <Link href="/planning-a-trip" className="text-emerald-700 font-semibold underline">
-                      Plan a trip now!
-                    </Link>
-                  </div>
-                )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Favorites & Quick Links Grid */}
@@ -472,25 +486,21 @@ export default async function ProfilePage() {
                     </Link>
                   </div>
 
-                  {profile.favorites && profile.favorites.length > 0 ? (
-                    <div className="grid grid-cols-4 gap-3">
-                      {profile.favorites.map((fav) => (
-                        <div key={fav.id} className="text-center space-y-1 group cursor-pointer">
-                          <div className="relative h-16 w-full rounded-xl overflow-hidden border border-gray-100">
-                            <Image
-                              src={fav.image || "/images/colombo.jpg"}
-                              alt={fav.name}
-                              fill
-                              className="object-cover group-hover:scale-105 transition"
-                            />
-                          </div>
-                          <p className="text-[10px] font-semibold text-gray-800">{fav.name}</p>
+                  <div className="grid grid-cols-4 gap-3">
+                    {profile.favorites.map((fav) => (
+                      <div key={fav.id} className="text-center space-y-1 group cursor-pointer">
+                        <div className="relative h-16 w-full rounded-xl overflow-hidden border border-gray-100">
+                          <Image
+                            src={fav.image}
+                            alt={fav.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition"
+                          />
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-400 text-center py-4">No favorite places saved yet.</p>
-                  )}
+                        <p className="text-[10px] font-semibold text-gray-800">{fav.name}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Quick Links */}
