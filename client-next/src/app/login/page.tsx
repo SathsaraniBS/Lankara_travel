@@ -32,28 +32,26 @@ export default function LoginPage() {
 
       if (!access_token) {
         setError("Login failed: no token received from server.");
+        setLoading(false);
         return;
       }
 
-      // 1) localStorage -> used by Navbar and client-side API calls
+      // 1) Save token to localStorage for client-side use
       localStorage.setItem("access_token", access_token);
 
-      // 2) cookie -> /profile is a Server Component and reads the token
-      //    from cookies on the server. Without this cookie it redirects
-      //    back to /login.
+      // 2) Save token to cookies so server components (/profile) can read it
       document.cookie = `access_token=${access_token}; path=/; max-age=${TOKEN_MAX_AGE}; samesite=lax`;
+      document.cookie = `token=${access_token}; path=/; max-age=${TOKEN_MAX_AGE}; samesite=lax`;
 
-      // Go to the user dashboard (profile page), then refresh so server
-      // components re-read the new cookie.
-      router.push("/profile");
-      router.refresh();
+      // Hard navigation to profile page
+      window.location.href = "/profile";
+
     } catch (err: any) {
       if (err.response?.status === 401) {
         setError("Incorrect email or password");
       } else {
         setError("Something went wrong. Please try again.");
       }
-    } finally {
       setLoading(false);
     }
   };
@@ -62,7 +60,6 @@ export default function LoginPage() {
     <div
       className="relative min-h-screen w-full flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat px-4 py-12"
       style={{
-        // Place your background image (e.g. scenic Ella train image) in public/images/bg.jpg
         backgroundImage: "url('/images/backimage1.jpg')",
       }}
     >
@@ -129,7 +126,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5 rounded-xl transition shadow-lg disabled:opacity-50 mt-2"
+            className="w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5 rounded-xl transition shadow-lg disabled:opacity-50 mt-2 cursor-pointer"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
