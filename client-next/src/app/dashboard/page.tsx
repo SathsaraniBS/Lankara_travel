@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -62,7 +63,9 @@ interface DashboardData {
   }>;
 }
 
-// Fallback data matching the exact UI design in the screenshot
+// Fallback data matching the exact UI design in the screenshot.
+// NOTE: only used for sections the backend does not provide yet
+// (upcoming trip, destinations, activities, tips).
 const fallbackDashboard: DashboardData = {
   full_name: "Sanduni Sathsarani",
   email: "s209bandara@gmail.com",
@@ -101,23 +104,30 @@ const fallbackDashboard: DashboardData = {
   ],
 };
 
-async function getDashboardData(token: string): Promise<DashboardData> {
+async function getDashboardData(token: string): Promise<DashboardData | "unauthorized"> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
   try {
-    const res = await fetch(`${apiUrl}/api/auth/me`, {
+    const res = await fetch(`${apiUrl}/api/v1/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
     });
 
+    // Token expired or invalid -> caller redirects to /login
+    if (res.status === 401) {
+      return "unauthorized";
+    }
+
     if (res.ok) {
       const data = await res.json();
       return {
         ...fallbackDashboard,
-        full_name: data.full_name || fallbackDashboard.full_name,
+        full_name: data.full_name || data.name || fallbackDashboard.full_name,
         email: data.email || fallbackDashboard.email,
+        role: data.role || fallbackDashboard.role,
+        avatar_url: data.avatar_url || fallbackDashboard.avatar_url,
         stats: data.stats || fallbackDashboard.stats,
       };
     }
@@ -132,7 +142,20 @@ export default async function DashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value || cookieStore.get("token")?.value;
 
-  const data = token ? await getDashboardData(token) : fallbackDashboard;
+  // Not logged in -> login page.
+  // (redirect() must stay outside try/catch because it works by throwing.)
+  if (!token) {
+    redirect("/login");
+  }
+
+  const result = await getDashboardData(token);
+
+  // Token expired / invalid -> login page
+  if (result === "unauthorized") {
+    redirect("/login");
+  }
+
+  const data = result;
 
   return (
     <div className="min-h-screen bg-[#071318] text-gray-100 font-sans flex flex-col justify-between">
