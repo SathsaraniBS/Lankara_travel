@@ -44,7 +44,7 @@ export default function LoginPage() {
       document.cookie = `token=${access_token}; path=/; max-age=${TOKEN_MAX_AGE}; samesite=lax`;
 
       // Hard navigation to profile page
-      window.location.href = "/profile";
+      window.location.href = "/dashboard";
 
     } catch (err: any) {
       if (err.response?.status === 401) {

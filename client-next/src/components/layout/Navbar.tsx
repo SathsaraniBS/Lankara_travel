@@ -64,7 +64,6 @@ export default function Navbar() {
     { to: "/planning-a-trip", label: "Planning a Trip", isProtected: true },
     { to: "/article", label: "Article" },
     { to: "/community-and-reviews", label: "Community and Reviews" },
-    { to: "/profile", label: "My Profile" },
   ];
 
   // In the mobile menu, "My Profile" is already shown in the logged-in block,
