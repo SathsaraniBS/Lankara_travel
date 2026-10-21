@@ -14,6 +14,7 @@ from routers.road_trips import router as road_trips_router
 from routers.safari import safari_router
 from routers.group_trips import group_trips_router
 from routers.contact import router as contact_router
+from routers.dashboard import router as dashboard_router   
 
 app = FastAPI(
     title="Lankara Travel API",
@@ -55,7 +56,7 @@ app.include_router(road_trips_router)
 app.include_router(safari_router)
 app.include_router(group_trips_router)
 app.include_router(contact_router)
-
+app.include_router(dashboard_router)                       
 # Destinations Router & Endpoints
 destinations_router = APIRouter(prefix="/api/v1/destinations", tags=["destinations"])
 root_destinations_router = APIRouter(tags=["destinations"])

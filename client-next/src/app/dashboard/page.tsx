@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard,
   Compass,
@@ -15,13 +16,69 @@ import {
   Settings,
   Bell,
   Search,
-  Star,
   ChevronRight,
   Sun,
+  Cloud,
+  CloudSun,
+  CloudRain,
+  CloudFog,
+  CloudLightning,
   Clock,
-  ArrowRight,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
+
+/* -------------------------------------------------------------------------- */
+/*  Config                                                                    */
+/* -------------------------------------------------------------------------- */
+
+// NEXT_PUBLIC_API_URL may end with "/api" (used by the axios client) -> keep only the server origin
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000")
+  .replace(/\/api(\/v1)?\/?$/, "")
+  .replace(/\/$/, "");
+
+// FastAPI route: server/routers/dashboard.py  ->  GET /api/dashboard
+const DASHBOARD_ENDPOINT = "/api/dashboard";
+
+const PLACEHOLDER_IMAGE = "/images/sigiriya.jpg";
+const DEFAULT_AVATAR = "/images/colombo.jpg";
+
+// Weather location (Colombo). Live data from Open-Meteo (free, no API key).
+const WEATHER = { label: "Colombo, Sri Lanka", latitude: 6.9271, longitude: 79.8612 };
+
+/* -------------------------------------------------------------------------- */
+/*  Types (match DashboardResponse in dashboard.py)                           */
+/* -------------------------------------------------------------------------- */
+
+interface TripItem {
+  title: string;
+  location: string;
+  date: string;
+  days: string;
+  type: string;
+  guests: string;
+  image: string;
+}
+
+interface DestinationItem {
+  id: string;
+  name: string;
+  province: string;
+  image: string;
+}
+
+interface ActivityItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  date: string;
+}
+
+interface TipItem {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+}
 
 interface DashboardData {
   full_name: string;
@@ -34,128 +91,206 @@ interface DashboardData {
     upcoming_trips: number;
     travel_points: number;
   };
-  upcoming_trip: {
-    title: string;
-    location: string;
-    date: string;
-    days: string;
-    type: string;
-    guests: string;
-    image: string;
-  };
-  popular_destinations: Array<{
-    id: string;
-    name: string;
-    province: string;
-    image: string;
-  }>;
-  recent_activities: Array<{
-    id: string;
-    title: string;
-    subtitle: string;
-    date: string;
-  }>;
-  travel_tips: Array<{
-    id: string;
-    title: string;
-    description: string;
-    image: string;
-  }>;
+  upcoming_trip: TripItem | null;
+  popular_destinations: DestinationItem[];
+  recent_activities: ActivityItem[];
+  travel_tips: TipItem[];
 }
 
-// Fallback data matching the exact UI design in the screenshot.
-// NOTE: only used for sections the backend does not provide yet
-// (upcoming trip, destinations, activities, tips).
-const fallbackDashboard: DashboardData = {
-  full_name: "Sanduni Sathsarani",
-  email: "s209bandara@gmail.com",
-  role: "Traveler",
-  avatar_url: "/images/colombo.jpg",
-  stats: {
-    total_bookings: 3,
-    wishlist_count: 5,
-    upcoming_trips: 1,
-    travel_points: 250,
-  },
-  upcoming_trip: {
-    title: "Ella Getaway",
-    location: "Ella, Badulla District",
-    date: "12 Apr 2025 - 16 Apr 2025",
-    days: "4 Days",
-    type: "Round Trip",
-    guests: "2 Adults",
-    image: "/images/ella.jpg",
-  },
-  popular_destinations: [
-    { id: "d1", name: "Ella", province: "Central Province", image: "/images/ella.jpg" },
-    { id: "d2", name: "Galle", province: "Southern Province", image: "/images/unawatuna.jpg" },
-    { id: "d3", name: "Kandy", province: "Central Province", image: "/images/Kandy.jpg" },
-    { id: "d4", name: "Sigiriya", province: "Central Province", image: "/images/sigiriya.jpg" },
-  ],
-  recent_activities: [
-    { id: "a1", title: "Hotel Booking Confirmed", subtitle: "Cinnamon Grand Colombo", date: "10 Apr 2025" },
-    { id: "a2", title: "Flight Booked", subtitle: "Colombo → Dubai", date: "05 Apr 2025" },
-    { id: "a3", title: "Holiday Package Viewed", subtitle: "Maldives - 5 Days", date: "28 Mar 2025" },
-  ],
-  travel_tips: [
-    { id: "t1", title: "Best Time to Visit Sri Lanka", description: "Weather, seasons and what to pack.", image: "/images/sigiriya.jpg" },
-    { id: "t2", title: "Top 10 Beaches in Sri Lanka", description: "Crystal clear waters and golden sands.", image: "/images/unawatuna.jpg" },
-    { id: "t3", title: "Essential Travel Tips", description: "Make your trip smooth and safe.", image: "/images/ella.jpg" },
-  ],
-};
+interface WeatherData {
+  current: { temp: number; label: string; Icon: LucideIcon; color: string };
+  daily: Array<{ day: string; max: number; Icon: LucideIcon; color: string }>;
+}
 
-async function getDashboardData(token: string): Promise<DashboardData | "unauthorized"> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+type DashboardResult =
+  | { status: "ok"; data: DashboardData }
+  | { status: "unauthorized" }
+  | { status: "error" };
 
+/* -------------------------------------------------------------------------- */
+/*  Helpers                                                                   */
+/* -------------------------------------------------------------------------- */
+
+function resolveImage(url: string | null | undefined, fallback = PLACEHOLDER_IMAGE): string {
+  if (!url) return fallback;
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/images/")) return url; // local file in /public/images
+  return `${API_URL}${url.startsWith("/") ? "" : "/"}${url}`; // file served by the backend (/static/...)
+}
+
+// Remote images skip the Next.js optimizer so no next.config host setup is required.
+const isRemote = (src: string) => /^https?:\/\//i.test(src);
+
+function getGreeting(): string {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-GB", {
+      hour: "numeric",
+      hour12: false,
+      timeZone: "Asia/Colombo",
+    }).format(new Date())
+  );
+  if (hour < 12) return "Good Morning,";
+  if (hour < 17) return "Good Afternoon,";
+  return "Good Evening,";
+}
+
+async function getDashboard(token: string): Promise<DashboardResult> {
   try {
-    const res = await fetch(`${apiUrl}/api/v1/auth/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const res = await fetch(`${API_URL}${DASHBOARD_ENDPOINT}`, {
+      headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
 
-    // Token expired or invalid -> caller redirects to /login
-    if (res.status === 401) {
-      return "unauthorized";
+    if (res.status === 401) return { status: "unauthorized" };
+    if (!res.ok) {
+      console.error(`Dashboard: ${DASHBOARD_ENDPOINT} returned ${res.status}`);
+      return { status: "error" };
     }
 
-    if (res.ok) {
-      const data = await res.json();
-      return {
-        ...fallbackDashboard,
-        full_name: data.full_name || data.name || fallbackDashboard.full_name,
-        email: data.email || fallbackDashboard.email,
-        role: data.role || fallbackDashboard.role,
-        avatar_url: data.avatar_url || fallbackDashboard.avatar_url,
-        stats: data.stats || fallbackDashboard.stats,
-      };
-    }
-    return fallbackDashboard;
+    const raw = await res.json();
+
+    return {
+      status: "ok",
+      data: {
+        full_name: raw.full_name || "Traveler",
+        email: raw.email ?? "",
+        role: raw.role || "Traveler",
+        avatar_url: resolveImage(raw.avatar_url, DEFAULT_AVATAR),
+        stats: {
+          total_bookings: raw.stats?.total_bookings ?? 0,
+          wishlist_count: raw.stats?.wishlist_count ?? 0,
+          upcoming_trips: raw.stats?.upcoming_trips ?? 0,
+          travel_points: raw.stats?.travel_points ?? 0,
+        },
+        upcoming_trip: raw.upcoming_trip
+          ? {
+              title: raw.upcoming_trip.title ?? "",
+              location: raw.upcoming_trip.location ?? "",
+              date: raw.upcoming_trip.date ?? "",
+              days: raw.upcoming_trip.days ?? "",
+              type: raw.upcoming_trip.type ?? "",
+              guests: raw.upcoming_trip.guests ?? "",
+              image: resolveImage(raw.upcoming_trip.image),
+            }
+          : null,
+        popular_destinations: (raw.popular_destinations ?? []).map((d: any) => ({
+          id: String(d.id),
+          name: d.name ?? "",
+          province: d.province ?? "",
+          image: resolveImage(d.image),
+        })),
+        recent_activities: (raw.recent_activities ?? []).map((a: any) => ({
+          id: String(a.id),
+          title: a.title ?? "",
+          subtitle: a.subtitle ?? "",
+          date: a.date ?? "",
+        })),
+        travel_tips: (raw.travel_tips ?? []).map((t: any) => ({
+          id: String(t.id),
+          title: t.title ?? "",
+          description: t.description ?? "",
+          image: resolveImage(t.image),
+        })),
+      },
+    };
   } catch (error) {
-    console.warn("Backend fetch failed, using fallback dashboard data:", error);
-    return fallbackDashboard;
+    console.error("Dashboard: request failed (is the FastAPI server running?)", error);
+    return { status: "error" };
   }
 }
+
+/* ---- Live weather (Open-Meteo) ---- */
+
+function weatherInfo(code: number): { label: string; Icon: LucideIcon; color: string } {
+  if (code === 0) return { label: "Clear Sky", Icon: Sun, color: "text-amber-400" };
+  if (code === 1 || code === 2) return { label: "Partly Cloudy", Icon: CloudSun, color: "text-amber-400" };
+  if (code === 3) return { label: "Overcast", Icon: Cloud, color: "text-zinc-300" };
+  if (code === 45 || code === 48) return { label: "Foggy", Icon: CloudFog, color: "text-zinc-300" };
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82))
+    return { label: "Rain", Icon: CloudRain, color: "text-sky-400" };
+  if (code >= 95) return { label: "Thunderstorm", Icon: CloudLightning, color: "text-amber-400" };
+  return { label: "Cloudy", Icon: Cloud, color: "text-zinc-300" };
+}
+
+async function getWeather(): Promise<WeatherData | null> {
+  try {
+    const url =
+      `https://api.open-meteo.com/v1/forecast?latitude=${WEATHER.latitude}&longitude=${WEATHER.longitude}` +
+      `&current=temperature_2m,weather_code&daily=temperature_2m_max,weather_code` +
+      `&timezone=Asia%2FColombo&forecast_days=3`;
+
+    const res = await fetch(url, { next: { revalidate: 1800 } });
+    if (!res.ok) return null;
+    const json = await res.json();
+
+    const current = weatherInfo(json.current.weather_code);
+
+    return {
+      current: { temp: Math.round(json.current.temperature_2m), ...current },
+      daily: json.daily.time.map((date: string, i: number) => ({
+        day: new Date(`${date}T00:00:00Z`).toLocaleDateString("en-US", {
+          weekday: "short",
+          timeZone: "UTC",
+        }),
+        max: Math.round(json.daily.temperature_2m_max[i]),
+        ...weatherInfo(json.daily.weather_code[i]),
+      })),
+    };
+  } catch (error) {
+    console.error("Dashboard: weather request failed", error);
+    return null;
+  }
+}
+
+function DashboardUnavailable() {
+  return (
+    <div className="min-h-screen bg-[#071318] text-gray-100 font-sans flex flex-col justify-between">
+      <div className="max-w-md mx-auto px-6 pt-40 text-center space-y-3">
+        <h1 className="text-xl font-serif font-bold text-white">Dashboard unavailable</h1>
+        <p className="text-xs text-zinc-400">
+          We couldn&apos;t load your dashboard right now. Please try again in a moment.
+        </p>
+        <Link
+          href="/dashboard"
+          className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition"
+        >
+          Retry
+        </Link>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Page                                                                      */
+/* -------------------------------------------------------------------------- */
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value || cookieStore.get("token")?.value;
 
-  // Not logged in -> login page.
-  // (redirect() must stay outside try/catch because it works by throwing.)
+  // Not logged in -> login page
   if (!token) {
     redirect("/login");
   }
 
-  const result = await getDashboardData(token);
+  const [result, weather] = await Promise.all([getDashboard(token), getWeather()]);
 
   // Token expired / invalid -> login page
-  if (result === "unauthorized") {
+  if (result.status === "unauthorized") {
     redirect("/login");
   }
 
-  const data = result;
+  // Backend down or route missing -> never show fake data
+  if (result.status === "error") {
+    return <DashboardUnavailable />;
+  }
+
+  const data = result.data;
+  const greeting = getGreeting();
+  const trip = data.upcoming_trip;
+  const WeatherIcon = weather ? weather.current.Icon : Sun;
 
   return (
     <div className="min-h-screen bg-[#071318] text-gray-100 font-sans flex flex-col justify-between">
@@ -190,7 +325,14 @@ export default async function DashboardPage() {
           
           <div className="flex items-center gap-3 pl-4 border-l border-zinc-700">
             <div className="relative w-9 h-9 rounded-full overflow-hidden border border-emerald-500">
-              <Image src={data.avatar_url} alt={data.full_name} fill className="object-cover" />
+              <Image
+                src={data.avatar_url}
+                alt={data.full_name}
+                fill
+                sizes="36px"
+                unoptimized={isRemote(data.avatar_url)}
+                className="object-cover"
+              />
             </div>
             <div className="hidden sm:block text-left text-xs">
               <p className="font-semibold text-white">{data.full_name}</p>
@@ -244,11 +386,11 @@ export default async function DashboardPage() {
               
               {/* Hero Welcome Banner */}
               <div className="relative w-full h-[220px] rounded-3xl overflow-hidden bg-slate-900 p-8 flex flex-col justify-center">
-                <Image src="/images/sigiriya.jpg" alt="Hero Banner" fill className="object-cover opacity-50" />
+                <Image src="/images/sigiriya.jpg" alt="Hero Banner" fill sizes="100vw" className="object-cover opacity-50" />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
                 <div className="relative z-10 space-y-2 max-w-lg">
                   <div className="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-widest">
-                    <Sun className="w-4 h-4" /> Good Morning,
+                    <Sun className="w-4 h-4" /> {greeting}
                   </div>
                   <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white">
                     {data.full_name}
@@ -277,7 +419,9 @@ export default async function DashboardPage() {
                 <div className="bg-[#0e1f28] p-4 rounded-2xl border border-zinc-800 space-y-1">
                   <div className="text-zinc-400 text-[11px]">Upcoming Trips</div>
                   <div className="text-2xl font-bold text-white">{data.stats.upcoming_trips}</div>
-                  <div className="text-[10px] text-amber-400">Next Trip: Ella →</div>
+                  <div className="text-[10px] text-amber-400">
+                    {trip ? `Next Trip: ${trip.location.split(",")[0] || trip.title} →` : "No upcoming trips"}
+                  </div>
                 </div>
                 <div className="bg-[#0e1f28] p-4 rounded-2xl border border-zinc-800 space-y-1">
                   <div className="text-zinc-400 text-[11px]">Travel Points</div>
@@ -295,30 +439,51 @@ export default async function DashboardPage() {
                   <Link href="/bookings" className="text-xs text-emerald-400 hover:underline">View All →</Link>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-[#11242f] p-4 rounded-2xl border border-zinc-800">
-                  <div className="relative sm:col-span-5 h-36 rounded-xl overflow-hidden">
-                    <Image src={data.upcoming_trip.image} alt={data.upcoming_trip.title} fill className="object-cover" />
-                    <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full">
-                      Upcoming
-                    </span>
-                  </div>
-                  <div className="sm:col-span-7 space-y-2">
-                    <h4 className="text-base font-serif font-bold text-white">{data.upcoming_trip.title}</h4>
-                    <p className="text-xs text-zinc-400 flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-emerald-400" /> {data.upcoming_trip.location}
-                    </p>
-                    <p className="text-xs text-zinc-300 flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-amber-400" /> {data.upcoming_trip.date} ({data.upcoming_trip.days})
-                    </p>
-                    <div className="flex gap-4 pt-1 text-[11px] text-zinc-400">
-                      <span>🏨 {data.upcoming_trip.type}</span>
-                      <span>👥 {data.upcoming_trip.guests}</span>
+                {trip ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-[#11242f] p-4 rounded-2xl border border-zinc-800">
+                    <div className="relative sm:col-span-5 h-36 rounded-xl overflow-hidden">
+                      <Image
+                        src={trip.image}
+                        alt={trip.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 40vw"
+                        unoptimized={isRemote(trip.image)}
+                        className="object-cover"
+                      />
+                      <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full">
+                        Upcoming
+                      </span>
                     </div>
-                    <Link href="/bookings" className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition mt-2">
-                      View Details →
+                    <div className="sm:col-span-7 space-y-2">
+                      <h4 className="text-base font-serif font-bold text-white">{trip.title}</h4>
+                      {trip.location && (
+                        <p className="text-xs text-zinc-400 flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5 text-emerald-400" /> {trip.location}
+                        </p>
+                      )}
+                      <p className="text-xs text-zinc-300 flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-amber-400" /> {trip.date}
+                        {trip.days && ` (${trip.days})`}
+                      </p>
+                      {(trip.type || trip.guests) && (
+                        <div className="flex gap-4 pt-1 text-[11px] text-zinc-400">
+                          {trip.type && <span>🏨 {trip.type}</span>}
+                          {trip.guests && <span>👥 {trip.guests}</span>}
+                        </div>
+                      )}
+                      <Link href="/bookings" className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition mt-2">
+                        View Details →
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-[#11242f] p-4 rounded-2xl border border-zinc-800 text-xs text-zinc-400">
+                    You have no upcoming trips.{" "}
+                    <Link href="/planning-a-trip" className="text-emerald-400 font-semibold hover:underline">
+                      Plan a new trip →
                     </Link>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Popular Destinations */}
@@ -330,21 +495,34 @@ export default async function DashboardPage() {
                   <Link href="/explore" className="text-xs text-emerald-400 hover:underline">View All →</Link>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {data.popular_destinations.map((dest) => (
-                    <div key={dest.id} className="bg-[#0e1f28] rounded-2xl border border-zinc-800 overflow-hidden group cursor-pointer">
-                      <div className="relative h-28 w-full overflow-hidden">
-                        <Image src={dest.image} alt={dest.name} fill className="object-cover group-hover:scale-105 transition duration-300" />
+                {data.popular_destinations.length === 0 ? (
+                  <p className="text-xs text-zinc-400">No destinations available right now.</p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {data.popular_destinations.map((dest) => (
+                      <div key={dest.id} className="bg-[#0e1f28] rounded-2xl border border-zinc-800 overflow-hidden group cursor-pointer">
+                        <div className="relative h-28 w-full overflow-hidden">
+                          <Image
+                            src={dest.image}
+                            alt={dest.name}
+                            fill
+                            sizes="(max-width: 640px) 50vw, 20vw"
+                            unoptimized={isRemote(dest.image)}
+                            className="object-cover group-hover:scale-105 transition duration-300"
+                          />
+                        </div>
+                        <div className="p-3">
+                          <h4 className="font-semibold text-white text-xs">{dest.name}</h4>
+                          {dest.province && (
+                            <p className="text-[10px] text-zinc-400 flex items-center gap-1 mt-0.5">
+                              <MapPin className="w-3 h-3 text-emerald-400" /> {dest.province}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div className="p-3">
-                        <h4 className="font-semibold text-white text-xs">{dest.name}</h4>
-                        <p className="text-[10px] text-zinc-400 flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3 text-emerald-400" /> {dest.province}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Recent Activities */}
@@ -356,17 +534,21 @@ export default async function DashboardPage() {
                   <Link href="#" className="text-xs text-emerald-400 hover:underline">View All →</Link>
                 </div>
 
-                <div className="space-y-3">
-                  {data.recent_activities.map((act) => (
-                    <div key={act.id} className="flex items-center justify-between p-3 bg-[#11242f] rounded-xl border border-zinc-800 text-xs">
-                      <div className="space-y-0.5">
-                        <p className="font-semibold text-white">{act.title}</p>
-                        <p className="text-[11px] text-zinc-400">{act.subtitle}</p>
+                {data.recent_activities.length === 0 ? (
+                  <p className="text-xs text-zinc-400">No recent activity yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {data.recent_activities.map((act) => (
+                      <div key={act.id} className="flex items-center justify-between p-3 bg-[#11242f] rounded-xl border border-zinc-800 text-xs">
+                        <div className="space-y-0.5">
+                          <p className="font-semibold text-white">{act.title}</p>
+                          <p className="text-[11px] text-zinc-400">{act.subtitle}</p>
+                        </div>
+                        <div className="text-[11px] text-zinc-400">{act.date}</div>
                       </div>
-                      <div className="text-[11px] text-zinc-400">{act.date}</div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
             </div>
@@ -377,7 +559,14 @@ export default async function DashboardPage() {
               {/* User Mini Profile Card */}
               <div className="bg-[#0e1f28] p-6 rounded-3xl border border-zinc-800 text-center space-y-4">
                 <div className="relative w-20 h-20 rounded-full overflow-hidden mx-auto border-2 border-emerald-500">
-                  <Image src={data.avatar_url} alt={data.full_name} fill className="object-cover" />
+                  <Image
+                    src={data.avatar_url}
+                    alt={data.full_name}
+                    fill
+                    sizes="80px"
+                    unoptimized={isRemote(data.avatar_url)}
+                    className="object-cover"
+                  />
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-white text-base">{data.full_name}</h3>
@@ -430,39 +619,39 @@ export default async function DashboardPage() {
               {/* Weather & Sri Lanka Card */}
               <div className="bg-[#0e1f28] rounded-3xl border border-zinc-800 overflow-hidden space-y-4">
                 <div className="relative h-44 w-full p-6 flex flex-col justify-end">
-                  <Image src="/images/colombo.jpg" alt="Weather" fill className="object-cover opacity-50" />
+                  <Image src="/images/colombo.jpg" alt="Weather" fill sizes="(max-width: 1280px) 100vw, 33vw" className="object-cover opacity-50" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                   <div className="relative z-10 space-y-1">
-                    <p className="text-xs text-zinc-300">Colombo, Sri Lanka</p>
-                    <div className="flex items-center gap-2">
-                      <Sun className="w-6 h-6 text-amber-400" />
-                      <span className="text-2xl font-bold text-white">28°C</span>
-                    </div>
-                    <p className="text-[11px] text-zinc-300">Partly Cloudy</p>
+                    <p className="text-xs text-zinc-300">{WEATHER.label}</p>
+                    {weather ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <WeatherIcon className={`w-6 h-6 ${weather.current.color}`} />
+                          <span className="text-2xl font-bold text-white">{weather.current.temp}°C</span>
+                        </div>
+                        <p className="text-[11px] text-zinc-300">{weather.current.label}</p>
+                      </>
+                    ) : (
+                      <p className="text-[11px] text-zinc-300">Weather unavailable right now</p>
+                    )}
                   </div>
                 </div>
 
                 <div className="p-6 pt-0 space-y-3">
-                  <div className="grid grid-cols-3 gap-2 text-center bg-[#11242f] p-3 rounded-2xl border border-zinc-800 text-xs">
-                    <div>
-                      <p className="text-[10px] text-zinc-400">Mon</p>
-                      <Sun className="w-4 h-4 text-amber-400 mx-auto my-1" />
-                      <p className="font-bold text-white">28°</p>
+                  {weather && (
+                    <div className="grid grid-cols-3 gap-2 text-center bg-[#11242f] p-3 rounded-2xl border border-zinc-800 text-xs">
+                      {weather.daily.map((d) => (
+                        <div key={d.day}>
+                          <p className="text-[10px] text-zinc-400">{d.day}</p>
+                          <d.Icon className={`w-4 h-4 ${d.color} mx-auto my-1`} />
+                          <p className="font-bold text-white">{d.max}°</p>
+                        </div>
+                      ))}
                     </div>
-                    <div>
-                      <p className="text-[10px] text-zinc-400">Tue</p>
-                      <Sun className="w-4 h-4 text-amber-400 mx-auto my-1" />
-                      <p className="font-bold text-white">29°</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-zinc-400">Wed</p>
-                      <Sun className="w-4 h-4 text-amber-400 mx-auto my-1" />
-                      <p className="font-bold text-white">30°</p>
-                    </div>
-                  </div>
+                  )}
 
                   <div className="relative rounded-2xl overflow-hidden p-5 bg-slate-900 border border-zinc-800 text-white space-y-2">
-                    <Image src="/images/unawatuna.jpg" alt="Discover" fill className="object-cover opacity-30" />
+                    <Image src="/images/unawatuna.jpg" alt="Discover" fill sizes="(max-width: 1280px) 100vw, 33vw" className="object-cover opacity-30" />
                     <div className="relative z-10 space-y-1">
                       <h4 className="font-serif font-bold text-sm">Discover Sri Lanka with Lankara Travels</h4>
                       <p className="text-[11px] text-zinc-300">Handpicked experiences, trusted services, unforgettable journeys.</p>
@@ -480,21 +669,33 @@ export default async function DashboardPage() {
                   <h3 className="font-serif font-bold text-white text-sm flex items-center gap-2">
                     💡 Travel Tips
                   </h3>
-                  <Link href="#" className="text-xs text-emerald-400 hover:underline">View All →</Link>
+                  <Link href="/article" className="text-xs text-emerald-400 hover:underline">View All →</Link>
                 </div>
-                <div className="space-y-3">
-                  {data.travel_tips.map((tip) => (
-                    <div key={tip.id} className="flex items-center gap-3 p-2 bg-[#11242f] rounded-xl border border-zinc-800">
-                      <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
-                        <Image src={tip.image} alt={tip.title} fill className="object-cover" />
+
+                {data.travel_tips.length === 0 ? (
+                  <p className="text-xs text-zinc-400">No travel tips available yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {data.travel_tips.map((tip) => (
+                      <div key={tip.id} className="flex items-center gap-3 p-2 bg-[#11242f] rounded-xl border border-zinc-800">
+                        <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                          <Image
+                            src={tip.image}
+                            alt={tip.title}
+                            fill
+                            sizes="48px"
+                            unoptimized={isRemote(tip.image)}
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="space-y-0.5 text-xs">
+                          <h4 className="font-semibold text-white leading-tight">{tip.title}</h4>
+                          <p className="text-[10px] text-zinc-400">{tip.description}</p>
+                        </div>
                       </div>
-                      <div className="space-y-0.5 text-xs">
-                        <h4 className="font-semibold text-white leading-tight">{tip.title}</h4>
-                        <p className="text-[10px] text-zinc-400">{tip.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
             </div>
