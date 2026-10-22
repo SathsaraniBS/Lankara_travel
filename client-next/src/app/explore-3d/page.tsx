@@ -366,7 +366,8 @@ export default function Explore3DPage() {
               </div>
               <div className="bg-[#11242f] p-3 rounded-2xl border border-zinc-800/80 space-y-0.5">
                 <span className="text-zinc-400 text-[10px]">Elevation</span>
-                <p ref="elevationRef" className="font-bold text-white">349m ASL</p>
+                {/* FIXED: changed ref="elevationRef" to ref={elevationRef} */}
+                <p ref={elevationRef} className="font-bold text-white">349m ASL</p>
               </div>
             </div>
 
