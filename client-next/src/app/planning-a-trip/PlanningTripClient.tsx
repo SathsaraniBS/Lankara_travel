@@ -107,7 +107,6 @@ export default function PlanningTripClient({
   initialDestinations,
   initialItinerary,
 }: PlanningTripClientProps) {
-  // Safe array & object fallbacks to prevent undefined map errors
   const destinations =
     Array.isArray(initialDestinations) && initialDestinations.length > 0
       ? initialDestinations
@@ -321,7 +320,7 @@ export default function PlanningTripClient({
                 <div className="relative h-28 w-full overflow-hidden">
                   <Image
                     src={dest.image_url || "/images/sigiriya.jpg"}
-                    alt={dest.name}
+                    alt={dest.name || "Destination Image"}
                     fill
                     className="object-cover group-hover:scale-105 transition duration-300"
                   />
@@ -361,7 +360,12 @@ export default function PlanningTripClient({
                   className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm grid grid-cols-1 sm:grid-cols-12 gap-4 items-center"
                 >
                   <div className="sm:col-span-3 relative h-28 rounded-xl overflow-hidden">
-                    <Image src={d.image_url || "/images/colombo.jpg"} alt={d.city} fill className="object-cover" />
+                    <Image 
+                      src={d.image_url || "/images/colombo.jpg"} 
+                      alt={d.city || `Day ${d.day} Itinerary`} 
+                      fill 
+                      className="object-cover" 
+                    />
                     <span className="absolute top-2 left-2 bg-emerald-800 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow">
                       Day {d.day}
                     </span>
@@ -406,7 +410,7 @@ export default function PlanningTripClient({
               </div>
 
               <div className="relative h-28 rounded-xl overflow-hidden">
-                <Image src="/images/unawatuna.jpg" alt={itinerary.title} fill className="object-cover" />
+                <Image src="/images/unawatuna.jpg" alt={itinerary.title || "Trip Summary"} fill className="object-cover" />
               </div>
 
               <div>
@@ -483,7 +487,7 @@ export default function PlanningTripClient({
             <div className="relative rounded-2xl overflow-hidden p-6 text-white bg-slate-900 space-y-3">
               <Image
                 src="/images/ella.jpg"
-                alt="Need Assistance"
+                alt="Need Travel Assistance"
                 fill
                 className="object-cover opacity-25"
               />
@@ -515,7 +519,7 @@ export default function PlanningTripClient({
           <div className="lg:col-span-7 relative h-72 sm:h-80 bg-blue-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center">
             <Image
               src="/images/sigiriya.jpg"
-              alt="Map Route"
+              alt="Map Route Overview"
               fill
               className="object-cover opacity-35"
             />
