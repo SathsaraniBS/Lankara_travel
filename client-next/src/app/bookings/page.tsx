@@ -1,39 +1,38 @@
 import React from "react";
-import { cookies } from "next/headers";
-import BookingsClient, { BookingItem } from "./BookingsClient";
-
-const FASTAPI_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-
-async function getUserBookings(): Promise<BookingItem[]> {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-
-    const res = await fetch(`${FASTAPI_URL}/api/bookings/my-bookings`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-      cache: "no-store", // Real-time user bookings
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch bookings: ${res.statusText}`);
-    }
-
-    const data = await res.json();
-    return Array.isArray(data) ? data : data.results || [];
-  } catch (error) {
-    console.error("Error fetching bookings from FastAPI:", error);
-    return [];
-  }
-}
+import { requireUser } from "@/lib/server/session";
+import { backendJson, toList } from "@/lib/server/backend";
+import { ApiBooking, toBookingView } from "@/lib/bookings";
+import BookingsClient from "./BookingsClient";
 
 export default async function BookingsPage() {
-  const bookings = await getUserBookings();
+  // Signed-out visitors go to /login and come back here afterwards
+  await requireUser("/bookings");
+
+  const data = await backendJson<unknown>("/bookings/", {
+    auth: true,
+    cache: "no-store", // always show the latest status (e.g. right after a payment)
+  });
+
+  if (data === null) {
+    return (
+      <div className="min-h-screen bg-[#faf9f6] text-slate-800 font-sans flex items-center justify-center px-6 pt-24">
+        <div className="max-w-md text-center space-y-2">
+          <h1 className="text-xl font-bold">We couldn&apos;t load your bookings</h1>
+          <p className="text-sm text-slate-500">
+            Something went wrong on our side. Please refresh the page in a moment.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const now = new Date();
+  const bookings = toList<ApiBooking>(data).map((b) => toBookingView(b, now));
+  const currency = process.env.PAYMENT_CURRENCY ?? "usd";
 
   return (
-    <main className="min-h-screen bg-[#faf9f6] text-slate-800 font-sans flex flex-col justify-between">
-      <BookingsClient initialBookings={bookings} />
-    </main>
+    <div className="min-h-screen bg-[#faf9f6] text-slate-800 font-sans flex flex-col justify-between">
+      <BookingsClient bookings={bookings} currency={currency} />
+    </div>
   );
 }
