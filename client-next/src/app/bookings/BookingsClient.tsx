@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,135 +9,79 @@ import {
   Users,
   Search,
   Hotel as HotelIcon,
-  Palmtree,
-  Compass,
   Plane,
+  Compass,
   ChevronRight,
   Headphones,
   Sparkles,
   CheckCircle2,
   Clock,
   XCircle,
+  CreditCard,
   Tag,
 } from "lucide-react";
-
-export interface BookingItem {
-  id: string;
-  type: "Hotel" | "Holiday Package" | "Tour" | "Flight";
-  title: string;
-  location: string;
-  date_range: string;
-  details_line_1: string;
-  details_line_2: string;
-  price_lkr: number;
-  status: "Upcoming" | "Completed" | "Cancelled";
-  image_url: string;
-}
+import { BookingPhase, BookingView, formatMoney } from "@/lib/bookings";
+import BookingActions from "./BookingActions";
 
 interface BookingsClientProps {
-  initialBookings: BookingItem[];
+  bookings: BookingView[];
+  currency: string;
 }
 
-const DEFAULT_BOOKINGS: BookingItem[] = [
-  {
-    id: "bk-101",
-    type: "Hotel",
-    title: "Cinnamon Grand Colombo",
-    location: "Colombo",
-    date_range: "12 Apr 2026 - 16 Apr 2026 (4 Nights)",
-    details_line_1: "2 Adults · Deluxe Room",
-    details_line_2: "Breakfast Included",
-    price_lkr: 85000,
-    status: "Upcoming",
-    image_url: "/images/colombo.jpg",
-  },
-  {
-    id: "bk-102",
-    type: "Holiday Package",
-    title: "Southern Beach Holiday",
-    location: "Galle",
-    date_range: "5 Mar 2026 - 10 Mar 2026 (5 Nights)",
-    details_line_1: "2 Adults · Family Package",
-    details_line_2: "Half Board",
-    price_lkr: 220000,
-    status: "Upcoming",
-    image_url: "/images/unawatuna.jpg",
-  },
-  {
-    id: "bk-103",
-    type: "Tour",
-    title: "Yala Safari Experience",
-    location: "Yala National Park",
-    date_range: "20 Jan 2026 - 22 Jan 2026 (2 Days)",
-    details_line_1: "2 Adults · Private Safari Jeep",
-    details_line_2: "All Meals",
-    price_lkr: 95000,
-    status: "Completed",
-    image_url: "/images/sigiriya.jpg",
-  },
-  {
-    id: "bk-104",
-    type: "Flight",
-    title: "Colombo → Dubai",
-    location: "International Flight",
-    date_range: "15 Dec 2025",
-    details_line_1: "1 Adult · Economy Class",
-    details_line_2: "Checked Baggage",
-    price_lkr: 68500,
-    status: "Completed",
-    image_url: "/images/colombo.jpg",
-  },
-  {
-    id: "bk-105",
-    type: "Hotel",
-    title: "Mirissa Beach Resort",
-    location: "Mirissa",
-    date_range: "10 Nov 2025 - 12 Nov 2025 (2 Nights)",
-    details_line_1: "2 Adults · Ocean View Room",
-    details_line_2: "Breakfast Included",
-    price_lkr: 52000,
-    status: "Completed",
-    image_url: "/images/ella.jpg",
-  },
+type TabId = "all" | BookingPhase;
+
+const TABS: { id: TabId; label: string }[] = [
+  { id: "all", label: "All Bookings" },
+  { id: "pending", label: "Pending payment" },
+  { id: "upcoming", label: "Upcoming" },
+  { id: "completed", label: "Completed" },
+  { id: "cancelled", label: "Cancelled" },
 ];
 
-export default function BookingsClient({ initialBookings }: BookingsClientProps) {
-  const bookings =
-    initialBookings.length > 0 ? initialBookings : DEFAULT_BOOKINGS;
+const PHASE_BADGE: Record<BookingPhase, { label: string; className: string }> = {
+  pending: { label: "Awaiting payment", className: "bg-amber-50 text-amber-700" },
+  upcoming: { label: "Confirmed", className: "bg-emerald-50 text-emerald-800" },
+  completed: { label: "Completed", className: "bg-blue-50 text-blue-700" },
+  cancelled: { label: "Cancelled", className: "bg-rose-50 text-rose-700" },
+};
 
-  const [activeTab, setActiveTab] = useState<"All" | "Upcoming" | "Completed" | "Cancelled">("All");
+export default function BookingsClient({ bookings, currency }: BookingsClientProps) {
+  const [activeTab, setActiveTab] = useState<TabId>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredBookings = useMemo(() => {
-    return bookings.filter((b) => {
-      const matchesTab = activeTab === "All" || b.status === activeTab;
-      const matchesSearch =
-        !searchQuery ||
-        b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        b.id.toLowerCase().includes(searchQuery.toLowerCase());
+  const counts = useMemo(
+    () => ({
+      all: bookings.length,
+      pending: bookings.filter((b) => b.phase === "pending").length,
+      upcoming: bookings.filter((b) => b.phase === "upcoming").length,
+      completed: bookings.filter((b) => b.phase === "completed").length,
+      cancelled: bookings.filter((b) => b.phase === "cancelled").length,
+    }),
+    [bookings]
+  );
 
+  const filteredBookings = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return bookings.filter((b) => {
+      const matchesTab = activeTab === "all" || b.phase === activeTab;
+      const matchesSearch =
+        !q ||
+        b.title.toLowerCase().includes(q) ||
+        b.location.toLowerCase().includes(q) ||
+        b.reference.toLowerCase().includes(q);
       return matchesTab && matchesSearch;
     });
   }, [bookings, activeTab, searchQuery]);
-
-  const summaryStats = useMemo(() => {
-    return {
-      total: bookings.length,
-      upcoming: bookings.filter((b) => b.status === "Upcoming").length,
-      completed: bookings.filter((b) => b.status === "Completed").length,
-      cancelled: bookings.filter((b) => b.status === "Cancelled").length,
-    };
-  }, [bookings]);
 
   return (
     <div className="w-full">
       {/* 1. HERO HEADER */}
       <section className="relative w-full h-[280px] sm:h-[320px] bg-slate-900 overflow-hidden">
         <Image
-          src="/images/unawatuna.jpg"
+          src="/images/galle.jpg"
           alt="My Bookings Banner"
           fill
+          sizes="100vw"
           className="object-cover opacity-45"
           priority
         />
@@ -153,7 +97,7 @@ export default function BookingsClient({ initialBookings }: BookingsClientProps)
                 Your Travel Bookings
               </h1>
               <p className="text-gray-200 text-xs sm:text-sm font-light leading-relaxed">
-                View, manage and track your upcoming and past bookings all in one place.
+                View, pay for and manage your bookings all in one place.
               </p>
             </div>
 
@@ -168,37 +112,32 @@ export default function BookingsClient({ initialBookings }: BookingsClientProps)
       {/* 2. TAB CONTROLS & SEARCH BAR */}
       <div className="max-w-7xl mx-auto px-6 -mt-8 relative z-20">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Status Tabs */}
           <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-            {[
-              { id: "All", label: "All Bookings" },
-              { id: "Upcoming", label: "Upcoming" },
-              { id: "Completed", label: "Completed" },
-              { id: "Cancelled", label: "Cancelled" },
-            ].map((tab) => (
+            {TABS.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                   activeTab === tab.id
                     ? "bg-emerald-800 text-white shadow-sm"
                     : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                 }`}
               >
-                {tab.id === "Upcoming" && <Clock size={13} />}
-                {tab.id === "Completed" && <CheckCircle2 size={13} />}
-                {tab.id === "Cancelled" && <XCircle size={13} />}
+                {tab.id === "pending" && <CreditCard size={13} />}
+                {tab.id === "upcoming" && <Clock size={13} />}
+                {tab.id === "completed" && <CheckCircle2 size={13} />}
+                {tab.id === "cancelled" && <XCircle size={13} />}
                 {tab.label}
+                <span className="opacity-70">({counts[tab.id]})</span>
               </button>
             ))}
           </div>
 
-          {/* Search Input */}
           <div className="flex items-center gap-2.5 px-3.5 py-2 bg-gray-50 rounded-xl border border-gray-100 w-full md:w-80">
             <Search size={16} className="text-gray-400 shrink-0" />
             <input
               type="text"
-              placeholder="Search by booking ID, destination or hotel..."
+              placeholder="Search by reference, destination or hotel..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-transparent text-xs text-gray-800 focus:outline-none placeholder:text-gray-400"
@@ -208,122 +147,148 @@ export default function BookingsClient({ initialBookings }: BookingsClientProps)
       </div>
 
       {/* 3. MAIN SECTION */}
-      <main className="max-w-7xl mx-auto px-6 py-10">
+      <section className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
           {/* LEFT: BOOKINGS LIST */}
           <div className="lg:col-span-8 space-y-6">
             <div>
               <h2 className="text-xl font-serif font-bold text-gray-900">Your Bookings</h2>
-              <p className="text-xs text-gray-500">Manage your trips, view details and make changes if needed.</p>
+              <p className="text-xs text-gray-500">
+                Complete payment for pending bookings, or review the trips you have already booked.
+              </p>
             </div>
 
-            {filteredBookings.length === 0 ? (
+            {bookings.length === 0 ? (
+              <div className="p-12 text-center bg-white rounded-2xl border border-gray-100 space-y-4">
+                <p className="text-sm font-semibold text-gray-700">You haven&apos;t made any bookings yet.</p>
+                <p className="text-xs text-gray-500">Find a place to stay or a flight and your bookings will appear here.</p>
+                <div className="flex items-center justify-center gap-2">
+                  <Link
+                    href="/Hotels"
+                    className="px-4 py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-xs rounded-xl transition"
+                  >
+                    Browse hotels
+                  </Link>
+                  <Link
+                    href="/flights"
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-xs rounded-xl transition"
+                  >
+                    Browse flights
+                  </Link>
+                </div>
+              </div>
+            ) : filteredBookings.length === 0 ? (
               <div className="p-12 text-center bg-white rounded-2xl border border-gray-100">
-                <p className="text-sm font-semibold text-gray-500">No bookings found for the selected criteria.</p>
+                <p className="text-sm font-semibold text-gray-500">No bookings match your search or filter.</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredBookings.map((b) => (
-                  <div
-                    key={b.id}
-                    className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden grid grid-cols-1 sm:grid-cols-12 gap-4 p-4 relative"
-                  >
-                    {/* Booking Image */}
-                    <div className="sm:col-span-4 relative h-44 sm:h-auto rounded-xl overflow-hidden">
-                      <Image
-                        src={b.image_url}
-                        alt={b.title}
-                        fill
-                        className="object-cover"
-                      />
-                      <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow flex items-center gap-1">
-                        {b.type === "Hotel" && <HotelIcon size={12} />}
-                        {b.type === "Holiday Package" && <Palmtree size={12} />}
-                        {b.type === "Tour" && <Compass size={12} />}
-                        {b.type === "Flight" && <Plane size={12} />}
-                        {b.type}
-                      </span>
-                    </div>
+                {filteredBookings.map((b) => {
+                  const badge = PHASE_BADGE[b.phase];
+                  const totalLabel = b.paid ? "Total paid" : b.phase === "cancelled" ? "Total (cancelled)" : "Total due";
+                  return (
+                    <div
+                      key={b.id}
+                      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden grid grid-cols-1 sm:grid-cols-12 gap-4 p-4 relative"
+                    >
+                      {/* Booking Image */}
+                      <div className="sm:col-span-4 relative h-44 sm:h-auto sm:min-h-[11rem] rounded-xl overflow-hidden">
+                        <Image
+                          src={b.imageUrl}
+                          alt={b.title}
+                          fill
+                          sizes="(min-width: 640px) 33vw, 100vw"
+                          className="object-cover"
+                        />
+                        <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow flex items-center gap-1">
+                          {b.kind === "Flight" ? <Plane size={12} /> : <HotelIcon size={12} />}
+                          {b.kind}
+                        </span>
+                      </div>
 
-                    {/* Booking Info */}
-                    <div className="sm:col-span-8 flex flex-col justify-between space-y-3">
-                      <div>
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <h3 className="text-base font-bold text-gray-900">{b.title}</h3>
-                            <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                              <MapPin size={12} className="text-emerald-700" /> {b.location}
-                            </p>
+                      {/* Booking Info */}
+                      <div className="sm:col-span-8 flex flex-col justify-between space-y-3">
+                        <div>
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <h3 className="text-base font-bold text-gray-900">{b.title}</h3>
+                              <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                                <MapPin size={12} className="text-emerald-700" /> {b.location}
+                                <span className="text-gray-300 mx-1">•</span>
+                                <span className="font-mono">{b.reference}</span>
+                              </p>
+                            </div>
+
+                            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap ${badge.className}`}>
+                              {badge.label}
+                            </span>
                           </div>
 
-                          <span
-                            className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
-                              b.status === "Upcoming"
-                                ? "bg-emerald-50 text-emerald-800"
-                                : b.status === "Completed"
-                                ? "bg-blue-50 text-blue-700"
-                                : "bg-rose-50 text-rose-700"
-                            }`}
-                          >
-                            {b.status}
-                          </span>
+                          <div className="mt-3 space-y-1.5 text-xs text-gray-600">
+                            {b.dateLine && (
+                              <p className="flex items-center gap-1.5 text-gray-800 font-semibold">
+                                <Calendar size={13} className="text-emerald-700 shrink-0" /> {b.dateLine}
+                              </p>
+                            )}
+                            {b.detailLine1 && (
+                              <p className="flex items-center gap-1.5 text-gray-500">
+                                <Users size={13} className="text-emerald-700 shrink-0" /> {b.detailLine1}
+                              </p>
+                            )}
+                            {b.detailLine2 && (
+                              <p className="flex items-center gap-1.5 text-gray-500">
+                                <Tag size={13} className="text-emerald-700 shrink-0" /> {b.detailLine2}
+                              </p>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="mt-3 space-y-1.5 text-xs text-gray-600">
-                          <p className="flex items-center gap-1.5 text-gray-800 font-semibold">
-                            <Calendar size={13} className="text-emerald-700" /> {b.date_range}
-                          </p>
-                          <p className="flex items-center gap-1.5 text-gray-500">
-                            <Users size={13} className="text-emerald-700" /> {b.details_line_1}
-                          </p>
-                          <p className="flex items-center gap-1.5 text-gray-500">
-                            <Tag size={13} className="text-emerald-700" /> {b.details_line_2}
-                          </p>
-                        </div>
-                      </div>
+                        {/* Price & Actions */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
+                          <div>
+                            <span className="text-xs text-gray-400 block">{totalLabel}</span>
+                            <span className="text-base font-bold text-gray-900">{formatMoney(b.total, currency)}</span>
+                          </div>
 
-                      {/* Price & Actions */}
-                      <div className="flex items-center justify-between border-t border-gray-100 pt-3">
-                        <div>
-                          <span className="text-xs text-gray-400 block">Total Paid</span>
-                          <span className="text-base font-bold text-gray-900">
-                            LKR {b.price_lkr.toLocaleString()}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Link
-                            href={`/bookings/${b.id}`}
-                            className="px-3.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-xs rounded-xl transition cursor-pointer"
-                          >
-                            View Details
-                          </Link>
-
-                          {b.status === "Upcoming" ? (
+                          <div className="flex items-center gap-2 flex-wrap justify-end">
                             <Link
-                              href={`/bookings/${b.id}/manage`}
-                              className="px-3.5 py-1.5 bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-xs rounded-xl transition cursor-pointer flex items-center gap-1"
+                              href={`/bookings/${b.id}`}
+                              className="px-3.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-xs rounded-xl transition cursor-pointer"
                             >
-                              Manage Booking →
+                              View Details
                             </Link>
-                          ) : (
-                            <button className="px-3.5 py-1.5 bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-xs rounded-xl transition cursor-pointer">
-                              Book Again
-                            </button>
-                          )}
+
+                            <BookingActions bookingId={b.id} canPay={b.canPay} canCancel={b.canCancel} />
+
+                            {(b.phase === "completed" || b.phase === "cancelled") && (
+                              <Link
+                                href={b.rebookHref}
+                                className="px-3.5 py-1.5 bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-xs rounded-xl transition cursor-pointer"
+                              >
+                                Book Again
+                              </Link>
+                            )}
+
+                            {b.phase === "upcoming" && (
+                              <Link
+                                href="/contact-us"
+                                className="px-3.5 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold text-xs rounded-xl transition cursor-pointer"
+                              >
+                                Need changes?
+                              </Link>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
 
           {/* RIGHT SIDEBAR */}
           <div className="lg:col-span-4 space-y-6">
-            
             {/* Quick Booking Shortcuts */}
             <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
               <div>
@@ -334,9 +299,8 @@ export default function BookingsClient({ initialBookings }: BookingsClientProps)
               <div className="space-y-2">
                 {[
                   { title: "Book a Hotel", desc: "Find the perfect stay", href: "/Hotels", icon: HotelIcon },
-                  { title: "Book a Holiday Package", desc: "Explore curated experiences", href: "/holiday-packages", icon: Palmtree },
                   { title: "Book a Flight", desc: "Fly to your next destination", href: "/flights", icon: Plane },
-                  { title: "Book a Tour", desc: "Discover amazing places", href: "/planning-a-trip", icon: Compass },
+                  { title: "Plan a Trip", desc: "Build your itinerary", href: "/planning-a-trip", icon: Compass },
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
@@ -367,6 +331,7 @@ export default function BookingsClient({ initialBookings }: BookingsClientProps)
                 src="/images/sigiriya.jpg"
                 alt="Need Help"
                 fill
+                sizes="(min-width: 1024px) 33vw, 100vw"
                 className="object-cover opacity-25"
               />
               <div className="relative z-10 space-y-1">
@@ -377,7 +342,7 @@ export default function BookingsClient({ initialBookings }: BookingsClientProps)
               </div>
 
               <Link
-                href="/contact"
+                href="/contact-us"
                 className="relative z-10 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer w-fit"
               >
                 <Headphones size={14} /> Contact Support →
@@ -386,54 +351,35 @@ export default function BookingsClient({ initialBookings }: BookingsClientProps)
 
             {/* Booking Summary Box */}
             <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-              <h3 className="font-serif font-bold text-gray-900 text-sm">Booking Summary</h3>
+              <h3 className="font-serif font-bold text-gray-900 text-sm flex items-center gap-1.5">
+                <Sparkles size={14} className="text-amber-500" /> Booking Summary
+              </h3>
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-gray-600">
                   <span>Total Bookings</span>
-                  <span className="font-bold text-gray-900">{summaryStats.total}</span>
+                  <span className="font-bold text-gray-900">{counts.all}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Pending payment</span>
+                  <span className="font-bold text-amber-600">{counts.pending}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Upcoming</span>
-                  <span className="font-bold text-emerald-800">{summaryStats.upcoming}</span>
+                  <span className="font-bold text-emerald-800">{counts.upcoming}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Completed</span>
-                  <span className="font-bold text-blue-600">{summaryStats.completed}</span>
+                  <span className="font-bold text-blue-600">{counts.completed}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Cancelled</span>
-                  <span className="font-bold text-rose-600">{summaryStats.cancelled}</span>
+                  <span className="font-bold text-rose-600">{counts.cancelled}</span>
                 </div>
               </div>
             </div>
-
-            {/* Travel More Save More Banner */}
-            <div className="relative rounded-2xl overflow-hidden p-6 text-white bg-slate-900 space-y-3">
-              <Image
-                src="/images/ella.jpg"
-                alt="Travel More Save More"
-                fill
-                className="object-cover opacity-30"
-              />
-              <div className="relative z-10 space-y-1">
-                <h4 className="text-base font-serif font-bold">Travel More Save More!</h4>
-                <p className="text-xs text-gray-300">
-                  Get exclusive deals and offers for your next trip.
-                </p>
-              </div>
-
-              <Link
-                href="/holiday-packages"
-                className="relative z-10 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold text-xs rounded-xl transition cursor-pointer inline-block"
-              >
-                Explore Offers →
-              </Link>
-            </div>
-
           </div>
-
         </div>
-      </main>
+      </section>
     </div>
   );
 }

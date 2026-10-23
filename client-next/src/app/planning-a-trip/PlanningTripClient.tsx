@@ -11,7 +11,6 @@ import {
   Plus,
   Edit2,
   MoreVertical,
-  PlusCircle,
   Navigation,
   Clock,
   Download,
@@ -109,8 +108,22 @@ export default function PlanningTripClient({
   initialItinerary,
 }: PlanningTripClientProps) {
   const destinations =
-    initialDestinations.length > 0 ? initialDestinations : DEFAULT_DESTINATIONS;
-  const itinerary = initialItinerary || DEFAULT_ITINERARY;
+    Array.isArray(initialDestinations) && initialDestinations.length > 0
+      ? initialDestinations
+      : DEFAULT_DESTINATIONS;
+      
+  const itinerary: TripItineraryData = {
+    title: initialItinerary?.title || DEFAULT_ITINERARY.title,
+    route_text: initialItinerary?.route_text || DEFAULT_ITINERARY.route_text,
+    date_range: initialItinerary?.date_range || DEFAULT_ITINERARY.date_range,
+    duration_text: initialItinerary?.duration_text || DEFAULT_ITINERARY.duration_text,
+    travelers_text: initialItinerary?.travelers_text || DEFAULT_ITINERARY.travelers_text,
+    tags: Array.isArray(initialItinerary?.tags) ? initialItinerary.tags : DEFAULT_ITINERARY.tags,
+    estimated_cost_range: initialItinerary?.estimated_cost_range || DEFAULT_ITINERARY.estimated_cost_range,
+    days: Array.isArray(initialItinerary?.days) && initialItinerary.days.length > 0
+      ? initialItinerary.days
+      : DEFAULT_ITINERARY.days,
+  };
 
   const [activeStep, setActiveStep] = useState(1);
   const [destinationQuery, setDestinationQuery] = useState("");
@@ -161,7 +174,6 @@ export default function PlanningTripClient({
                 Create your perfect trip with our smart planner. Explore places, get route suggestions, and make unforgettable memories.
               </p>
 
-              {/* Quick Feature Badges */}
               <div className="flex flex-wrap gap-4 pt-3 text-[11px] font-semibold text-white">
                 <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-lg">
                   <Calendar size={13} className="text-amber-400" /> Plan Your Itinerary
@@ -228,7 +240,6 @@ export default function PlanningTripClient({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-            {/* Input 1: Destination */}
             <div className="sm:col-span-5 bg-gray-50 p-2.5 rounded-xl border border-gray-100 flex items-center gap-2">
               <MapPin size={16} className="text-gray-400 shrink-0" />
               <div className="w-full">
@@ -243,7 +254,6 @@ export default function PlanningTripClient({
               </div>
             </div>
 
-            {/* Input 2: Dates */}
             <div className="sm:col-span-4 bg-gray-50 p-2.5 rounded-xl border border-gray-100 flex items-center gap-2">
               <Calendar size={16} className="text-gray-400 shrink-0" />
               <div className="w-full">
@@ -257,7 +267,6 @@ export default function PlanningTripClient({
               </div>
             </div>
 
-            {/* Input 3: Type */}
             <div className="sm:col-span-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100 flex items-center gap-2">
               <Compass size={16} className="text-gray-400 shrink-0" />
               <div className="w-full">
@@ -305,13 +314,13 @@ export default function PlanningTripClient({
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {destinations.map((dest) => (
               <div
-                key={dest.id}
+                key={dest.id || dest.name}
                 className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition group cursor-pointer"
               >
                 <div className="relative h-28 w-full overflow-hidden">
                   <Image
-                    src={dest.image_url}
-                    alt={dest.name}
+                    src={dest.image_url || "/images/sigiriya.jpg"}
+                    alt={dest.name || "Destination Image"}
                     fill
                     className="object-cover group-hover:scale-105 transition duration-300"
                   />
@@ -351,7 +360,12 @@ export default function PlanningTripClient({
                   className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm grid grid-cols-1 sm:grid-cols-12 gap-4 items-center"
                 >
                   <div className="sm:col-span-3 relative h-28 rounded-xl overflow-hidden">
-                    <Image src={d.image_url} alt={d.city} fill className="object-cover" />
+                    <Image 
+                      src={d.image_url || "/images/colombo.jpg"} 
+                      alt={d.city || `Day ${d.day} Itinerary`} 
+                      fill 
+                      className="object-cover" 
+                    />
                     <span className="absolute top-2 left-2 bg-emerald-800 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow">
                       Day {d.day}
                     </span>
@@ -363,7 +377,7 @@ export default function PlanningTripClient({
                   <div className="sm:col-span-7 space-y-1.5">
                     <h3 className="text-base font-bold text-gray-900">{d.city}</h3>
                     <ul className="space-y-1">
-                      {d.spots.map((spot, idx) => (
+                      {Array.isArray(d.spots) && d.spots.map((spot, idx) => (
                         <li key={idx} className="text-xs text-gray-600 flex items-center gap-1.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-800" />
                           <span>{spot}</span>
@@ -396,7 +410,7 @@ export default function PlanningTripClient({
               </div>
 
               <div className="relative h-28 rounded-xl overflow-hidden">
-                <Image src="/images/unawatuna.jpg" alt={itinerary.title} fill className="object-cover" />
+                <Image src="/images/unawatuna.jpg" alt={itinerary.title || "Trip Summary"} fill className="object-cover" />
               </div>
 
               <div>
@@ -417,7 +431,7 @@ export default function PlanningTripClient({
 
               {/* Tags */}
               <div className="flex flex-wrap gap-1.5">
-                {itinerary.tags.map((tag) => (
+                {Array.isArray(itinerary.tags) && itinerary.tags.map((tag) => (
                   <span
                     key={tag}
                     className="text-[10px] font-semibold text-emerald-900 bg-emerald-50 px-2.5 py-0.5 rounded-full"
@@ -473,7 +487,7 @@ export default function PlanningTripClient({
             <div className="relative rounded-2xl overflow-hidden p-6 text-white bg-slate-900 space-y-3">
               <Image
                 src="/images/ella.jpg"
-                alt="Need Assistance"
+                alt="Need Travel Assistance"
                 fill
                 className="object-cover opacity-25"
               />
@@ -502,16 +516,14 @@ export default function PlanningTripClient({
         {/* MAP & WHY PLAN WITH US SECTION */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           
-          {/* MAP VISUALIZER */}
           <div className="lg:col-span-7 relative h-72 sm:h-80 bg-blue-50 rounded-2xl overflow-hidden border border-gray-100 flex items-center justify-center">
             <Image
               src="/images/sigiriya.jpg"
-              alt="Map Route"
+              alt="Map Route Overview"
               fill
               className="object-cover opacity-35"
             />
             
-            {/* Overlay Waypoints Box */}
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md p-3 rounded-xl shadow-sm text-xs space-y-1.5 font-bold text-gray-800">
               <span className="text-[10px] text-gray-400 uppercase block">Your Route</span>
               <p className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500"/> Colombo</p>
@@ -520,14 +532,12 @@ export default function PlanningTripClient({
               <p className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"/> Galle</p>
             </div>
 
-            {/* Map Controls */}
             <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md rounded-xl p-1 shadow flex flex-col gap-1 text-gray-700">
               <button className="p-1 hover:bg-gray-100 rounded cursor-pointer"><ZoomIn size={16} /></button>
               <button className="p-1 hover:bg-gray-100 rounded cursor-pointer"><ZoomOut size={16} /></button>
             </div>
           </div>
 
-          {/* WHY PLAN WITH LANKARA TRAVELS */}
           <div className="lg:col-span-5 space-y-4">
             <h2 className="text-xl font-serif font-bold text-gray-900">Why Plan with Lankara Travels?</h2>
 

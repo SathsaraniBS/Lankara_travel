@@ -75,7 +75,7 @@ export default function Navbar() {
       <div className="flex items-center justify-between h-20 max-w-[1500px] w-full mx-auto px-5">
         {/* Logo */}
         <Link href="/" className="flex items-center shrink-0" onClick={closeMobileMenu}>
-          <Image src="/images/logo.png" alt="logo" width={70} height={70} className="h-[70px] w-auto rounded-full" />
+          <Image src="/images/logo2.png" alt="logo" width={70} height={70} className="h-[70px] w-auto rounded-full" />
         </Link>
 
         {/* Desktop Nav Links */}
