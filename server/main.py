@@ -1,7 +1,7 @@
 import os
 import uuid
 from typing import Optional
-from fastapi import FastAPI, Form, UploadFile, File, HTTPException, status, Query, APIRouter
+from fastapi import FastAPI, Form, UploadFile, File, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -14,7 +14,12 @@ from routers.road_trips import router as road_trips_router
 from routers.safari import safari_router
 from routers.group_trips import group_trips_router
 from routers.contact import router as contact_router
-from routers.dashboard import router as dashboard_router   
+from routers.dashboard import router as dashboard_router
+from routers.planner import router as planner_router
+from routers.destinations import (
+    router as destinations_router,
+    root_router as root_destinations_router,
+)
 
 app = FastAPI(
     title="Lankara Travel API",
@@ -56,28 +61,8 @@ app.include_router(road_trips_router)
 app.include_router(safari_router)
 app.include_router(group_trips_router)
 app.include_router(contact_router)
-app.include_router(dashboard_router)                       
-# Destinations Router & Endpoints
-destinations_router = APIRouter(prefix="/api/v1/destinations", tags=["destinations"])
-root_destinations_router = APIRouter(tags=["destinations"])
-
-@destinations_router.get("")
-@destinations_router.get("/")
-def get_destinations(category: Optional[str] = None):
-    destinations_list = [
-        {"id": "1", "name": "Sigiriya", "category": "Culture", "image": "/images/sigiriya.jpg", "description": "Ancient rock fortress and palace." },
-        {"id": "2", "name": "Ella", "category": "Hiking", "image": "/images/ella.jpg", "description": "Scenic mountain village with stunning views." },
-        {"id": "3", "name": "Mirissa", "category": "Beaches", "image": "/images/mirissa.webp", "description": "Whale watching and golden sand beaches." },
-        {"id": "4", "name": "Kandy", "category": "Culture", "image": "/images/Kandy.jpg", "description": "Home to the Temple of the Sacred Tooth Relic." }
-    ]
-    if category:
-        destinations_list = [d for d in destinations_list if d["category"].lower() == category.lower()]
-    return destinations_list
-
-@root_destinations_router.get("/destinations")
-def get_root_destinations(category: Optional[str] = None):
-    return get_destinations(category)
-
+app.include_router(dashboard_router)
+app.include_router(planner_router)
 app.include_router(destinations_router)
 app.include_router(root_destinations_router)
 
