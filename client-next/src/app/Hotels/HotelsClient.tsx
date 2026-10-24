@@ -140,7 +140,7 @@ const DEFAULT_HOTELS: HotelItem[] = [
 ];
 
 export default function HotelsClient({ initialHotels }: HotelsClientProps) {
-  const hotelsList = initialHotels.length > 0 ? initialHotels : DEFAULT_HOTELS;
+  const hotelsList = Array.isArray(initialHotels) && initialHotels.length > 0 ? initialHotels : DEFAULT_HOTELS;
 
   const [destination, setDestination] = useState("All Destinations");
   const [checkIn, setCheckIn] = useState("12 Apr 2026");
@@ -178,9 +178,11 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
       if (hotel.price_lkr > maxPrice) return false;
       if (selectedStars.length > 0 && !selectedStars.includes(hotel.stars)) return false;
       if (selectedTypes.length > 0 && !selectedTypes.includes(hotel.type)) return false;
+      
+      const amenities = Array.isArray(hotel.amenities) ? hotel.amenities : [];
       if (
         selectedFacilities.length > 0 &&
-        !selectedFacilities.every((f) => hotel.amenities.includes(f))
+        !selectedFacilities.every((f) => amenities.includes(f))
       ) {
         return false;
       }
@@ -239,10 +241,9 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
         </div>
       </section>
 
-      {/* 2. SEARCH BAR BAR */}
+      {/* 2. SEARCH BAR */}
       <div className="max-w-7xl mx-auto px-6 -mt-8 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
-          {/* Destination */}
           <div className="lg:col-span-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
             <label className="text-[10px] text-gray-400 font-bold uppercase block">Destination</label>
             <div className="flex items-center justify-between text-xs font-bold text-gray-800 mt-0.5">
@@ -251,7 +252,6 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
             </div>
           </div>
 
-          {/* Check In */}
           <div className="lg:col-span-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
             <label className="text-[10px] text-gray-400 font-bold uppercase block">Check In</label>
             <div className="flex items-center justify-between text-xs font-bold text-gray-800 mt-0.5">
@@ -260,7 +260,6 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
             </div>
           </div>
 
-          {/* Check Out */}
           <div className="lg:col-span-3 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
             <label className="text-[10px] text-gray-400 font-bold uppercase block">Check Out</label>
             <div className="flex items-center justify-between text-xs font-bold text-gray-800 mt-0.5">
@@ -269,7 +268,6 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
             </div>
           </div>
 
-          {/* Guests */}
           <div className="lg:col-span-2 bg-gray-50 p-2.5 rounded-xl border border-gray-100">
             <label className="text-[10px] text-gray-400 font-bold uppercase block">Guests</label>
             <div className="flex items-center justify-between text-xs font-bold text-gray-800 mt-0.5">
@@ -278,7 +276,6 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
             </div>
           </div>
 
-          {/* Search Button */}
           <div className="lg:col-span-1">
             <button className="w-full h-full min-h-[48px] bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition cursor-pointer shadow">
               <Search size={14} />
@@ -299,7 +296,6 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
                 <p className="text-xs text-gray-500">Handpicked stays for an unforgettable Sri Lanka experience.</p>
               </div>
 
-              {/* Sort Dropdown */}
               <div className="flex items-center gap-2 text-xs">
                 <span className="text-gray-400 font-medium">Sort by:</span>
                 <select
@@ -322,7 +318,9 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
             ) : (
               <div className="space-y-6">
                 {filteredHotels.map((hotel) => {
-                  const currentImage = selectedImageMap[hotel.id] || hotel.main_image;
+                  const currentImage = selectedImageMap[hotel.id] || hotel.main_image || "/images/unawatuna.jpg";
+                  const amenities = Array.isArray(hotel.amenities) ? hotel.amenities : [];
+                  const gallery = Array.isArray(hotel.gallery) ? hotel.gallery : [];
 
                   return (
                     <div
@@ -335,7 +333,7 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
                         <div className="sm:col-span-4 relative h-52 sm:h-auto rounded-xl overflow-hidden group">
                           <Image
                             src={currentImage}
-                            alt={hotel.title}
+                            alt={hotel.title || "Hotel"}
                             fill
                             className="object-cover transition duration-300 group-hover:scale-105"
                           />
@@ -364,7 +362,7 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
                                     ))}
                                   </div>
                                   <span>{hotel.rating}</span>
-                                  <span className="text-gray-400 font-normal">({hotel.reviews_count.toLocaleString()} reviews)</span>
+                                  <span className="text-gray-400 font-normal">({(hotel.reviews_count ?? 0).toLocaleString()} reviews)</span>
                                 </div>
                               </div>
 
@@ -382,7 +380,7 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
 
                             {/* Amenity Badges */}
                             <div className="flex flex-wrap gap-2 mt-2">
-                              {hotel.amenities.map((amenity) => (
+                              {amenities.map((amenity) => (
                                 <span
                                   key={amenity}
                                   className="text-[10px] font-semibold text-gray-600 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md flex items-center gap-1"
@@ -407,7 +405,7 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
                           <div className="flex items-center justify-between border-t border-gray-100 pt-3">
                             <div>
                               <span className="text-base font-bold text-gray-900">
-                                LKR {hotel.price_lkr.toLocaleString()}
+                                LKR {(hotel.price_lkr || 0).toLocaleString()}
                               </span>
                               <span className="text-[10px] text-gray-400 block">per night</span>
                             </div>
@@ -424,21 +422,23 @@ export default function HotelsClient({ initialHotels }: HotelsClientProps) {
                       </div>
 
                       {/* Small Image Gallery Switcher */}
-                      <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-50">
-                        {hotel.gallery.map((img, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() =>
-                              setSelectedImageMap((prev) => ({ ...prev, [hotel.id]: img }))
-                            }
-                            className={`relative h-14 rounded-lg overflow-hidden border-2 transition cursor-pointer ${
-                              currentImage === img ? "border-emerald-800" : "border-transparent opacity-70 hover:opacity-100"
-                            }`}
-                          >
-                            <Image src={img} alt="Hotel detail" fill className="object-cover" />
-                          </button>
-                        ))}
-                      </div>
+                      {gallery.length > 0 && (
+                        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-50">
+                          {gallery.map((img, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() =>
+                                setSelectedImageMap((prev) => ({ ...prev, [hotel.id]: img }))
+                              }
+                              className={`relative h-14 rounded-lg overflow-hidden border-2 transition cursor-pointer ${
+                                currentImage === img ? "border-emerald-800" : "border-transparent opacity-70 hover:opacity-100"
+                              }`}
+                            >
+                              <Image src={img} alt="Hotel detail" fill className="object-cover" />
+                            </button>
+                          ))}
+                        </div>
+                      )}
 
                     </div>
                   );
