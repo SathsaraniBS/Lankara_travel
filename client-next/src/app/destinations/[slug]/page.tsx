@@ -117,7 +117,7 @@ export default function DestinationDetailPage() {
 
     async function fetchDestination() {
       try {
-        const res = await fetch(`http://localhost:8000/api/destinations/${slug}`);
+        const res = await fetch(`http://localhost:8000/api/v1/destinations/${slug}`);
         if (res.ok) {
           const apiData = await res.json();
           setData(apiData);
