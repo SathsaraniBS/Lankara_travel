@@ -1,8 +1,14 @@
 DESTINATION_LIST = [
-    {"id": "1", "name": "Sigiriya", "slug": "sigiriya", "category": "Culture", "image": "/images/sigiriya.jpg", "description": "Ancient rock fortress and palace."},
-    {"id": "2", "name": "Ella", "slug": "ella", "category": "Hiking", "image": "/images/ella.jpg", "description": "Scenic mountain village with stunning views."},
+    {"id": "1", "name": "Colombo", "slug": "colombo", "category": "Culture", "image": "/images/colombo.jpg", "description": "Vibrant capital city with rich history and culture."},
+    {"id": "2", "name": "Galle", "slug": "galle", "category": "Beaches", "image": "/images/galle.jpg", "description": "Historic coastal city with well-preserved Dutch colonial architecture."},
     {"id": "3", "name": "Mirissa", "slug": "mirissa", "category": "Beaches", "image": "/images/mirissa.webp", "description": "Whale watching and golden sand beaches."},
     {"id": "4", "name": "Kandy", "slug": "kandy", "category": "Culture", "image": "/images/Kandy.jpg", "description": "Home to the Temple of the Sacred Tooth Relic."},
+    {"id": "5", "name": "Sigiriya", "slug": "sigiriya", "category": "Culture", "image": "/images/sigiriya.jpg", "description": "Ancient rock fortress and palace."},
+    {"id": "6", "name": "Ella", "slug": "ella", "category": "Hiking", "image": "/images/ella.jpg", "description": "Scenic mountain village with stunning views."},
+    {"id": "7", "name": "Trincomalee", "slug": "trincomalee", "category": "Beaches", "image": "/images/Trincomalee.jpg", "description": "Whale watching and golden sand beaches."},
+    {"id": "8", "name": "Nuwara Eliya", "slug": "nuwara eliya", "category": "Culture", "image": "/images/nuwaraeliya.webp", "description": "Home to the Temple of the Sacred Tooth Relic."},
+    {"id": "9", "name": "Anuradhapura", "slug": "anuradhapura", "category": "Culture", "image": "/images/anuradhapura.jpg", "description": "Ancient rock fortress and palace."},
+    {"id": "10", "name": "Jaffna", "slug": "Jaffna", "category": "Culture", "image": "/images/jaffna.jpg", "description": "Ancient rock fortress and palace."},
 ]
 
 DESTINATION_DETAILS = {
