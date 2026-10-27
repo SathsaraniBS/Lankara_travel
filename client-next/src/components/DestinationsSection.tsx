@@ -20,7 +20,8 @@ interface Destination {
   duration?: string;
   price?: number;
   categoryTag?: string;
-  image: string;
+  image?: string;
+  heroImage?: string;
   name?: string;
   subtitle?: string;
   description?: string;
@@ -38,26 +39,26 @@ const categoriesData: Category[] = [
 
 const mockDestinations: Destination[] = [
   { id: "1", title: "Colombo Explorer", location: "Colombo, Sri Lanka", duration: "3 days Trip", price: 450.0, categoryTag: "Urban", image: "/images/colombo.jpg" },
-  { id: "2", title: "Galle Fort Heritage", location: "Galle, Sri Lanka", duration: "5 days Trip", price: 620.0, categoryTag: "Culture", image: "/images/galle.jpg" },
+  { id: "2", title: "Galle Fort Heritage", location: "Galle, Sri Lanka", duration: "5 days Trip", price: 620.0, categoryTag: "Culture", image: "/images/unawatuna.jpg" },
   { id: "3", title: "Kandy Sacred Temple", location: "Kandy, Sri Lanka", duration: "4 days Trip", price: 550.0, categoryTag: "Culture", image: "/images/Kandy.jpg" },
-  { id: "4", title: "Trincomalee Beach Retreat", location: "Trincomalee, Sri Lanka", duration: "7 days Trip", price: 780.0, categoryTag: "Beach", image: "/images/Trincomalee.jpg" },
-  { id: "5", title: "Nuwara Eliya Tea Hills", location: "Nuwara Eliya, Sri Lanka", duration: "4 days Trip", price: 500.0, categoryTag: "Nature", image: "/images/nuwaraeliya.webp" },
-  { id: "6", title: "Jaffna Cultural Journey", location: "Jaffna, Sri Lanka", duration: "6 days Trip", price: 600.0, categoryTag: "Culture", image: "/images/jaffna.jpg" },
+  { id: "4", title: "Trincomalee Beach Retreat", location: "Trincomalee, Sri Lanka", duration: "7 days Trip", price: 780.0, categoryTag: "Beach", image: "/images/colombo.jpg" },
+  { id: "5", title: "Nuwara Eliya Tea Hills", location: "Nuwara Eliya, Sri Lanka", duration: "4 days Trip", price: 500.0, categoryTag: "Nature", image: "/images/ella.jpg" },
+  { id: "6", title: "Jaffna Cultural Journey", location: "Jaffna, Sri Lanka", duration: "6 days Trip", price: 600.0, categoryTag: "Culture", image: "/images/sigiriya.jpg" },
   { id: "7", title: "Ella Gap & Nine Arch", location: "Ella, Sri Lanka", duration: "5 days Trip", price: 520.0, categoryTag: "Adventure", image: "/images/ella.jpg" },
   { id: "8", title: "Sigiriya Fortress Hike", location: "Sigiriya, Sri Lanka", duration: "3 days Trip", price: 480.0, categoryTag: "History", image: "/images/sigiriya.jpg" },
-  { id: "9", title: "Anuradhapura Ancient City", location: "Anuradhapura, Sri Lanka", duration: "4 days Trip", price: 510.0, categoryTag: "History", image: "/images/anuradhapura.jpg" },
+  { id: "9", title: "Anuradhapura Ancient City", location: "Anuradhapura, Sri Lanka", duration: "4 days Trip", price: 510.0, categoryTag: "History", image: "/images/Kandy.jpg" },
 ];
 
 const fallbackGuideDestinations: Destination[] = [
   { id: "1", title: "COLOMBO", subtitle: "Urban & Nightlife", location: "Colombo", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg", slug: "colombo" },
-  { id: "2", title: "GALLE", subtitle: "Heritage & Beaches", location: "Galle", duration: "", price: 0, categoryTag: "", image: "/images/galle.jpg", slug: "galle" },
+  { id: "2", title: "GALLE", subtitle: "Heritage & Beaches", location: "Galle", duration: "", price: 0, categoryTag: "", image: "/images/unawatuna.jpg", slug: "galle" },
   { id: "3", title: "KANDY", subtitle: "History & Culture", location: "Kandy", duration: "", price: 0, categoryTag: "", image: "/images/Kandy.jpg", slug: "kandy" },
-  { id: "4", title: "TRINCOMALEE", subtitle: "Beaches & Diving", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/Trincomalee.jpg", slug: "trincomalee" },
-  { id: "5", title: "NUWARA ELIYA", subtitle: "Tea Gardens & Cool Climate", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/nuwaraeliya.webp", slug: "nuwara-eliya" },
-  { id: "6", title: "JAFFNA", subtitle: "Northern Heritage & Food", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/jaffna.jpg", slug: "jaffna" },
+  { id: "4", title: "TRINCOMALEE", subtitle: "Beaches & Diving", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg", slug: "trincomalee" },
+  { id: "5", title: "NUWARA ELIYA", subtitle: "Tea Gardens & Cool Climate", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/ella.jpg", slug: "nuwara-eliya" },
+  { id: "6", title: "JAFFNA", subtitle: "Northern Heritage & Food", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "jaffna" },
   { id: "7", title: "ELLA", subtitle: "Cool Climate", location: "Ella", duration: "", price: 0, categoryTag: "", image: "/images/ella.jpg", slug: "ella" },
-  { id: "8", title: "SIGIRIYA", subtitle: "History ", location: "Sigiriya", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "sigiriya" },
-  { id: "9", title: "ANURADHAPURA", subtitle: "Culture", location: "Anuradhapura", duration: "", price: 0, categoryTag: "", image: "/images/anuradhapura.jpg", slug: "anuradhapura" },
+  { id: "8", title: "SIGIRIYA", subtitle: "History", location: "Sigiriya", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "sigiriya" },
+  { id: "9", title: "ANURADHAPURA", subtitle: "Culture", location: "Anuradhapura", duration: "", price: 0, categoryTag: "", image: "/images/Kandy.jpg", slug: "anuradhapura" },
 ];
 
 const CATEGORY_ROUTES: Record<string, string> = {
@@ -99,6 +100,14 @@ export default function DestinationsSection() {
     return rawName.toLowerCase().replace(/\s+/g, "-");
   };
 
+  // Helper to ensure correct image mapping if backend returns missing or default images
+  const getDestinationImage = (dest: Destination, index: number) => {
+    if (dest.image && dest.image.trim() !== "") return dest.image;
+    if (dest.heroImage && dest.heroImage.trim() !== "") return dest.heroImage;
+    // Fallback based on fallback array index to prevent all showing Sigiriya
+    return fallbackGuideDestinations[index % fallbackGuideDestinations.length].image || "/images/sigiriya.jpg";
+  };
+
   useEffect(() => {
     async function fetchDestinations() {
       try {
@@ -121,7 +130,7 @@ export default function DestinationsSection() {
     let isMounted = true;
     async function fetchGuide() {
       try {
-        const res = await fetch("http://localhost:8000/destinations");
+        const res = await fetch("http://localhost:8000/api/v1/destinations");
         if (res.ok) {
           const data = await res.json();
           if (isMounted && Array.isArray(data) && data.length > 0) {
@@ -216,46 +225,49 @@ export default function DestinationsSection() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {destinations.map((dest, index) => (
-              <div
-                key={`${dest.id}-${index}`}
-                className="bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-3 flex flex-col justify-between space-y-3 hover:border-zinc-700 transition duration-300 group shadow-lg"
-              >
-                <div className="relative h-48 w-full rounded-xl overflow-hidden">
-                  <Image
-                    src={dest.image || "/images/sigiriya.jpg"}
-                    alt={dest.name || dest.title || "Destination image"}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <span className="absolute top-2.5 left-2.5 bg-emerald-500/90 backdrop-blur-md text-slate-950 font-semibold text-[10px] px-2.5 py-0.5 rounded-md">
-                    {dest.categoryTag || "Featured"}
-                  </span>
-                </div>
-
-                <div className="space-y-2 text-left px-1">
-                  <h3 className="text-sm font-bold text-zinc-100 line-clamp-1">{dest.title || dest.name}</h3>
-                  <div className="flex items-center justify-between text-zinc-400 text-[11px]">
-                    <span className="flex items-center gap-1">
-                      <MapPin size={12} className="text-emerald-500" /> {dest.location || "Sri Lanka"}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Navigation size={12} className="text-emerald-500" /> {dest.duration || "3 days Trip"}
+            {destinations.map((dest, index) => {
+              const imgSrc = getDestinationImage(dest, index);
+              return (
+                <div
+                  key={`${dest.id}-${index}`}
+                  className="bg-[#121614]/90 backdrop-blur-sm border border-zinc-800/80 rounded-2xl p-3 flex flex-col justify-between space-y-3 hover:border-zinc-700 transition duration-300 group shadow-lg"
+                >
+                  <div className="relative h-48 w-full rounded-xl overflow-hidden">
+                    <Image
+                      src={imgSrc}
+                      alt={dest.name || dest.title || "Destination image"}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <span className="absolute top-2.5 left-2.5 bg-emerald-500/90 backdrop-blur-md text-slate-950 font-semibold text-[10px] px-2.5 py-0.5 rounded-md">
+                      {dest.categoryTag || "Featured"}
                     </span>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 px-1">
-                  <span className="text-sm font-extrabold text-zinc-100">
-                    ${Number(dest.price || 0).toFixed(2)}
-                  </span>
-                  <button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition-colors">
-                    Book Now
-                  </button>
+                  <div className="space-y-2 text-left px-1">
+                    <h3 className="text-sm font-bold text-zinc-100 line-clamp-1">{dest.title || dest.name}</h3>
+                    <div className="flex items-center justify-between text-zinc-400 text-[11px]">
+                      <span className="flex items-center gap-1">
+                        <MapPin size={12} className="text-emerald-500" /> {dest.location || "Sri Lanka"}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Navigation size={12} className="text-emerald-500" /> {dest.duration || "3 days Trip"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 px-1">
+                    <span className="text-sm font-extrabold text-zinc-100">
+                      ${Number(dest.price || 0).toFixed(2)}
+                    </span>
+                    <button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition-colors">
+                      Book Now
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -327,6 +339,7 @@ export default function DestinationsSection() {
                 const subtitleText = dest.subtitle || dest.description || dest.categoryTag || "Top Attraction";
                 const isFav = !!favorites[dest.id];
                 const citySlug = getCitySlug(dest);
+                const imgSrc = getDestinationImage(dest, index);
 
                 return (
                   <Link
@@ -336,7 +349,7 @@ export default function DestinationsSection() {
                   >
                     {/* Background Image */}
                     <Image
-                      src={dest.image || "/images/sigiriya.jpg"}
+                      src={imgSrc}
                       alt={titleText}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
