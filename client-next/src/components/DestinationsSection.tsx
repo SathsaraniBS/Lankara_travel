@@ -41,7 +41,7 @@ const mockDestinations: Destination[] = [
   { id: "1", title: "Colombo Explorer", location: "Colombo, Sri Lanka", duration: "3 days Trip", price: 450.0, categoryTag: "Urban", image: "/images/colombo.jpg" },
   { id: "2", title: "Galle Fort Heritage", location: "Galle, Sri Lanka", duration: "5 days Trip", price: 620.0, categoryTag: "Culture", image: "/images/galle.jpg" },
   { id: "3", title: "Kandy Sacred Temple", location: "Kandy, Sri Lanka", duration: "4 days Trip", price: 550.0, categoryTag: "Culture", image: "/images/Kandy.jpg" },
-  { id: "4", title: "Trincomalee Beach Retreat", location: "Trincomalee, Sri Lanka", duration: "7 days Trip", price: 780.0, categoryTag: "Beach", image: "/images/colombo.jpg" },
+  { id: "4", title: "Trincomalee Beach Retreat", location: "Trincomalee, Sri Lanka", duration: "7 days Trip", price: 780.0, categoryTag: "Beach", image: "/images/Trincomalee.jpg" },
   { id: "5", title: "Nuwara Eliya Tea Hills", location: "Nuwara Eliya, Sri Lanka", duration: "4 days Trip", price: 500.0, categoryTag: "Nature", image: "/images/nuwaraeliya.webp" },
   { id: "6", title: "Jaffna Cultural Journey", location: "Jaffna, Sri Lanka", duration: "6 days Trip", price: 600.0, categoryTag: "Culture", image: "/images/jaffna.jpg" },
   { id: "7", title: "Ella Gap & Nine Arch", location: "Ella, Sri Lanka", duration: "5 days Trip", price: 520.0, categoryTag: "Adventure", image: "/images/ella.jpg" },
@@ -59,7 +59,7 @@ const fallbackGuideDestinations: Destination[] = [
   { id: "6", title: "GALLE", subtitle: "Top Attraction", location: "Galle", duration: "", price: 0, categoryTag: "", image: "/images/galle.jpg", slug: "galle" },
   { id: "7", title: "JAFFNA", subtitle: "Top Attraction", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/jaffna.jpg", slug: "jaffna" },
   { id: "8", title: "ANURADHAPURA", subtitle: "Top Attraction", location: "Anuradhapura", duration: "", price: 0, categoryTag: "", image: "/images/anuradhapura.jpg", slug: "anuradhapura" },
-  { id: "9", title: "TRINCOMALEE", subtitle: "Top Attraction", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg", slug: "trincomalee" },
+  { id: "9", title: "TRINCOMALEE", subtitle: "Top Attraction", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/Trincomalee.jpg", slug: "trincomalee" },
 ];
 
 const CATEGORY_ROUTES: Record<string, string> = {
