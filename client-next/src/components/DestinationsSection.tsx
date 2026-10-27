@@ -39,26 +39,27 @@ const categoriesData: Category[] = [
 
 const mockDestinations: Destination[] = [
   { id: "1", title: "Colombo Explorer", location: "Colombo, Sri Lanka", duration: "3 days Trip", price: 450.0, categoryTag: "Urban", image: "/images/colombo.jpg" },
-  { id: "2", title: "Galle Fort Heritage", location: "Galle, Sri Lanka", duration: "5 days Trip", price: 620.0, categoryTag: "Culture", image: "/images/unawatuna.jpg" },
+  { id: "2", title: "Galle Fort Heritage", location: "Galle, Sri Lanka", duration: "5 days Trip", price: 620.0, categoryTag: "Culture", image: "/images/galle.jpg" },
   { id: "3", title: "Kandy Sacred Temple", location: "Kandy, Sri Lanka", duration: "4 days Trip", price: 550.0, categoryTag: "Culture", image: "/images/Kandy.jpg" },
   { id: "4", title: "Trincomalee Beach Retreat", location: "Trincomalee, Sri Lanka", duration: "7 days Trip", price: 780.0, categoryTag: "Beach", image: "/images/colombo.jpg" },
-  { id: "5", title: "Nuwara Eliya Tea Hills", location: "Nuwara Eliya, Sri Lanka", duration: "4 days Trip", price: 500.0, categoryTag: "Nature", image: "/images/ella.jpg" },
-  { id: "6", title: "Jaffna Cultural Journey", location: "Jaffna, Sri Lanka", duration: "6 days Trip", price: 600.0, categoryTag: "Culture", image: "/images/sigiriya.jpg" },
+  { id: "5", title: "Nuwara Eliya Tea Hills", location: "Nuwara Eliya, Sri Lanka", duration: "4 days Trip", price: 500.0, categoryTag: "Nature", image: "/images/nuwaraeliya.webp" },
+  { id: "6", title: "Jaffna Cultural Journey", location: "Jaffna, Sri Lanka", duration: "6 days Trip", price: 600.0, categoryTag: "Culture", image: "/images/jaffna.jpg" },
   { id: "7", title: "Ella Gap & Nine Arch", location: "Ella, Sri Lanka", duration: "5 days Trip", price: 520.0, categoryTag: "Adventure", image: "/images/ella.jpg" },
   { id: "8", title: "Sigiriya Fortress Hike", location: "Sigiriya, Sri Lanka", duration: "3 days Trip", price: 480.0, categoryTag: "History", image: "/images/sigiriya.jpg" },
-  { id: "9", title: "Anuradhapura Ancient City", location: "Anuradhapura, Sri Lanka", duration: "4 days Trip", price: 510.0, categoryTag: "History", image: "/images/Kandy.jpg" },
+  { id: "9", title: "Anuradhapura Ancient City", location: "Anuradhapura, Sri Lanka", duration: "4 days Trip", price: 510.0, categoryTag: "History", image: "/images/anuradhapura.jpg" },
 ];
 
+// Complete 9 Top Destinations List for Destination Guide Section
 const fallbackGuideDestinations: Destination[] = [
-  { id: "1", title: "COLOMBO", subtitle: "Urban & Nightlife", location: "Colombo", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg", slug: "colombo" },
-  { id: "2", title: "GALLE", subtitle: "Heritage & Beaches", location: "Galle", duration: "", price: 0, categoryTag: "", image: "/images/unawatuna.jpg", slug: "galle" },
-  { id: "3", title: "KANDY", subtitle: "History & Culture", location: "Kandy", duration: "", price: 0, categoryTag: "", image: "/images/Kandy.jpg", slug: "kandy" },
-  { id: "4", title: "TRINCOMALEE", subtitle: "Beaches & Diving", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg", slug: "trincomalee" },
-  { id: "5", title: "NUWARA ELIYA", subtitle: "Tea Gardens & Cool Climate", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/ella.jpg", slug: "nuwara-eliya" },
-  { id: "6", title: "JAFFNA", subtitle: "Northern Heritage & Food", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "jaffna" },
-  { id: "7", title: "ELLA", subtitle: "Cool Climate", location: "Ella", duration: "", price: 0, categoryTag: "", image: "/images/ella.jpg", slug: "ella" },
-  { id: "8", title: "SIGIRIYA", subtitle: "History", location: "Sigiriya", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "sigiriya" },
-  { id: "9", title: "ANURADHAPURA", subtitle: "Culture", location: "Anuradhapura", duration: "", price: 0, categoryTag: "", image: "/images/Kandy.jpg", slug: "anuradhapura" },
+  { id: "1", title: "KANDY", subtitle: "Top Attraction", location: "Kandy", duration: "", price: 0, categoryTag: "", image: "/images/Kandy.jpg", slug: "kandy" },
+  { id: "2", title: "SIGIRIYA", subtitle: "Top Attraction", location: "Sigiriya", duration: "", price: 0, categoryTag: "", image: "/images/sigiriya.jpg", slug: "sigiriya" },
+  { id: "3", title: "ELLA", subtitle: "Top Attraction", location: "Ella", duration: "", price: 0, categoryTag: "", image: "/images/ella.jpg", slug: "ella" },
+  { id: "4", title: "COLOMBO", subtitle: "Top Attraction", location: "Colombo", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg", slug: "colombo" },
+  { id: "5", title: "NUWARA ELIYA", subtitle: "Top Attraction", location: "Nuwara Eliya", duration: "", price: 0, categoryTag: "", image: "/images/nuwaraeliya.webp", slug: "nuwara-eliya" },
+  { id: "6", title: "GALLE", subtitle: "Top Attraction", location: "Galle", duration: "", price: 0, categoryTag: "", image: "/images/galle.jpg", slug: "galle" },
+  { id: "7", title: "JAFFNA", subtitle: "Top Attraction", location: "Jaffna", duration: "", price: 0, categoryTag: "", image: "/images/jaffna.jpg", slug: "jaffna" },
+  { id: "8", title: "ANURADHAPURA", subtitle: "Top Attraction", location: "Anuradhapura", duration: "", price: 0, categoryTag: "", image: "/images/anuradhapura.jpg", slug: "anuradhapura" },
+  { id: "9", title: "TRINCOMALEE", subtitle: "Top Attraction", location: "Trincomalee", duration: "", price: 0, categoryTag: "", image: "/images/colombo.jpg", slug: "trincomalee" },
 ];
 
 const CATEGORY_ROUTES: Record<string, string> = {
@@ -76,7 +77,7 @@ export default function DestinationsSection() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const [guideDestinations, setGuideDestinations] = useState<Destination[]>(fallbackGuideDestinations);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
 
   const handleCategoryClick = (title: string) => {
@@ -100,11 +101,9 @@ export default function DestinationsSection() {
     return rawName.toLowerCase().replace(/\s+/g, "-");
   };
 
-  // Helper to ensure correct image mapping if backend returns missing or default images
   const getDestinationImage = (dest: Destination, index: number) => {
     if (dest.image && dest.image.trim() !== "") return dest.image;
     if (dest.heroImage && dest.heroImage.trim() !== "") return dest.heroImage;
-    // Fallback based on fallback array index to prevent all showing Sigiriya
     return fallbackGuideDestinations[index % fallbackGuideDestinations.length].image || "/images/sigiriya.jpg";
   };
 
@@ -133,7 +132,7 @@ export default function DestinationsSection() {
         const res = await fetch("http://localhost:8000/api/v1/destinations");
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && Array.isArray(data) && data.length > 0) {
+          if (isMounted && Array.isArray(data) && data.length >= 8) {
             setGuideDestinations(data);
           }
         }
