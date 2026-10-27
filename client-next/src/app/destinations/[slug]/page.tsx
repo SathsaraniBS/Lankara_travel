@@ -8,10 +8,8 @@ import {
   Calendar,
   Thermometer,
   Languages,
-  Bus,
   CheckCircle2,
   ChevronRight,
-  ArrowRight,
   Sparkles,
   Map,
 } from "lucide-react";
@@ -59,121 +57,186 @@ interface DestinationDetails {
   whyVisit: string[];
 }
 
-// Full Mocked Fallback Dataset matching all UI designs provided (Kandy, Sigiriya, Ella, Colombo, Nuwara Eliya, Mirissa)
+// Complete Mocked Fallback Dataset for all 9 destinations (Kandy, Sigiriya, Ella, Colombo, Nuwara Eliya, Galle, Jaffna, Anuradhapura, Trincomalee)
 const DESTINATIONS_DATA: Record<string, DestinationDetails> = {
   kandy: {
     slug: "kandy",
     name: "Kandy",
     tagline: "A city of culture, history and natural beauty",
-    description:
-      "Nestled in the hills of central Sri Lanka, Kandy is a city where heritage, spirituality and nature come together in perfect harmony.",
+    description: "Nestled in the hills of central Sri Lanka, Kandy is a city where heritage, spirituality and nature come together in perfect harmony.",
     heroImage: "/images/Kandy.jpg",
     aboutImage: "/images/Kandy.jpg",
     tags: ["Cultural Heritage", "Nature & Scenic Beauty", "Temples & Sacred Sites"],
-    quickInfo: {
-      bestTime: "Dec – Apr",
-      avgTemp: "20°C – 28°C",
-      travelTime: "3–4 hours from Colombo",
-      languages: "Sinhala, Tamil, English",
-    },
-    stats: {
-      history: "500+ Years",
-      relicInfo: "Sacred Tooth Relic",
-      elevation: "500 m ASL",
-    },
+    quickInfo: { bestTime: "Dec – Apr", avgTemp: "20°C – 28°C", travelTime: "3–4 hours from Colombo", languages: "Sinhala, Tamil, English" },
+    stats: { history: "500+ Years", relicInfo: "Sacred Tooth Relic", elevation: "500 m ASL" },
     attractions: [
       { name: "Temple of the Tooth Relic", desc: "A sacred Buddhist temple with a rich history and cultural value.", location: "Kandy", image: "/images/Kandy.jpg" },
       { name: "Kandy Lake", desc: "A beautiful man-made lake in the heart of the city.", location: "Kandy", image: "/images/Kandy.jpg" },
-      { name: "Royal Botanical Gardens", desc: "Home to over 4,000 species of plants and trees.", location: "Peradeniya (5 km)", image: "/images/ella.jpg" },
-      { name: "Arthur's Seat", desc: "Enjoy breathtaking panoramic views of Kandy city.", location: "Kandy", image: "/images/sigiriya.jpg" },
     ],
-    itineraries: [
-      { title: "1 Day in Kandy", subtitle: "Temple, Lake & City Tour", daysText: "1 Day", location: "Kandy", image: "/images/Kandy.jpg" },
-      { title: "2 Days in Kandy", subtitle: "Culture + Nature", daysText: "2 Days", location: "Kandy", image: "/images/ella.jpg" },
-      { title: "3 Days in Kandy", subtitle: "Kandy → Ella (Train Journey)", daysText: "3 Days", location: "Kandy – Ella", image: "/images/unawatuna.jpg" },
-    ],
-    popularActivities: [
-      "Visit the Temple of the Tooth",
-      "Explore Kandy Lake",
-      "Take a scenic train ride",
-      "Discover local cuisine",
-      "Shop for traditional handicrafts",
-    ],
-    travelTips: [
-      "Dress modestly when visiting temples (cover shoulders and knees).",
-      "Carry a light jacket (cooler in the evenings).",
-      "Try local food like kottu, rice and curry.",
-      "Use public transport or tuk-tuks for short distances.",
-    ],
-    whyVisit: [
-      "Rich cultural heritage and ancient kingdom history",
-      "Breathtaking mountain views and lush greenery",
-      "Vibrant street food culture and local markets",
-    ],
+    itineraries: [{ title: "1 Day in Kandy", subtitle: "Temple, Lake & City Tour", daysText: "1 Day", location: "Kandy", image: "/images/Kandy.jpg" }],
+    popularActivities: ["Visit the Temple of the Tooth", "Explore Kandy Lake"],
+    travelTips: ["Dress modestly when visiting temples (cover shoulders and knees)."],
+    whyVisit: ["Rich cultural heritage and ancient kingdom history"]
   },
   sigiriya: {
     slug: "sigiriya",
     name: "Sigiriya",
     tagline: "An Ancient Marvel in the Heart of Sri Lanka",
-    description:
-      "Explore the legendary rock fortress of Sigiriya, a UNESCO World Heritage Site known for its breathtaking views, ancient history and unique architecture.",
+    description: "Explore the legendary rock fortress of Sigiriya, a UNESCO World Heritage Site known for its breathtaking views, ancient history and unique architecture.",
     heroImage: "/images/sigiriya.jpg",
     aboutImage: "/images/sigiriya.jpg",
-    tags: ["UNESCO Heritage", "Ancient Rock Fortress", "Stunning Views", "Nature & Wildlife"],
-    quickInfo: {
-      bestTime: "Jan – Apr",
-      avgTemp: "25°C – 32°C",
-      travelTime: "2–4 hours duration",
-      languages: "Sinhala, Tamil, English",
-    },
-    stats: {
-      history: "5th Century",
-      relicInfo: "World Heritage Site",
-      elevation: "200 m Rock Height",
-    },
+    tags: ["UNESCO Heritage", "Ancient Rock Fortress", "Stunning Views"],
+    quickInfo: { bestTime: "Jan – Apr", avgTemp: "25°C – 32°C", travelTime: "2–4 hours duration", languages: "Sinhala, Tamil, English" },
+    stats: { history: "5th Century", relicInfo: "World Heritage Site", elevation: "200 m Rock Height" },
     attractions: [
-      { name: "Sigiriya Rock Fortress", desc: "Climb the iconic rock and explore ancient palace ruins.", location: "Sigiriya", image: "/images/sigiriya.jpg" },
-      { name: "Frescoes", desc: "Admire the world-famous ancient paintings.", location: "Sigiriya", image: "/images/sigiriya.jpg" },
-      { name: "Mirror Wall", desc: "See the polished wall with ancient inscriptions.", location: "Sigiriya", image: "/images/sigiriya.jpg" },
-      { name: "Royal Gardens", desc: "Beautiful gardens with water features and ruins.", location: "Sigiriya", image: "/images/sigiriya.jpg" },
+      { name: "Sigiriya Rock Fortress", desc: "Climb the iconic rock and explore ancient palace ruins.", location: "Sigiriya", image: "/images/sigiriya.jpg" }
     ],
-    itineraries: [
-      { title: "Day Trip to Sigiriya", subtitle: "Sigiriya Climb & Tour", daysText: "1 Day", location: "Sigiriya", image: "/images/sigiriya.jpg" },
-      { title: "Sigiriya & Dambulla", subtitle: "Cave Temple + Rock Fortress", daysText: "2 Days", location: "Sigiriya • Dambulla", image: "/images/Kandy.jpg" },
-      { title: "Cultural Triangle Tour", subtitle: "Sigiriya • Polonnaruwa • Dambulla", daysText: "3 Days", location: "Cultural Triangle", image: "/images/ella.jpg" },
-    ],
-    popularActivities: [
-      "Climb the Sigiriya Rock",
-      "Explore the Ancient Frescoes",
-      "Visit the Royal Gardens",
-      "See the Mirror Wall",
-      "Discover the Lion's Paw Staircase",
-    ],
-    travelTips: [
-      "Wear comfortable shoes for climbing.",
-      "Bring water and a hat (it can be hot).",
-      "Visit early in the morning for cooler weather.",
-      "Respect the cultural and historical significance of the site.",
-    ],
-    whyVisit: [
-      "A UNESCO World Heritage Site with rich history",
-      "Breathtaking panoramic views from the top",
-      "Unique ancient art and architecture",
-      "A must-visit for culture and nature lovers",
-    ],
+    itineraries: [{ title: "Day Trip to Sigiriya", subtitle: "Sigiriya Climb & Tour", daysText: "1 Day", location: "Sigiriya", image: "/images/sigiriya.jpg" }],
+    popularActivities: ["Climb the Sigiriya Rock", "Explore the Ancient Frescoes"],
+    travelTips: ["Wear comfortable shoes for climbing."],
+    whyVisit: ["A UNESCO World Heritage Site with rich history"]
   },
+  ella: {
+    slug: "ella",
+    name: "Ella",
+    tagline: "Mountains, Waterfalls and Endless Adventures",
+    description: "Ella is a peaceful hill town in the heart of Sri Lanka's tea country, known for its breathtaking views, lush green landscapes, and relaxed atmosphere.",
+    heroImage: "/images/ella.jpg",
+    aboutImage: "/images/ella.jpg",
+    tags: ["Scenic Views & Hikes", "Waterfalls & Nature", "Iconic Railway"],
+    quickInfo: { bestTime: "Jan – Apr", avgTemp: "12°C – 25°C", travelTime: "6–7 hours from Colombo", languages: "Sinhala, Tamil, English" },
+    stats: { history: "Hill Capital", relicInfo: "Nine Arch Bridge", elevation: "1,041 m ASL" },
+    attractions: [
+      { name: "Nine Arch Bridge", desc: "An iconic railway bridge surrounded by lush greenery.", location: "Ella", image: "/images/ella.jpg" },
+      { name: "Ravana Falls", desc: "A beautiful waterfall with a legendary story.", location: "Ella", image: "/images/ella.jpg" }
+    ],
+    itineraries: [{ title: "1 Day in Ella", subtitle: "Nine Arch Bridge & Peaks", daysText: "1 Day", location: "Ella", image: "/images/ella.jpg" }],
+    popularActivities: ["Hike Little Adam's Peak", "Visit Ravana Falls"],
+    travelTips: ["Wear comfortable shoes for hiking.", "Carry a light jacket as evenings get chilly."],
+    whyVisit: ["Breathtaking mountain views and scenic landscapes"]
+  },
+  colombo: {
+    slug: "colombo",
+    name: "Colombo",
+    tagline: "Where city life meets the Indian Ocean",
+    description: "Colombo, Sri Lanka's commercial capital, is a dynamic blend of modern city life and timeless heritage.",
+    heroImage: "/images/colombo.jpg",
+    aboutImage: "/images/colombo.jpg",
+    tags: ["Coastal City", "Culture & Heritage", "Food & Nightlife"],
+    quickInfo: { bestTime: "Dec – Mar", avgTemp: "30°C", travelTime: "Capital Hub", languages: "Sinhala, Tamil, English" },
+    stats: { history: "200+ Years", relicInfo: "Commercial Capital", elevation: "Sea Level" },
+    attractions: [
+      { name: "Gangaramaya Temple", desc: "A historic temple with a unique blend of architecture.", location: "Colombo", image: "/images/colombo.jpg" }
+    ],
+    itineraries: [{ title: "1 Day in Colombo", subtitle: "City Highlights", daysText: "1 Day", location: "Colombo", image: "/images/colombo.jpg" }],
+    popularActivities: ["Visit Gangaramaya Temple", "Walk along Galle Face Green"],
+    travelTips: ["Carry light clothing for tropical climate."],
+    whyVisit: ["Vibrant urban culture and dining"]
+  },
+  "nuwara-eliya": {
+    slug: "nuwara-eliya",
+    name: "Nuwara Eliya",
+    tagline: "Where misty mountains and timeless charm meet",
+    description: "Escape to the cool hills of Nuwara Eliya, a colonial-era town surrounded by lush tea estates.",
+    heroImage: "/images/nuwaraeliya.webp",
+    aboutImage: "/images/nuwaraeliya.webp",
+    tags: ["Tea Plantations", "Scenic Mountains", "Cool Climate"],
+    quickInfo: { bestTime: "Dec – Apr", avgTemp: "16°C – 20°C", travelTime: "4 hours from Colombo", languages: "Sinhala, Tamil, English" },
+    stats: { history: "Little England", relicInfo: "Tea Estates", elevation: "1,868 m ASL" },
+    attractions: [
+      { name: "Gregory Lake", desc: "Boating, fishing and scenic lakeside views.", location: "Nuwara Eliya", image: "/images/nuwaraeliya.webp" }
+    ],
+    itineraries: [{ title: "1 Day in Nuwara Eliya", subtitle: "Lake, Gardens & Tea Estates", daysText: "1 Day", location: "Nuwara Eliya", image: "/images/nuwaraeliya.webp" }],
+    popularActivities: ["Visit Tea Plantations", "Explore Gregory Lake"],
+    travelTips: ["Carry a light jacket (it gets chilly)."],
+    whyVisit: ["Cool climate and stunning tea hills"]
+  },
+  galle: {
+    slug: "galle",
+    name: "Galle",
+    tagline: "Where History Meets the Ocean",
+    description: "Galle is famous for its UNESCO World Heritage-listed fort, colonial architecture and beautiful beaches.",
+    heroImage: "/images/galle.jpg",
+    aboutImage: "/images/galle.jpg",
+    tags: ["UNESCO Heritage", "Colonial Fort", "Beaches"],
+    quickInfo: { bestTime: "Nov – Apr", avgTemp: "28°C", travelTime: "2.5 hours from Colombo", languages: "Sinhala, Tamil, English" },
+    stats: { history: "Colonial Era", relicInfo: "Galle Fort", elevation: "Sea Level" },
+    attractions: [
+      { name: "Galle Fort", desc: "Historic ramparts and charming streets.", location: "Galle", image: "/images/galle.jpg" }
+    ],
+    itineraries: [{ title: "1 Day in Galle", subtitle: "Fort & Lighthouse", daysText: "1 Day", location: "Galle", image: "/images/galle.jpg" }],
+    popularActivities: ["Walk Around the Galle Fort", "Visit the Lighthouse"],
+    travelTips: ["Wear comfortable shoes for walking."],
+    whyVisit: ["UNESCO World Heritage Site with rich history"]
+  },
+  jaffna: {
+    slug: "jaffna",
+    name: "Jaffna",
+    tagline: "Culture, History and Untouched Beauty",
+    description: "Jaffna, the cultural heart of the North, is a land of proud heritage, ancient temples and pristine beaches.",
+    heroImage: "/images/jaffna.jpg",
+    aboutImage: "/images/jaffna.jpg",
+    tags: ["Cultural Heritage", "Historic Temples", "Local Cuisine"],
+    quickInfo: { bestTime: "Jan – Apr", avgTemp: "30°C", travelTime: "6 hours from Colombo", languages: "Tamil, Sinhala, English" },
+    stats: { history: "Ancient Era", relicInfo: "Nallur Temple", elevation: "Northern Tip" },
+    attractions: [
+      { name: "Nallur Kandaswamy Temple", desc: "A sacred Hindu temple.", location: "Nallur", image: "/images/jaffna.jpg" }
+    ],
+    itineraries: [{ title: "1 Day in Jaffna", subtitle: "Temple & Fort", daysText: "1 Day", location: "Jaffna", image: "/images/jaffna.jpg" }],
+    popularActivities: ["Visit Nallur Temple", "Try local Jaffna cuisine"],
+    travelTips: ["Dress modestly when visiting temples."],
+    whyVisit: ["Rich Tamil culture and heritage"]
+  },
+  anuradhapura: {
+    slug: "anuradhapura",
+    name: "Anuradhapura",
+    tagline: "The Ancient Kingdom of কালের",
+    description: "Anuradhapura is one of the world's oldest continuously inhabited cities, rich in history and spirituality.",
+    heroImage: "/images/anuradhapura.jpg",
+    aboutImage: "/images/anuradhapura.jpg",
+    tags: ["UNESCO Heritage", "Ancient City", "Sacred Stupas"],
+    quickInfo: { bestTime: "Jan – Apr", avgTemp: "31°C", travelTime: "4 hours from Colombo", languages: "Sinhala, Tamil, English" },
+    stats: { history: "First Capital", relicInfo: "Sri Maha Bodhi", elevation: "North Central" },
+    attractions: [
+      { name: "Ruwanwelisaya", desc: "Magnificent ancient stupa.", location: "Anuradhapura", image: "/images/anuradhapura.jpg" }
+    ],
+    itineraries: [{ title: "1 Day in Anuradhapura", subtitle: "Ruins tour", daysText: "1 Day", location: "Anuradhapura", image: "/images/anuradhapura.jpg" }],
+    popularActivities: ["Visit Sacred Ruins", "See Sri Maha Bodhi"],
+    travelTips: ["Wear modest clothing covering shoulders and knees."],
+    whyVisit: ["Ancient kingdom with sacred stupas"]
+  },
+  trincomalee: {
+    slug: "trincomalee",
+    name: "Trincomalee",
+    tagline: "Beaches, Diving and Coastal Wonder",
+    description: "Trincomalee features natural harbors, beautiful beaches and wonderful diving spots.",
+    heroImage: "/images/Trincomalee.jpg",
+    aboutImage: "/images/Trincomalee.jpg",
+    tags: ["Beaches", "Diving", "Coastal Wonder"],
+    quickInfo: { bestTime: "May – Oct", avgTemp: "30°C", travelTime: "5 hours from Colombo", languages: "Sinhala, Tamil, English" },
+    stats: { history: "Coastal Hub", relicInfo: "Nilaveli Beach", elevation: "East Coast" },
+    attractions: [
+      { name: "Nilaveli Beach", desc: "White sand beach.", location: "Trincomalee", image: "/images/Trincomalee.jpg" }
+    ],
+    itineraries: [{ title: "1 Day in Trincomalee", subtitle: "Beach & Diving", daysText: "1 Day", location: "Trincomalee", image: "/images/Trincomalee.jpg" }],
+    popularActivities: ["Relax at Nilaveli Beach", "Snorkeling"],
+    travelTips: ["Use sunscreen and stay hydrated."],
+    whyVisit: ["Stunning east coast beaches"]
+  }
 };
 
 async function getDestinationDetails(slug: string): Promise<DestinationDetails | null> {
   try {
-    const res = await fetch(`${FASTAPI_URL}/api/v1/destinations/${slug}`, {
+    const cleanSlug = slug.toLowerCase().trim();
+    const res = await fetch(`${FASTAPI_URL}/api/v1/destinations/${cleanSlug}`, {
       cache: "no-store",
     });
-    if (!res.ok) return DESTINATIONS_DATA[slug] || null;
+    if (!res.ok) return DESTINATIONS_DATA[cleanSlug] || null;
     const data = await res.json();
-    return data || DESTINATIONS_DATA[slug] || null;
+    return data || DESTINATIONS_DATA[cleanSlug] || null;
   } catch (err) {
-    return DESTINATIONS_DATA[slug] || null;
+    const cleanSlug = slug.toLowerCase().trim();
+    return DESTINATIONS_DATA[cleanSlug] || null;
   }
 }
 
@@ -191,8 +254,6 @@ export default async function DestinationDetailPage({
 
   return (
     <div className="bg-[#faf9f6] text-slate-800 font-sans min-h-screen pb-16">
-      
-      {/* 1. HERO HEADER BANNER */}
       <section className="relative w-full h-[420px] sm:h-[480px] bg-slate-900 overflow-hidden">
         <Image
           src={dest.heroImage || "/images/sigiriya.jpg"}
@@ -205,7 +266,6 @@ export default async function DestinationDetailPage({
 
         <div className="relative z-10 max-w-7xl mx-auto h-full px-6 flex flex-col justify-end pb-10">
           <div className="space-y-3">
-            {/* Breadcrumbs */}
             <nav className="text-xs text-amber-300 font-medium flex items-center gap-2">
               <Link href="/" className="hover:underline">Home</Link>
               <ChevronRight size={12} />
@@ -224,7 +284,6 @@ export default async function DestinationDetailPage({
               {dest.description}
             </p>
 
-            {/* Badges Strip */}
             <div className="flex flex-wrap gap-2 pt-2">
               {dest.tags.map((tag) => (
                 <span
@@ -240,13 +299,8 @@ export default async function DestinationDetailPage({
         </div>
       </section>
 
-      {/* 2. MAIN CONTENT AREA */}
       <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
-        
-        {/* TOP GRID: ABOUT & QUICK INFO */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* ABOUT CARD */}
           <div className="lg:col-span-8 bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
             <h2 className="text-xl font-serif font-bold text-gray-900 flex items-center gap-2">
               🏛️ About {dest.name}
@@ -255,11 +309,10 @@ export default async function DestinationDetailPage({
               {dest.description}
             </p>
 
-            {/* Stats counter strip */}
             <div className="grid grid-cols-3 gap-4 pt-2 border-t border-b border-gray-100 py-4 text-center">
               <div>
                 <span className="text-lg font-bold text-emerald-800 block">{dest.stats.history}</span>
-                <span className="text-[10px] text-gray-400 font-medium uppercase">Years of History</span>
+                <span className="text-[10px] text-gray-400 font-medium uppercase">History</span>
               </div>
               <div className="border-x border-gray-100">
                 <span className="text-lg font-bold text-emerald-800 block">{dest.stats.relicInfo}</span>
@@ -271,7 +324,6 @@ export default async function DestinationDetailPage({
               </div>
             </div>
 
-            {/* Featured Highlight Banner Image */}
             <div className="relative h-56 sm:h-64 rounded-2xl overflow-hidden group">
               <Image
                 src={dest.aboutImage || "/images/sigiriya.jpg"}
@@ -288,7 +340,6 @@ export default async function DestinationDetailPage({
             </div>
           </div>
 
-          {/* QUICK INFO SIDEBAR */}
           <div className="lg:col-span-4 space-y-6">
             <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
               <h3 className="font-serif font-bold text-gray-900 text-base flex items-center gap-2">
@@ -337,7 +388,6 @@ export default async function DestinationDetailPage({
               </Link>
             </div>
 
-            {/* POPULAR ACTIVITIES CARD */}
             <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3">
               <h3 className="font-serif font-bold text-gray-900 text-base flex items-center gap-2">
                 ⭐ Popular Activities
@@ -355,18 +405,13 @@ export default async function DestinationDetailPage({
               </ul>
             </div>
           </div>
-
         </div>
 
-        {/* TOP ATTRACTIONS SECTION */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-serif font-bold text-gray-900 flex items-center gap-2">
               🏛️ Top Attractions in {dest.name}
             </h2>
-            <span className="text-xs text-emerald-800 font-bold hover:underline cursor-pointer">
-              View All →
-            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -399,10 +444,7 @@ export default async function DestinationDetailPage({
           </div>
         </div>
 
-        {/* SUGGESTED ITINERARIES & TRAVEL TIPS GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* SUGGESTED ITINERARIES */}
           <div className="lg:col-span-8 space-y-4">
             <h2 className="text-xl font-serif font-bold text-gray-900">
               🗺️ Suggested Itineraries
@@ -428,7 +470,6 @@ export default async function DestinationDetailPage({
             </div>
           </div>
 
-          {/* TRAVEL TIPS */}
           <div className="lg:col-span-4 bg-emerald-950 text-white p-6 rounded-3xl space-y-4 shadow-lg">
             <h3 className="font-serif font-bold text-base flex items-center gap-2 text-amber-400">
               💡 Travel Tips for {dest.name}
@@ -442,10 +483,8 @@ export default async function DestinationDetailPage({
               ))}
             </ul>
           </div>
-
         </div>
 
-        {/* BOTTOM CTA BANNER */}
         <div className="relative rounded-3xl overflow-hidden bg-slate-900 text-white p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <Image
             src={dest.heroImage}
@@ -465,7 +504,6 @@ export default async function DestinationDetailPage({
             Plan Your Trip →
           </Link>
         </div>
-
       </main>
     </div>
   );
